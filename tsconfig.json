@@ -1,0 +1,11 @@
+{
+	"compilerOptions": {
+		"target": "es5",
+		"declaration": true,
+		"outFile": "bin/uulib.js"
+	},
+	"include": [
+		"libs",
+		"src"
+	]
+}
