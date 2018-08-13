@@ -189,6 +189,7 @@ declare class Preview extends eui.Component {
     private pageIndex;
     constructor();
     private onAddToStageInit(event);
+    private bindHandlers();
     private initEui();
     private displayGroup;
     private getPages();
