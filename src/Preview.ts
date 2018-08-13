@@ -194,10 +194,10 @@ class Preview extends eui.Component {
                     break;
                 case 99:
                     var bg:UUImage = new UUImage();
-                    var texture:egret.Texture = RES.getRes(elements[i].src);
+                    var texture:egret.Texture = RES.getRes(elements[i].name);
                     bg.texture = texture;
-                    bg.width = this.displayGroup.width;
-                    bg.height = this.displayGroup.height;
+                    // bg.width = this.displayGroup.width;
+                    // bg.height = this.displayGroup.height;
                     bg.name = elements[i].id;
                     bg.data = elements[i];
                     this.displayList.push(new Picture(bg, elements[i].matrix));

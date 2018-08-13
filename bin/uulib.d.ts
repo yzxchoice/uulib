@@ -51,7 +51,8 @@ declare class Control {
 declare class Picture {
     image: any;
     transform: any;
-    constructor(image: any, m: any);
+    b: boolean;
+    constructor(image: any, m: any, b?: boolean);
     draw(container: any): void;
     undraw(container: any): void;
 }

@@ -5,8 +5,10 @@
 class Picture {
     image: any;
     transform: any;
-    constructor (image, m) {
+    b: boolean;
+    constructor (image, m, b:boolean = true) {
         this.image = image;
+        this.b = b;
         var matrix = new Matrix(m.a, m.b, m.c, m.d, m.x, m.y);
         this.transform = new Transformable(image.width, image.height, matrix, this);
         // if(this.image.data.pro)

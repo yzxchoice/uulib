@@ -191,8 +191,10 @@ __reflect(Control.prototype, "Control");
  * 可操作对象容器
  */
 var Picture = (function () {
-    function Picture(image, m) {
+    function Picture(image, m, b) {
+        if (b === void 0) { b = true; }
         this.image = image;
+        this.b = b;
         var matrix = new Matrix(m.a, m.b, m.c, m.d, m.x, m.y);
         this.transform = new Transformable(image.width, image.height, matrix, this);
         // if(this.image.data.pro)
@@ -919,10 +921,10 @@ var Preview = (function (_super) {
                     break;
                 case 99:
                     var bg = new UUImage();
-                    var texture = RES.getRes(elements[i].src);
+                    var texture = RES.getRes(elements[i].name);
                     bg.texture = texture;
-                    bg.width = this.displayGroup.width;
-                    bg.height = this.displayGroup.height;
+                    // bg.width = this.displayGroup.width;
+                    // bg.height = this.displayGroup.height;
                     bg.name = elements[i].id;
                     bg.data = elements[i];
                     this.displayList.push(new Picture(bg, elements[i].matrix));
