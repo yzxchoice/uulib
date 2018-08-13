@@ -1,4 +1,7 @@
 
+/**
+ * transform 枚举
+ */
 enum ControlType {
     SCALE = 1,
     SCALE_X = 2,
@@ -88,6 +91,9 @@ class Control {
         }
     }
 
+    /**
+     * 更新操作框坐标
+     */
     updatePosition () {
         if (!this.tool || !this.tool.target){
             return;
@@ -121,6 +127,9 @@ class Control {
         }
     }
 
+    /**
+     * 画操作框形状
+     */
     draw (ctx: any) {
         // for custom drawing methods, call
         // that method and skip standard drawing

@@ -9,6 +9,9 @@ class Mouse {
         throw new Error('can not create a instance');
     }
 
+    /**
+     * 鼠标点击的坐标
+     */
     static get (event: egret.TouchEvent, elem: eui.Group) {
         if (!elem){
             elem = event.currentTarget;
