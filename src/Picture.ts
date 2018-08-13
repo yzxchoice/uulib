@@ -6,7 +6,9 @@ class Picture {
         this.image = image;
         var matrix = new Matrix(m.a, m.b, m.c, m.d, m.x, m.y);
         this.transform = new Transformable(image.width, image.height, matrix, this);
+        // if(this.image.data.pro)
     }
+
 
     draw (container) {
         var m = this.transform.matrix;

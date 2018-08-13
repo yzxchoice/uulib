@@ -96,17 +96,28 @@ class Preview extends eui.Component {
         if(this.pages[this.pageIndex].hasOwnProperty("properties") && this.pages[this.pageIndex].properties.hasOwnProperty("triggerGroup")){
         
             var triggerGroup = this.pages[this.pageIndex].properties.triggerGroup;
+            console.log('triggerGroup...');
+            console.log(JSON.stringify(triggerGroup));
             triggerGroup.forEach( (item) => {
                 if(item.sourceId == event.target.name){
                     if(event.target.data.hasOwnProperty("sound")){
                         var sound:egret.Sound = RES.getRes(event.target.data.name);
                         sound.play(0, 1);
                     }else {
+                        console.log('item.targetId = ' + item.targetId);
                         egret.Tween.get( this.getDisplayByName(item.targetId)[0].image ).to( {alpha: 0}, 300, egret.Ease.sineIn );
                     }
                     
                 }
             })
+            // 可拖拽
+            let elements = this.pages[this.pageIndex].elements;
+            if(elements.some(item => item.id == event.target.name)){
+                if(event.target.data.property.drag){
+                   
+                }
+            }
+            
         }
         
         event.preventDefault();
@@ -122,6 +133,8 @@ class Preview extends eui.Component {
         
         var i = 0;
         var elements = this.pages[index].elements;
+        console.log('elements...');
+        console.log(JSON.stringify(elements));
         // var triggerGroup = this.pages[index].properties.triggerGroup;
         var n = elements.length;
         for (i=0; i<n; i++){
@@ -160,6 +173,8 @@ class Preview extends eui.Component {
                     circle.data = elements[i];
                     circle.width = 400;
                     circle.height = 400;
+                    circle.name = elements[i].id;
+                    circle.data = elements[i];
                     this.displayList.push(new Picture(circle, elements[i].matrix));
                     break;
                 case 8:

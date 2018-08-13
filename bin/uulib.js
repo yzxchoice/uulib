@@ -183,6 +183,7 @@ var Picture = (function () {
         this.image = image;
         var matrix = new Matrix(m.a, m.b, m.c, m.d, m.x, m.y);
         this.transform = new Transformable(image.width, image.height, matrix, this);
+        // if(this.image.data.pro)
     }
     Picture.prototype.draw = function (container) {
         var m = this.transform.matrix;
@@ -788,6 +789,8 @@ var Preview = (function (_super) {
         console.log(event.target);
         if (this.pages[this.pageIndex].hasOwnProperty("properties") && this.pages[this.pageIndex].properties.hasOwnProperty("triggerGroup")) {
             var triggerGroup = this.pages[this.pageIndex].properties.triggerGroup;
+            console.log('triggerGroup...');
+            console.log(JSON.stringify(triggerGroup));
             triggerGroup.forEach(function (item) {
                 if (item.sourceId == event.target.name) {
                     if (event.target.data.hasOwnProperty("sound")) {
@@ -795,10 +798,17 @@ var Preview = (function (_super) {
                         sound.play(0, 1);
                     }
                     else {
+                        console.log('item.targetId = ' + item.targetId);
                         egret.Tween.get(_this.getDisplayByName(item.targetId)[0].image).to({ alpha: 0 }, 300, egret.Ease.sineIn);
                     }
                 }
             });
+            // 可拖拽
+            var elements = this.pages[this.pageIndex].elements;
+            if (elements.some(function (item) { return item.id == event.target.name; })) {
+                if (event.target.data.property.drag) {
+                }
+            }
         }
         event.preventDefault();
     };
@@ -810,6 +820,8 @@ var Preview = (function (_super) {
     Preview.prototype.addResources = function (index) {
         var i = 0;
         var elements = this.pages[index].elements;
+        console.log('elements...');
+        console.log(JSON.stringify(elements));
         // var triggerGroup = this.pages[index].properties.triggerGroup;
         var n = elements.length;
         for (i = 0; i < n; i++) {
@@ -848,6 +860,8 @@ var Preview = (function (_super) {
                     circle.data = elements[i];
                     circle.width = 400;
                     circle.height = 400;
+                    circle.name = elements[i].id;
+                    circle.data = elements[i];
                     this.displayList.push(new Picture(circle, elements[i].matrix));
                     break;
                 case 8:
