@@ -8,6 +8,9 @@ var __extends = this && this.__extends || function __extends(t, e) {
 for (var i in e) e.hasOwnProperty(i) && (t[i] = e[i]);
 r.prototype = e.prototype, t.prototype = new r();
 };
+/**
+ * transform 枚举
+ */
 var ControlType;
 (function (ControlType) {
     ControlType[ControlType["SCALE"] = 1] = "SCALE";
@@ -71,6 +74,9 @@ var Control = (function () {
             }
         }
     };
+    /**
+     * 更新操作框坐标
+     */
     Control.prototype.updatePosition = function () {
         if (!this.tool || !this.tool.target) {
             return;
@@ -99,6 +105,9 @@ var Control = (function () {
             this.y += this.offsetY * Math.cos(angle);
         }
     };
+    /**
+     * 画操作框形状
+     */
     Control.prototype.draw = function (ctx) {
         // for custom drawing methods, call
         // that method and skip standard drawing
@@ -178,6 +187,9 @@ var Control = (function () {
 }());
 __reflect(Control.prototype, "Control");
 // TypeScript file
+/**
+ * 可操作对象容器
+ */
 var Picture = (function () {
     function Picture(image, m) {
         this.image = image;
@@ -197,12 +209,18 @@ var Picture = (function () {
 }());
 __reflect(Picture.prototype, "Picture");
 // TypeScript file
+/**
+ * 组件基类
+ */
 var BaseUI = (function () {
     function BaseUI() {
     }
     return BaseUI;
 }());
 __reflect(BaseUI.prototype, "BaseUI");
+/**
+ * 自定义操作框
+ */
 var ControlSet = (function () {
     function ControlSet() {
         throw new Error('can not create a instance');
@@ -372,6 +390,9 @@ var EgretControl = (function (_super) {
     return EgretControl;
 }(Control));
 __reflect(EgretControl.prototype, "EgretControl");
+/**
+ * 矩阵对象
+ */
 var Matrix = (function () {
     function Matrix(a, b, c, d, x, y) {
         this.a = (a != null) ? a : 1;
@@ -418,6 +439,10 @@ var Matrix = (function () {
         this.x = m.x;
         this.y = m.y;
     };
+    /**
+     * 旋转
+     * angle 弧度
+     */
     Matrix.prototype.rotate = function (angle) {
         var u = Math.cos(angle);
         var v = Math.sin(angle);
@@ -431,6 +456,9 @@ var Matrix = (function () {
         this.x = u * this.x - v * this.y;
         this.y = v * temp + u * this.y;
     };
+    /**
+     * 位移
+     */
     Matrix.prototype.translate = function (x, y) {
         this.x += x;
         this.y += y;
@@ -495,6 +523,9 @@ var Matrix = (function () {
     Matrix.prototype.getTransformedY = function (x, y) {
         return this.y + this.d * y + this.b * x;
     };
+    /**
+     * 缩放
+     */
     Matrix.prototype.scale = function (x, y) {
         this.a *= x;
         this.b *= y;
@@ -525,6 +556,9 @@ var Mouse = (function () {
     function Mouse() {
         throw new Error('can not create a instance');
     }
+    /**
+     * 鼠标点击的坐标
+     */
     Mouse.get = function (event, elem) {
         if (!elem) {
             elem = event.currentTarget;
@@ -559,6 +593,9 @@ var Mouse = (function () {
 }());
 __reflect(Mouse.prototype, "Mouse");
 // TypeScript file
+/**
+ * 转盘组件
+ */
 var CircleSector = (function (_super) {
     __extends(CircleSector, _super);
     function CircleSector() {
@@ -675,6 +712,9 @@ var CircleSector = (function (_super) {
     CircleSector.prototype.onComplete = function (param1) {
         alert(param1);
     };
+    /**
+     * 画弧形方法
+     */
     CircleSector.prototype.drawArc = function (mc, x, y, r, angle, startFrom, color) {
         if (x === void 0) { x = 200; }
         if (y === void 0) { y = 200; }
@@ -709,15 +749,18 @@ var CircleSector = (function (_super) {
 }(eui.Group));
 __reflect(CircleSector.prototype, "CircleSector", ["IUUContainer"]);
 // TypeScript file
+/**
+ * 预览
+ */
 var Preview = (function (_super) {
     __extends(Preview, _super);
+    // w: number = 1200;
+    // h: number = 900;
     function Preview() {
         var _this = _super.call(this) || this;
         _this.displayList = [];
         _this.pages = [];
         _this.pageIndex = 0;
-        _this.w = 750;
-        _this.h = 1334;
         _this.displayGroup = new eui.Group();
         // this.tool = new TransformTool(this);
         _this.getPages();
@@ -732,13 +775,14 @@ var Preview = (function (_super) {
     Preview.prototype.initEui = function () {
         var bg = new egret.Shape;
         bg.graphics.beginFill(0xffffff, 1);
-        bg.graphics.drawRect(0, 0, this.w, this.h);
+        bg.graphics.lineStyle(1, 0xcccccc);
+        bg.graphics.drawRect(0, 0, this.width - 2, this.height - 2);
         bg.graphics.endFill();
         this.addChild(bg);
-        this.horizontalCenter = 0;
+        // this.horizontalCenter = 0;
         // this.displayGroup.horizontalCenter = 0;
-        this.displayGroup.width = this.w;
-        this.displayGroup.height = this.h;
+        this.displayGroup.width = this.width;
+        this.displayGroup.height = this.height;
         this.displayGroup.scrollEnabled = true;
         this.addChild(this.displayGroup);
         var button = new eui.Button();
@@ -900,6 +944,9 @@ var Preview = (function (_super) {
     return Preview;
 }(eui.Component));
 __reflect(Preview.prototype, "Preview");
+/**
+ * 声音组件
+ */
 var SoundButton = (function (_super) {
     __extends(SoundButton, _super);
     function SoundButton() {
@@ -929,6 +976,9 @@ var Transformable = (function () {
     return Transformable;
 }());
 __reflect(Transformable.prototype, "Transformable");
+/**
+ * 操作基类
+ */
 var TransformTool = (function () {
     function TransformTool(container) {
         // transform interaction
@@ -1315,6 +1365,9 @@ var TransformTool = (function () {
 }());
 __reflect(TransformTool.prototype, "TransformTool");
 // TypeScript file
+/**
+ * 图形基类
+ */
 var UUBitmap = (function (_super) {
     __extends(UUBitmap, _super);
     function UUBitmap() {
@@ -1324,6 +1377,9 @@ var UUBitmap = (function (_super) {
 }(egret.Bitmap));
 __reflect(UUBitmap.prototype, "UUBitmap");
 // TypeScript file
+/**
+ * 图片组件
+ */
 var UUImage = (function (_super) {
     __extends(UUImage, _super);
     function UUImage() {
@@ -1333,6 +1389,9 @@ var UUImage = (function (_super) {
 }(eui.Image));
 __reflect(UUImage.prototype, "UUImage");
 // TypeScript file
+/**
+ * 文字组件
+ */
 var UULabel = (function (_super) {
     __extends(UULabel, _super);
     function UULabel() {

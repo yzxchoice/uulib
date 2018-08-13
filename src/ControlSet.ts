@@ -1,3 +1,6 @@
+/**
+ * 自定义操作框
+ */
 class ControlSet {
     static controlClass: any;
     constructor () {

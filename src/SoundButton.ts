@@ -4,6 +4,9 @@ interface uiData {
     name: string,
     url?: string
 }
+/**
+ * 声音组件
+ */
 class SoundButton extends eui.Button implements BaseUI {
     data: uiData;
     constructor () {

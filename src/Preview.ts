@@ -1,11 +1,14 @@
 // TypeScript file
+/**
+ * 预览
+ */
 class Preview extends eui.Component {
     private displayList = [];
     tool: any;
     pages = [];
     private pageIndex: number = 0;
-    w: number = 750;
-    h: number = 1334;
+    // w: number = 1200;
+    // h: number = 900;
     public constructor () {
         super();
         
@@ -24,15 +27,16 @@ class Preview extends eui.Component {
 
         var bg:egret.Shape = new egret.Shape;
         bg.graphics.beginFill(0xffffff,1);
-        bg.graphics.drawRect(0, 0, this.w, this.h);
+        bg.graphics.lineStyle(1, 0xcccccc);
+        bg.graphics.drawRect(0, 0, this.width - 2, this.height - 2);
         bg.graphics.endFill();
         this.addChild(bg);
 
-        this.horizontalCenter = 0;
+        // this.horizontalCenter = 0;
 
         // this.displayGroup.horizontalCenter = 0;
-        this.displayGroup.width = this.w;
-        this.displayGroup.height = this.h;
+        this.displayGroup.width = this.width;
+        this.displayGroup.height = this.height;
         this.displayGroup.scrollEnabled = true;
         this.addChild(this.displayGroup);
 

@@ -1,3 +1,6 @@
+/**
+ * transform 枚举
+ */
 declare enum ControlType {
     SCALE = 1,
     SCALE_X = 2,
@@ -32,10 +35,19 @@ declare class Control {
     private transformCallback;
     constructor(type?: any, u?: any, v?: any, offsetX?: number, offsetY?: number, size?: number);
     setDefaultShape(): void;
+    /**
+     * 更新操作框坐标
+     */
     updatePosition(): void;
+    /**
+     * 画操作框形状
+     */
     draw(ctx: any): void;
     contains(x: number, y: number): any;
 }
+/**
+ * 可操作对象容器
+ */
 declare class Picture {
     image: any;
     transform: any;
@@ -43,9 +55,18 @@ declare class Picture {
     draw(container: any): void;
     undraw(container: any): void;
 }
+/**
+ * 组件基类
+ */
 declare class BaseUI {
+    /**
+     * 绑定数据
+     */
     data: any;
 }
+/**
+ * 自定义操作框
+ */
 declare class ControlSet {
     static controlClass: any;
     constructor();
@@ -83,6 +104,9 @@ interface MatrixType {
     x: number;
     y: number;
 }
+/**
+ * 矩阵对象
+ */
 declare class Matrix {
     a: number;
     b: number;
@@ -98,7 +122,14 @@ declare class Matrix {
     clone(): Matrix;
     clone1(): egret.Matrix;
     copyFrom(m: MatrixType): void;
+    /**
+     * 旋转
+     * angle 弧度
+     */
     rotate(angle: number): void;
+    /**
+     * 位移
+     */
     translate(x: number, y: number): void;
     concat(m: MatrixType): void;
     invert(): void;
@@ -106,6 +137,9 @@ declare class Matrix {
     getRotationY(): number;
     getTransformedX(x: number, y: number): number;
     getTransformedY(x: number, y: number): number;
+    /**
+     * 缩放
+     */
     scale(x: number, y: number): void;
     containsPoint(x: number, y: number, w: number, h: number): boolean;
 }
@@ -116,8 +150,14 @@ declare class Mouse {
     static MOVE: string;
     static END: string;
     constructor();
+    /**
+     * 鼠标点击的坐标
+     */
     static get(event: egret.TouchEvent, elem: eui.Group): typeof Mouse;
 }
+/**
+ * 转盘组件
+ */
 declare class CircleSector extends eui.Group implements BaseUI, IUUContainer {
     data: any;
     container: any;
@@ -134,15 +174,19 @@ declare class CircleSector extends eui.Group implements BaseUI, IUUContainer {
     rotateFn(item: number, txt: string): void;
     dispose(): void;
     private onComplete(param1);
+    /**
+     * 画弧形方法
+     */
     drawArc(mc: egret.Shape, x?: number, y?: number, r?: number, angle?: number, startFrom?: number, color?: number): void;
 }
+/**
+ * 预览
+ */
 declare class Preview extends eui.Component {
     private displayList;
     tool: any;
     pages: any[];
     private pageIndex;
-    w: number;
-    h: number;
     constructor();
     private onAddToStageInit(event);
     private initEui();
@@ -164,6 +208,9 @@ interface uiData {
     name: string;
     url?: string;
 }
+/**
+ * 声音组件
+ */
 declare class SoundButton extends eui.Button implements BaseUI {
     data: uiData;
     constructor();
@@ -178,6 +225,9 @@ declare class Transformable {
     changed: any;
     constructor(width: number, height: number, matrix: any, owner: any);
 }
+/**
+ * 操作基类
+ */
 declare class TransformTool {
     protected container: any;
     target: any;
@@ -227,12 +277,21 @@ declare class TransformTool {
     commit(): void;
     sanitizeStartMatrix(): void;
 }
+/**
+ * 图形基类
+ */
 declare class UUBitmap extends egret.Bitmap implements BaseUI {
     data: any;
 }
+/**
+ * 图片组件
+ */
 declare class UUImage extends eui.Image implements BaseUI {
     data: any;
 }
+/**
+ * 文字组件
+ */
 declare class UULabel extends eui.Label implements BaseUI {
     data: any;
 }

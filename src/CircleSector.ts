@@ -1,4 +1,7 @@
 // TypeScript file
+/**
+ * 转盘组件
+ */
 class CircleSector extends eui.Group implements BaseUI, IUUContainer {
     data: any;
     container: any;
@@ -134,6 +137,9 @@ class CircleSector extends eui.Group implements BaseUI, IUUContainer {
         alert(param1);
     }
 
+    /**
+     * 画弧形方法
+     */
     drawArc(mc:egret.Shape, x:number=200, y:number=200, r:number=100, angle:number=27, startFrom:number=270, color:number=0xff0000):void {
         mc.graphics.beginFill(color,50);
         mc.graphics.lineStyle(0,color);   

@@ -1,3 +1,6 @@
+/**
+ * 操作基类
+ */
 class TransformTool {
     protected container:any;
     public target:any;

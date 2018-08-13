@@ -7,6 +7,9 @@ interface MatrixType {
     y: number;
 }
 
+/**
+ * 矩阵对象
+ */
 class Matrix {
     // private matrix: any;
     a: number;
@@ -82,6 +85,10 @@ class Matrix {
         this.y = m.y;
     }
 
+    /**
+     * 旋转 
+     * angle 弧度
+     */
     rotate (angle: number) {
         var u = Math.cos(angle);
         var v = Math.sin(angle);
@@ -97,6 +104,9 @@ class Matrix {
         this.y = v * temp + u * this.y;
     }
 
+    /**
+     * 位移
+     */
     translate (x: number, y: number) {
         this.x += x;
         this.y += y;
@@ -174,6 +184,9 @@ class Matrix {
         return this.y + this.d * y + this.b * x;
     }
 
+    /**
+     * 缩放
+     */
     scale (x: number, y: number) {
         this.a *= x;
         this.b *= y;

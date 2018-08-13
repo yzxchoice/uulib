@@ -1,4 +1,7 @@
 // TypeScript file
+/**
+ * 可操作对象容器
+ */
 class Picture {
     image: any;
     transform: any;
