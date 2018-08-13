@@ -912,6 +912,16 @@ var Preview = (function (_super) {
                     // this.createGameScene();
                     this.displayList.push(new Picture(this, elements[i].matrix));
                     break;
+                case 99:
+                    var bg = new UUImage();
+                    var texture = RES.getRes(elements[i].src);
+                    bg.texture = texture;
+                    bg.width = this.displayGroup.width;
+                    bg.height = this.displayGroup.height;
+                    bg.name = elements[i].id;
+                    bg.data = elements[i];
+                    this.displayList.push(new Picture(bg, elements[i].matrix));
+                    break;
             }
         }
     };
@@ -938,6 +948,11 @@ var Preview = (function (_super) {
         for (i = 0; i < n; i++) {
             // if (!targetControl || this.tool.target !== this.displayList[i].transform){
             this.displayList[i].draw(this.displayGroup);
+            // 背景图
+            var item = this.displayList[i].image;
+            if (item.data.type == 99) {
+                this.displayGroup.setChildIndex(item, 0);
+            }
             // }
         }
     };

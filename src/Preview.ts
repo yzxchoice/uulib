@@ -185,6 +185,16 @@ class Preview extends eui.Component {
                     // this.createGameScene();
                     this.displayList.push(new Picture(this, elements[i].matrix));
                     break;
+                case 99:
+                    var bg:UUImage = new UUImage();
+                    var texture:egret.Texture = RES.getRes(elements[i].src);
+                    bg.texture = texture;
+                    bg.width = this.displayGroup.width;
+                    bg.height = this.displayGroup.height;
+                    bg.name = elements[i].id;
+                    bg.data = elements[i];
+                    this.displayList.push(new Picture(bg, elements[i].matrix));
+                    break;
             }
             
         }
@@ -216,6 +226,11 @@ class Preview extends eui.Component {
         for (i=0; i<n; i++){
             // if (!targetControl || this.tool.target !== this.displayList[i].transform){
                 this.displayList[i].draw(this.displayGroup);
+                // 背景图
+                let item = this.displayList[i].image;                
+                if(item.data.type == 99){
+                    this.displayGroup.setChildIndex(item, 0);
+                }
             // }
         }
     }
