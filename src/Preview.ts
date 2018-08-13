@@ -18,9 +18,16 @@ class Preview extends eui.Component {
     }
 
     private onAddToStageInit(event:egret.Event) {
+        this.bindHandlers();
         this.initEui();
         this.init(); 
         // initEvent();
+        
+    }
+
+    private bindHandlers () {
+        this.render = this.render.bind(this);
+        // this.addSinglePicture = this.addSinglePicture.bind(this);
     }
 
     private initEui() {
@@ -173,6 +180,7 @@ class Preview extends eui.Component {
             }
             
         }
+        requestAnimationFrame(this.render);
     }
 
     render () {

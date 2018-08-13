@@ -767,9 +767,14 @@ var Preview = (function (_super) {
         return _this;
     }
     Preview.prototype.onAddToStageInit = function (event) {
+        this.bindHandlers();
         this.initEui();
         this.init();
         // initEvent();
+    };
+    Preview.prototype.bindHandlers = function () {
+        this.render = this.render.bind(this);
+        // this.addSinglePicture = this.addSinglePicture.bind(this);
     };
     Preview.prototype.initEui = function () {
         var bg = new egret.Shape;
@@ -900,6 +905,7 @@ var Preview = (function (_super) {
                     break;
             }
         }
+        requestAnimationFrame(this.render);
     };
     Preview.prototype.render = function () {
         this.clear();
