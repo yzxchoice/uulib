@@ -122,12 +122,12 @@ class Preview extends eui.Component {
                 }
             })
             // 可拖拽
-            let elements = this.pages[this.pageIndex].elements;
-            if(elements.some(item => item.id == event.target.name)){
-                if(event.target.data.property.drag){
+            // let elements = this.pages[this.pageIndex].elements;
+            // if(elements.some(item => item.id == event.target.name)){
+            //     if(event.target.data.property.drag){
                    
-                }
-            }
+            //     }
+            // }
             
         }
         

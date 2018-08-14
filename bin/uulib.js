@@ -855,11 +855,11 @@ var Preview = (function (_super) {
                 }
             });
             // 可拖拽
-            var elements = this.pages[this.pageIndex].elements;
-            if (elements.some(function (item) { return item.id == event.target.name; })) {
-                if (event.target.data.property.drag) {
-                }
-            }
+            // let elements = this.pages[this.pageIndex].elements;
+            // if(elements.some(item => item.id == event.target.name)){
+            //     if(event.target.data.property.drag){
+            //     }
+            // }
         }
         event.preventDefault();
     };
