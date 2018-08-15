@@ -402,11 +402,13 @@ var Preview = (function (_super) {
         var r = null;
         var i = temp.length;
         var target = this.tool.target.owner.image;
-        var rect = new egret.Rectangle(target.x, target.y, target.width, target.height);
+        var rect = new egret.Rectangle(target.x, target.y, target.width * this.tool.target.matrix.a, target.height * this.tool.target.matrix.d);
+        egret.log('source rect:' + rect);
         while (i--) {
             pic = temp[i];
             t = pic.transform;
             r = new egret.Rectangle(pic.image.x, pic.image.y, pic.image.width, pic.image.height);
+            egret.log('target rect:' + r);
             if (r.intersects(rect)) {
                 return r;
             }
