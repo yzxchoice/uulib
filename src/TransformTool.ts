@@ -14,7 +14,7 @@ class TransformTool {
     private startY: number = 0;
     
     // trnasforms to apply
-	private preMatrix: Matrix = new Matrix();
+	public preMatrix: Matrix = new Matrix();
 	public postMatrix: Matrix = new Matrix();
 	
 	// where interaction ends

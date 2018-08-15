@@ -2,7 +2,7 @@
 /**
  * 预览
  */
-class Preview extends eui.Component {
+class Preview extends eui.Group {
     private displayList = [];
     tool: any;
     pages = [];
@@ -18,6 +18,7 @@ class Preview extends eui.Component {
     }
 
     private onAddToStageInit(event:egret.Event) {
+        this.tool = new TransformTool(this);
         this.bindHandlers();
         this.initEui();
         this.init(); 
@@ -94,12 +95,29 @@ class Preview extends eui.Component {
 
     private init (): void {
         this.addResources(this.pageIndex);
-        // this.setupTool();
+        this.setupTool();
 	
         // selects pictures on mouse down
         this.addEventListener(Mouse.START, this.down, this);
 
         this.render();
+    }
+
+    setupTool () {
+        ControlSet.controlClass = EgretControl;
+        // var controls = this.getCustomControls();
+        this.tool.setControls(ControlSet.getUniformScaler());	
+    }
+
+    private getFrame () {
+        var temp = [];
+        var eles = this.pages[this.pageIndex].elements;
+        for (var i=0;i<eles.length;i++){
+            if(eles[i].type == 102){
+                temp.push(this.displayList[i]);
+            }
+        }
+        return temp;
     }
 
     down (event: egret.TouchEvent) {
@@ -121,23 +139,176 @@ class Preview extends eui.Component {
                     
                 }
             })
-            // 可拖拽
-            // let elements = this.pages[this.pageIndex].elements;
-            // if(elements.some(item => item.id == event.target.name)){
-            //     if(event.target.data.property.drag){
-                   
-            //     }
-            // }
             
+        }
+
+        
+
+        Mouse.get(event, this);
+        var controlled = this.tool.start(Mouse.x, Mouse.y);
+
+        if(!this.containsPoint(Mouse.x, Mouse.y)){
+            return false;
+        }
+        
+        if (!controlled && this.selectImage(Mouse.x, Mouse.y)){
+            controlled = this.tool.start(Mouse.x, Mouse.y, this.findControlByType(ControlType.TRANSLATE)); 
+        }
+        
+        if (controlled){
+            this.addEventListener(Mouse.MOVE, this.move, this);
+            this.addEventListener(Mouse.END, this.up, this);
         }
         
         event.preventDefault();
+    }
+
+    move (event: egret.TouchEvent) {
+        Mouse.get(event, this);
+        this.applyDynamicControls(event);
+        this.tool.move(Mouse.x, Mouse.y);   
+        
+        requestAnimationFrame(this.render);
+        event.preventDefault();
+    }
+
+    up (event: egret.TouchEvent) {
+
+        this.tool.end();
+
+        if(this.inter()){
+            console.log('in');
+            var m = this.tool.target.matrix;
+            this.tool.target.matrix = new Matrix(m.a,m.b,m.c,m.d,this.inter().x,this.inter().y);
+        }
+	
+        this.removeEventListener(Mouse.MOVE, this.move, this);
+        this.removeEventListener(Mouse.END, this.up, this);
+        
+        requestAnimationFrame(this.render);
+        event.preventDefault();
+    }
+
+    findControlByType(type: any) {
+        var i = 0;
+        var n = this.tool.controls.length;
+        for (i=0; i<n; i++){
+            if (this.tool.controls[i].type == type){
+                return this.tool.controls[i];
+            }
+        }
+        return null;
+    }
+
+    applyDynamicControls (event: any) {
+        // if dynamic, set controls based on 
+        // keyboard keys
+        var dyn = this.getDynamicControl();
+        console.log('dyn:'+dyn);
+        if (dyn){
+            if (event.ctrlKey){
+                if (event.shiftKey){
+                    dyn.type = ControlType.ROTATE_SCALE;
+                }else{
+                    dyn.type = ControlType.ROTATE;
+                }
+            }else if (event.shiftKey){
+                dyn.type = ControlType.SCALE;
+            }else{
+                dyn.type = ControlType.TRANSLATE;
+            }
+        }
+    }
+
+    getDynamicControl () {
+        var i = 0;
+        var n = this.tool.controls.length;
+        for (i=0; i<n; i++){
+            if (this.tool.controls[i].dynamicUV){
+                return this.tool.controls[i];
+            }
+        }
+        return null;
+    }
+
+    containsPoint (x: number, y: number) {
+        var globalEdit: egret.Point = this.parent.localToGlobal(this.matrix.tx, this.matrix.ty);
+        var globalMouse: egret.Point = this.localToGlobal(Mouse.x, Mouse.y);
+
+        var m: Matrix = new Matrix(
+            this.matrix.a,
+            this.matrix.b,
+            this.matrix.c,
+            this.matrix.d,
+            globalEdit.x,
+            globalEdit.y
+        );
+
+        // console.log(globalMouse.x, globalMouse.y)
+        // console.log(m.containsPoint(globalMouse.x, globalMouse.y, this.width, this.height));
+
+        return m.containsPoint(globalMouse.x, globalMouse.y, this.width, this.height);
     }
 
     private getDisplayByName (name: string) {
         return this.displayList.filter( item => 
             item.image.name == name
         )
+    }
+
+    inter () {
+        var temp = this.getFrame();
+        var pic = null;
+        var t = null;
+        var r: egret.Rectangle = null;
+        var i = temp.length;
+        var target = this.tool.target.owner.image;
+        var rect = new egret.Rectangle(target.x, target.y, target.width, target.height);
+        while (i--){
+            pic = temp[i];
+            t = pic.transform;
+            r = new egret.Rectangle(pic.image.x, pic.image.y, pic.image.width, pic.image.height);
+            if(r.intersects(rect)){
+                return r;
+            }
+        }
+
+        return null;
+    }
+
+    selectImage (x: number, y: number) {
+        var pic = null;
+        var t = null;
+        
+        // walk backwards selecting top-most first
+        var i = this.displayList.length;
+        while (i--){
+            pic = this.displayList[i];
+            if(!pic.b) return false;
+            t = pic.transform;
+            if (t.matrix.containsPoint(x, y, t.width, t.height)){
+                if (this.tool.target !== t){
+                    
+                    // select
+                    this.tool.setTarget(t);
+                    // reorder for layer rendering
+                    // this.displayList.splice(i,1);
+                    // this.displayList.push(pic);
+                    return true;
+                }
+                
+                // already selected
+                return false;
+            }
+        }
+
+        // deselect
+        let point = new egret.Point(x,y);
+        let rect = new egret.Rectangle(0,0,this.width,this.height);
+        if(rect.containsPoint(point)){
+            this.tool.setTarget(null);            
+            return false;
+        };
     }
 
     private addResources (index: number): void {
@@ -162,10 +333,9 @@ class Preview extends eui.Component {
                     this.displayList.push(new Picture(label, elements[i].matrix));
                     break;
                 case 2:
-                    var result:UUImage = new UUImage();
+                    var result:UUBitmap = new UUBitmap();
                     var texture:egret.Texture = RES.getRes(elements[i].name);
-                    // result.texture = texture;
-                    result.source = texture;
+                    result.texture = texture;
                     result.name = elements[i].id;
                     result.data = elements[i];
                     this.displayList.push(new Picture(result, elements[i].matrix));
@@ -177,6 +347,8 @@ class Preview extends eui.Component {
                     // result.source = texture;
                     soundBtn.name = elements[i].id;
                     soundBtn.data = elements[i];
+                    soundBtn.width = 100;
+                    soundBtn.height = 50;
                     this.displayList.push(new Picture(soundBtn, elements[i].matrix));
                     break;
                 case 101: 
@@ -200,7 +372,15 @@ class Preview extends eui.Component {
                     // bg.height = this.displayGroup.height;
                     bg.name = elements[i].id;
                     bg.data = elements[i];
-                    this.displayList.push(new Picture(bg, elements[i].matrix));
+                    this.displayList.push(new Picture(bg, elements[i].matrix, false));
+                    break;
+                case 102:
+                    var c:UUContainer = new UUContainer();
+                    c.name = elements[i].id;
+                    c.data = elements[i];
+                    c.width = 300;
+                    c.height = 300;
+                    this.displayList.push(new Picture(c, elements[i].matrix));
                     break;
             }
             

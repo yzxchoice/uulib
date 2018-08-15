@@ -46,15 +46,39 @@ declare class Control {
     contains(x: number, y: number): any;
 }
 /**
- * 可操作对象容器
+ * 预览
  */
-declare class Picture {
-    image: any;
-    transform: any;
-    b: boolean;
-    constructor(image: any, m: any, b?: boolean);
-    draw(container: any): void;
-    undraw(container: any): void;
+declare class Preview extends eui.Group {
+    private displayList;
+    tool: any;
+    pages: any[];
+    private pageIndex;
+    constructor();
+    private onAddToStageInit(event);
+    private bindHandlers();
+    private initEui();
+    private displayGroup;
+    private getPages();
+    private pre(event);
+    private next(event);
+    private init();
+    setupTool(): void;
+    private getFrame();
+    down(event: egret.TouchEvent): boolean;
+    move(event: egret.TouchEvent): void;
+    up(event: egret.TouchEvent): void;
+    findControlByType(type: any): any;
+    applyDynamicControls(event: any): void;
+    getDynamicControl(): any;
+    containsPoint(x: number, y: number): boolean;
+    private getDisplayByName(name);
+    inter(): egret.Rectangle;
+    selectImage(x: number, y: number): boolean;
+    private addResources(index);
+    render(): void;
+    clear(): void;
+    reset(): void;
+    drawDisplayList(): void;
 }
 /**
  * 组件基类
@@ -157,6 +181,17 @@ declare class Mouse {
     static get(event: egret.TouchEvent, elem: eui.Group): typeof Mouse;
 }
 /**
+ * 可操作对象容器
+ */
+declare class Picture {
+    image: any;
+    transform: any;
+    b: boolean;
+    constructor(image: any, m: any, b?: boolean);
+    draw(container: any): void;
+    undraw(container: any): void;
+}
+/**
  * 转盘组件
  */
 declare class CircleSector extends eui.Group implements BaseUI, IUUContainer {
@@ -179,31 +214,6 @@ declare class CircleSector extends eui.Group implements BaseUI, IUUContainer {
      * 画弧形方法
      */
     drawArc(mc: egret.Shape, x?: number, y?: number, r?: number, angle?: number, startFrom?: number, color?: number): void;
-}
-/**
- * 预览
- */
-declare class Preview extends eui.Component {
-    private displayList;
-    tool: any;
-    pages: any[];
-    private pageIndex;
-    constructor();
-    private onAddToStageInit(event);
-    private bindHandlers();
-    private initEui();
-    private displayGroup;
-    private getPages();
-    private pre(event);
-    private next(event);
-    private init();
-    down(event: egret.TouchEvent): void;
-    private getDisplayByName(name);
-    private addResources(index);
-    render(): void;
-    clear(): void;
-    reset(): void;
-    drawDisplayList(): void;
 }
 interface uiData {
     id: string;
@@ -238,7 +248,7 @@ declare class TransformTool {
     regStartV: number;
     private startX;
     private startY;
-    private preMatrix;
+    preMatrix: Matrix;
     postMatrix: Matrix;
     endMatrix: Matrix;
     regEndU: number;
@@ -285,6 +295,13 @@ declare class TransformTool {
 declare class UUBitmap extends egret.Bitmap implements BaseUI {
     data: any;
 }
+declare class UUContainer extends eui.Group implements BaseUI {
+    data: any;
+    items: any[];
+    constructor();
+    private onAddToStage(event);
+    private init();
+}
 /**
  * 图片组件
  */
@@ -296,4 +313,7 @@ declare class UUImage extends eui.Image implements BaseUI {
  */
 declare class UULabel extends eui.Label implements BaseUI {
     data: any;
+}
+declare class UURequest {
+    constructor();
 }
