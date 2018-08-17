@@ -243,6 +243,8 @@ declare class Transformable {
 declare class TransformTool {
     protected container: any;
     target: any;
+    preTarget: any;
+    targetMask: egret.Shape;
     startMatrix: Matrix;
     regStartU: number;
     regStartV: number;
@@ -266,6 +268,9 @@ declare class TransformTool {
     private strokeStyle;
     private lineWidth;
     constructor(container: any);
+    addMask(): void;
+    removeMask(): void;
+    setPreTarget(preTarget: any): void;
     setTarget(target: any): void;
     updateFromTarget(): void;
     setControls(controls: any): void;
