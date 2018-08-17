@@ -187,384 +187,73 @@ var Control = (function () {
 }());
 __reflect(Control.prototype, "Control");
 // TypeScript file
-/**
- * 预览
- */
-var Preview = (function (_super) {
-    __extends(Preview, _super);
-    // w: number = 1200;
-    // h: number = 900;
-    function Preview() {
-        var _this = _super.call(this) || this;
-        _this.displayList = [];
-        _this.pages = [];
-        _this.pageIndex = 0;
-        _this.displayGroup = new eui.Group();
-        // this.tool = new TransformTool(this);
-        _this.getPages();
-        _this.addEventListener(egret.Event.ADDED_TO_STAGE, _this.onAddToStageInit, _this);
-        return _this;
+var UUType;
+(function (UUType) {
+    /**
+     * 文本
+     */
+    UUType[UUType["TEXT"] = 1] = "TEXT";
+    /**
+     * 图片
+     */
+    UUType[UUType["IMAGE"] = 2] = "IMAGE";
+    /**
+     * 音频
+     */
+    UUType[UUType["SOUND"] = 18] = "SOUND";
+    /**
+     * 背景
+     */
+    UUType[UUType["BACKGROUND"] = 99] = "BACKGROUND";
+    /**
+     * 转盘
+     */
+    UUType[UUType["CIRCLE_SECTOR"] = 101] = "CIRCLE_SECTOR";
+    /**
+     * 容器框
+     */
+    UUType[UUType["FRAME"] = 102] = "FRAME";
+})(UUType || (UUType = {}));
+var LayerSet = (function () {
+    function LayerSet() {
+        throw new Error('can not create a instance');
     }
-    Preview.prototype.onAddToStageInit = function (event) {
-        this.tool = new TransformTool(this);
-        this.bindHandlers();
-        this.initEui();
-        this.init();
-        // initEvent();
-    };
-    Preview.prototype.bindHandlers = function () {
-        this.render = this.render.bind(this);
-        // this.addSinglePicture = this.addSinglePicture.bind(this);
-    };
-    Preview.prototype.initEui = function () {
-        var bg = new egret.Shape;
-        bg.graphics.beginFill(0xffffff, 1);
-        bg.graphics.lineStyle(1, 0xcccccc);
-        bg.graphics.drawRect(0, 0, this.width - 2, this.height - 2);
-        bg.graphics.endFill();
-        this.addChild(bg);
-        // this.horizontalCenter = 0;
-        // this.displayGroup.horizontalCenter = 0;
-        this.displayGroup.width = this.width;
-        this.displayGroup.height = this.height;
-        this.displayGroup.scrollEnabled = true;
-        this.addChild(this.displayGroup);
-        var button = new eui.Button();
-        button.width = 100;
-        button.height = 40;
-        button.label = "上一页";
-        button.right = 0;
-        button.addEventListener(Mouse.START, this.pre, this);
-        this.addChild(button);
-        var button2 = new eui.Button();
-        button2.y = 50;
-        button2.right = 0;
-        button2.width = 100;
-        button2.height = 40;
-        button2.label = "下一页";
-        button2.addEventListener(Mouse.START, this.next, this);
-        this.addChild(button2);
-    };
-    Preview.prototype.getPages = function () {
-        console.log(RES.getRes("data_json"));
-        this.pages = RES.getRes("data_json").list;
-    };
-    Preview.prototype.pre = function (event) {
-        if (this.pageIndex > 0) {
-            this.reset();
-            this.pageIndex--;
-            this.addResources(this.pageIndex);
-            this.render();
+    LayerSet.createInstance = function (layerClass, prop) {
+        var translater = new layerClass(prop);
+        var obj = prop;
+        for (var key in obj) {
+            translater[key] = obj[key];
         }
+        return translater;
     };
-    Preview.prototype.next = function (event) {
-        if (this.pageIndex < this.pages.length - 1) {
-            this.reset();
-            this.pageIndex++;
-            this.addResources(this.pageIndex);
-            this.render();
-        }
-    };
-    Preview.prototype.init = function () {
-        this.addResources(this.pageIndex);
-        this.setupTool();
-        // selects pictures on mouse down
-        this.addEventListener(Mouse.START, this.down, this);
-        this.render();
-    };
-    Preview.prototype.setupTool = function () {
-        ControlSet.controlClass = EgretControl;
-        // var controls = this.getCustomControls();
-        this.tool.setControls(ControlSet.getUniformScaler());
-    };
-    Preview.prototype.getFrame = function () {
-        var temp = [];
-        var eles = this.pages[this.pageIndex].elements;
-        for (var i = 0; i < eles.length; i++) {
-            if (eles[i].type == 102) {
-                temp.push(this.displayList[i]);
-            }
-        }
-        return temp;
-    };
-    Preview.prototype.down = function (event) {
-        var _this = this;
-        console.log(event.target);
-        if (this.pages[this.pageIndex].hasOwnProperty("properties") && this.pages[this.pageIndex].properties.hasOwnProperty("triggerGroup")) {
-            var triggerGroup = this.pages[this.pageIndex].properties.triggerGroup;
-            console.log('triggerGroup...');
-            console.log(JSON.stringify(triggerGroup));
-            triggerGroup.forEach(function (item) {
-                if (item.sourceId == event.target.name) {
-                    if (event.target.data.hasOwnProperty("sound")) {
-                        var sound = RES.getRes(event.target.data.name);
-                        sound.play(0, 1);
-                    }
-                    else {
-                        console.log('item.targetId = ' + item.targetId);
-                        egret.Tween.get(_this.getDisplayByName(item.targetId)[0].image).to({ alpha: 0 }, 300, egret.Ease.sineIn);
-                    }
-                }
-            });
-        }
-        Mouse.get(event, this);
-        var controlled = this.tool.start(Mouse.x, Mouse.y);
-        if (!this.containsPoint(Mouse.x, Mouse.y)) {
-            return false;
-        }
-        if (!controlled && this.selectImage(Mouse.x, Mouse.y)) {
-            controlled = this.tool.start(Mouse.x, Mouse.y, this.findControlByType(ControlType.TRANSLATE));
-        }
-        if (controlled) {
-            this.addEventListener(Mouse.MOVE, this.move, this);
-            this.addEventListener(Mouse.END, this.up, this);
-        }
-        event.preventDefault();
-    };
-    Preview.prototype.move = function (event) {
-        Mouse.get(event, this);
-        this.applyDynamicControls(event);
-        this.tool.move(Mouse.x, Mouse.y);
-        requestAnimationFrame(this.render);
-        event.preventDefault();
-    };
-    Preview.prototype.up = function (event) {
-        this.tool.end();
-        if (this.inter()) {
-            console.log('in');
-            var m = this.tool.target.matrix;
-            this.tool.target.matrix = new Matrix(m.a, m.b, m.c, m.d, this.inter().x, this.inter().y);
-        }
-        this.removeEventListener(Mouse.MOVE, this.move, this);
-        this.removeEventListener(Mouse.END, this.up, this);
-        requestAnimationFrame(this.render);
-        event.preventDefault();
-    };
-    Preview.prototype.findControlByType = function (type) {
-        var i = 0;
-        var n = this.tool.controls.length;
-        for (i = 0; i < n; i++) {
-            if (this.tool.controls[i].type == type) {
-                return this.tool.controls[i];
-            }
-        }
-        return null;
-    };
-    Preview.prototype.applyDynamicControls = function (event) {
-        // if dynamic, set controls based on 
-        // keyboard keys
-        var dyn = this.getDynamicControl();
-        console.log('dyn:' + dyn);
-        if (dyn) {
-            if (event.ctrlKey) {
-                if (event.shiftKey) {
-                    dyn.type = ControlType.ROTATE_SCALE;
-                }
-                else {
-                    dyn.type = ControlType.ROTATE;
-                }
-            }
-            else if (event.shiftKey) {
-                dyn.type = ControlType.SCALE;
-            }
-            else {
-                dyn.type = ControlType.TRANSLATE;
-            }
-        }
-    };
-    Preview.prototype.getDynamicControl = function () {
-        var i = 0;
-        var n = this.tool.controls.length;
-        for (i = 0; i < n; i++) {
-            if (this.tool.controls[i].dynamicUV) {
-                return this.tool.controls[i];
-            }
-        }
-        return null;
-    };
-    Preview.prototype.containsPoint = function (x, y) {
-        var globalEdit = this.parent.localToGlobal(this.matrix.tx, this.matrix.ty);
-        var globalMouse = this.localToGlobal(Mouse.x, Mouse.y);
-        var m = new Matrix(this.matrix.a, this.matrix.b, this.matrix.c, this.matrix.d, globalEdit.x, globalEdit.y);
-        // console.log(globalMouse.x, globalMouse.y)
-        // console.log(m.containsPoint(globalMouse.x, globalMouse.y, this.width, this.height));
-        return m.containsPoint(globalMouse.x, globalMouse.y, this.width, this.height);
-    };
-    Preview.prototype.getDisplayByName = function (name) {
-        return this.displayList.filter(function (item) {
-            return item.image.name == name;
+    LayerSet.getLayer = function (list, type) {
+        return list.filter(function (item) {
+            return item.uuType == type;
         });
     };
-    Preview.prototype.inter = function () {
-        var temp = this.getFrame();
-        var pic = null;
-        var t = null;
-        var r = null;
-        var i = temp.length;
-        var target = this.tool.target.owner.image;
-        var rect = new egret.Rectangle(target.x, target.y, target.width * this.tool.target.matrix.a, target.height * this.tool.target.matrix.d);
-        egret.log('source rect:' + rect);
-        while (i--) {
-            pic = temp[i];
-            t = pic.transform;
-            r = new egret.Rectangle(pic.image.x, pic.image.y, pic.image.width, pic.image.height);
-            egret.log('target rect:' + r);
-            if (r.intersects(rect)) {
-                return r;
-            }
-        }
-        return null;
-    };
-    Preview.prototype.selectImage = function (x, y) {
-        var pic = null;
-        var t = null;
-        // walk backwards selecting top-most first
-        var i = this.displayList.length;
-        while (i--) {
-            pic = this.displayList[i];
-            if (!pic.b)
-                return false;
-            t = pic.transform;
-            if (t.matrix.containsPoint(x, y, t.width, t.height)) {
-                if (this.tool.target !== t) {
-                    // select
-                    this.tool.setTarget(t);
-                    // reorder for layer rendering
-                    // this.displayList.splice(i,1);
-                    // this.displayList.push(pic);
-                    return true;
-                }
-                // already selected
-                return false;
-            }
-        }
-        // deselect
-        var point = new egret.Point(x, y);
-        var rect = new egret.Rectangle(0, 0, this.width, this.height);
-        if (rect.containsPoint(point)) {
-            this.tool.setTarget(null);
-            return false;
-        }
-        ;
-    };
-    Preview.prototype.addResources = function (index) {
-        var i = 0;
-        var elements = this.pages[index].elements;
-        console.log('elements...');
-        console.log(JSON.stringify(elements));
-        // var triggerGroup = this.pages[index].properties.triggerGroup;
-        var n = elements.length;
-        for (i = 0; i < n; i++) {
-            switch (elements[i].type) {
-                case 1:
-                    var label = new UULabel();
-                    label.text = elements[i].content;
-                    label.textColor = 0xff0000;
-                    label.size = 16;
-                    label.lineSpacing = 12;
-                    label.textAlign = egret.HorizontalAlign.JUSTIFY;
-                    label.name = elements[i].id;
-                    label.data = elements[i];
-                    this.displayList.push(new Picture(label, elements[i].matrix));
-                    break;
-                case 2:
-                    var result = new UUBitmap();
-                    var texture = RES.getRes(elements[i].name);
-                    result.texture = texture;
-                    result.name = elements[i].id;
-                    result.data = elements[i];
-                    this.displayList.push(new Picture(result, elements[i].matrix));
-                    break;
-                case 18:
-                    var soundBtn = new SoundButton();
-                    soundBtn.label = elements[i].name;
-                    // var texture:egret.Texture = RES.getRes(elements[i].name);
-                    // result.source = texture;
-                    soundBtn.name = elements[i].id;
-                    soundBtn.data = elements[i];
-                    soundBtn.width = 100;
-                    soundBtn.height = 50;
-                    this.displayList.push(new Picture(soundBtn, elements[i].matrix));
-                    break;
-                case 101:
-                    var circle = new CircleSector();
-                    circle.data = elements[i];
-                    circle.width = 400;
-                    circle.height = 400;
-                    circle.name = elements[i].id;
-                    circle.data = elements[i];
-                    this.displayList.push(new Picture(circle, elements[i].matrix));
-                    break;
-                case 8:
-                    // this.createGameScene();
-                    this.displayList.push(new Picture(this, elements[i].matrix));
-                    break;
-                case 99:
-                    var bg = new UUImage();
-                    var texture = RES.getRes(elements[i].name);
-                    bg.texture = texture;
-                    // bg.width = this.displayGroup.width;
-                    // bg.height = this.displayGroup.height;
-                    bg.name = elements[i].id;
-                    bg.data = elements[i];
-                    this.displayList.push(new Picture(bg, elements[i].matrix, false));
-                    break;
-                case 102:
-                    var c = new UUContainer();
-                    c.name = elements[i].id;
-                    c.data = elements[i];
-                    c.width = 300;
-                    c.height = 300;
-                    this.displayList.push(new Picture(c, elements[i].matrix));
-                    break;
-            }
-        }
-        requestAnimationFrame(this.render);
-    };
-    Preview.prototype.render = function () {
-        this.clear();
-        this.drawDisplayList();
-        // this.tool.draw();
-    };
-    Preview.prototype.clear = function () {
-        // this.tool.undraw();
-    };
-    Preview.prototype.reset = function () {
-        this.clear();
-        var i = 0;
-        var n = this.displayList.length;
-        for (i = 0; i < n; i++) {
-            this.displayList[i].undraw(this.displayGroup);
-        }
-        this.displayList = [];
-    };
-    Preview.prototype.drawDisplayList = function () {
-        var i = 0;
-        var n = this.displayList.length;
-        for (i = 0; i < n; i++) {
-            // if (!targetControl || this.tool.target !== this.displayList[i].transform){
-            this.displayList[i].draw(this.displayGroup);
-            // 背景图
-            var item = this.displayList[i].image;
-            if (item.data.type == 99) {
-                this.displayGroup.setChildIndex(item, 0);
-            }
-            // }
-        }
-    };
-    return Preview;
-}(eui.Group));
-__reflect(Preview.prototype, "Preview");
-// TypeScript file
-/**
- * 组件基类
- */
-var BaseUI = (function () {
-    function BaseUI() {
-    }
-    return BaseUI;
+    return LayerSet;
 }());
-__reflect(BaseUI.prototype, "BaseUI");
+__reflect(LayerSet.prototype, "LayerSet");
+/**
+ * 声音组件
+ */
+var SoundButton = (function (_super) {
+    __extends(SoundButton, _super);
+    function SoundButton() {
+        var _this = _super.call(this) || this;
+        _this.addEventListener(egret.Event.ADDED_TO_STAGE, _this.onAddToStage, _this);
+        return _this;
+    }
+    SoundButton.prototype.onAddToStage = function (event) {
+        this.init();
+        // this.bindHandler();
+    };
+    SoundButton.prototype.init = function () {
+    };
+    SoundButton.uuType = UUType.SOUND;
+    return SoundButton;
+}(eui.Button));
+__reflect(SoundButton.prototype, "SoundButton");
 /**
  * 自定义操作框
  */
@@ -955,13 +644,13 @@ var Picture = (function () {
     Picture.prototype.draw = function (container) {
         console.log('Picture draw...');
         var data = this.image.data;
-        // if(data.type == 1){
-        //     let property = data.property || {};
-        //     let { size, textColor } = property;              
-        //     this.image.text = data.content;
-        //     this.image.textColor = textColor || 0xff0000;
-        //     this.image.size = size || 16;
-        // }
+        if (data.type == 1) {
+            data.props = data.props || {};
+            var _a = data.props, size = _a.size, textColor = _a.textColor;
+            this.image.text = data.content;
+            this.image.textColor = textColor || 0x000000;
+            this.image.size = size || 40;
+        }
         var m = this.transform.matrix;
         this.image.matrix = new egret.Matrix(m.a, m.b, m.c, m.d, m.x, m.y);
         container.addChild(this.image);
@@ -972,6 +661,320 @@ var Picture = (function () {
     return Picture;
 }());
 __reflect(Picture.prototype, "Picture");
+// TypeScript file
+/**
+ * 预览
+ */
+var Preview = (function (_super) {
+    __extends(Preview, _super);
+    // w: number = 1200;
+    // h: number = 900;
+    function Preview() {
+        var _this = _super.call(this) || this;
+        _this.displayList = [];
+        _this.pages = [];
+        _this.pageIndex = 0;
+        _this.displayGroup = new eui.Group();
+        // this.tool = new TransformTool(this);
+        _this.getPages();
+        _this.addEventListener(egret.Event.ADDED_TO_STAGE, _this.onAddToStageInit, _this);
+        return _this;
+    }
+    Preview.prototype.onAddToStageInit = function (event) {
+        this.tool = new TransformTool(this);
+        this.bindHandlers();
+        this.initEui();
+        this.init();
+        // initEvent();
+    };
+    Preview.prototype.bindHandlers = function () {
+        this.render = this.render.bind(this);
+        // this.addSinglePicture = this.addSinglePicture.bind(this);
+    };
+    Preview.prototype.initEui = function () {
+        var bg = new egret.Shape;
+        bg.graphics.beginFill(0xffffff, 1);
+        bg.graphics.lineStyle(1, 0xcccccc);
+        bg.graphics.drawRect(0, 0, this.width - 2, this.height - 2);
+        bg.graphics.endFill();
+        this.addChild(bg);
+        // this.horizontalCenter = 0;
+        // this.displayGroup.horizontalCenter = 0;
+        this.displayGroup.width = this.width;
+        this.displayGroup.height = this.height;
+        this.displayGroup.scrollEnabled = true;
+        this.addChild(this.displayGroup);
+        var button = new eui.Button();
+        button.width = 100;
+        button.height = 40;
+        button.label = "上一页";
+        button.right = 0;
+        button.addEventListener(Mouse.START, this.pre, this);
+        this.addChild(button);
+        var button2 = new eui.Button();
+        button2.y = 50;
+        button2.right = 0;
+        button2.width = 100;
+        button2.height = 40;
+        button2.label = "下一页";
+        button2.addEventListener(Mouse.START, this.next, this);
+        this.addChild(button2);
+    };
+    Preview.prototype.getPages = function () {
+        console.log(RES.getRes("data_json"));
+        this.pages = RES.getRes("data_json").list;
+    };
+    Preview.prototype.pre = function (event) {
+        if (this.pageIndex > 0) {
+            this.reset();
+            this.pageIndex--;
+            this.addResources(this.pageIndex);
+            this.render();
+        }
+    };
+    Preview.prototype.next = function (event) {
+        if (this.pageIndex < this.pages.length - 1) {
+            this.reset();
+            this.pageIndex++;
+            this.addResources(this.pageIndex);
+            this.render();
+        }
+    };
+    Preview.prototype.init = function () {
+        this.addResources(this.pageIndex);
+        this.setupTool();
+        // selects pictures on mouse down
+        this.addEventListener(Mouse.START, this.down, this);
+        this.render();
+    };
+    Preview.prototype.setupTool = function () {
+        ControlSet.controlClass = EgretControl;
+        // var controls = this.getCustomControls();
+        this.tool.setControls(ControlSet.getUniformScaler());
+    };
+    Preview.prototype.getFrame = function () {
+        var temp = [];
+        var eles = this.pages[this.pageIndex].elements;
+        for (var i = 0; i < eles.length; i++) {
+            if (eles[i].type == 102) {
+                temp.push(this.displayList[i]);
+            }
+        }
+        return temp;
+    };
+    Preview.prototype.down = function (event) {
+        var _this = this;
+        console.log(event.target);
+        if (this.pages[this.pageIndex].hasOwnProperty("properties") && this.pages[this.pageIndex].properties.hasOwnProperty("triggerGroup")) {
+            var triggerGroup = this.pages[this.pageIndex].properties.triggerGroup;
+            console.log('triggerGroup...');
+            console.log(JSON.stringify(triggerGroup));
+            triggerGroup.forEach(function (item) {
+                if (item.sourceId == event.target.name) {
+                    if (event.target.data.hasOwnProperty("sound")) {
+                        var sound = RES.getRes(event.target.data.name);
+                        sound.play(0, 1);
+                    }
+                    else {
+                        console.log('item.targetId = ' + item.targetId);
+                        egret.Tween.get(_this.getDisplayByName(item.targetId)[0].image).to({ alpha: 0 }, 300, egret.Ease.sineIn);
+                    }
+                }
+            });
+        }
+        Mouse.get(event, this);
+        var controlled = this.tool.start(Mouse.x, Mouse.y);
+        if (!this.containsPoint(Mouse.x, Mouse.y)) {
+            return false;
+        }
+        if (!controlled && this.selectImage(Mouse.x, Mouse.y)) {
+            controlled = this.tool.start(Mouse.x, Mouse.y, this.findControlByType(ControlType.TRANSLATE));
+        }
+        if (controlled) {
+            this.addEventListener(Mouse.MOVE, this.move, this);
+            this.addEventListener(Mouse.END, this.up, this);
+        }
+        event.preventDefault();
+    };
+    Preview.prototype.move = function (event) {
+        Mouse.get(event, this);
+        this.applyDynamicControls(event);
+        this.tool.move(Mouse.x, Mouse.y);
+        requestAnimationFrame(this.render);
+        event.preventDefault();
+    };
+    Preview.prototype.up = function (event) {
+        this.tool.end();
+        if (this.inter()) {
+            console.log('in');
+            var m = this.tool.target.matrix;
+            this.tool.target.matrix = new Matrix(m.a, m.b, m.c, m.d, this.inter().x, this.inter().y);
+        }
+        this.removeEventListener(Mouse.MOVE, this.move, this);
+        this.removeEventListener(Mouse.END, this.up, this);
+        requestAnimationFrame(this.render);
+        event.preventDefault();
+    };
+    Preview.prototype.findControlByType = function (type) {
+        var i = 0;
+        var n = this.tool.controls.length;
+        for (i = 0; i < n; i++) {
+            if (this.tool.controls[i].type == type) {
+                return this.tool.controls[i];
+            }
+        }
+        return null;
+    };
+    Preview.prototype.applyDynamicControls = function (event) {
+        // if dynamic, set controls based on 
+        // keyboard keys
+        var dyn = this.getDynamicControl();
+        console.log('dyn:' + dyn);
+        if (dyn) {
+            if (event.ctrlKey) {
+                if (event.shiftKey) {
+                    dyn.type = ControlType.ROTATE_SCALE;
+                }
+                else {
+                    dyn.type = ControlType.ROTATE;
+                }
+            }
+            else if (event.shiftKey) {
+                dyn.type = ControlType.SCALE;
+            }
+            else {
+                dyn.type = ControlType.TRANSLATE;
+            }
+        }
+    };
+    Preview.prototype.getDynamicControl = function () {
+        var i = 0;
+        var n = this.tool.controls.length;
+        for (i = 0; i < n; i++) {
+            if (this.tool.controls[i].dynamicUV) {
+                return this.tool.controls[i];
+            }
+        }
+        return null;
+    };
+    Preview.prototype.containsPoint = function (x, y) {
+        var globalEdit = this.parent.localToGlobal(this.matrix.tx, this.matrix.ty);
+        var globalMouse = this.localToGlobal(Mouse.x, Mouse.y);
+        var m = new Matrix(this.matrix.a, this.matrix.b, this.matrix.c, this.matrix.d, globalEdit.x, globalEdit.y);
+        // console.log(globalMouse.x, globalMouse.y)
+        // console.log(m.containsPoint(globalMouse.x, globalMouse.y, this.width, this.height));
+        return m.containsPoint(globalMouse.x, globalMouse.y, this.width, this.height);
+    };
+    Preview.prototype.getDisplayByName = function (name) {
+        return this.displayList.filter(function (item) {
+            return item.image.name == name;
+        });
+    };
+    Preview.prototype.inter = function () {
+        var temp = this.getFrame();
+        var pic = null;
+        var t = null;
+        var r = null;
+        var i = temp.length;
+        var target = this.tool.target.owner.image;
+        var rect = new egret.Rectangle(target.x, target.y, target.width * this.tool.target.matrix.a, target.height * this.tool.target.matrix.d);
+        egret.log('source rect:' + rect);
+        while (i--) {
+            pic = temp[i];
+            t = pic.transform;
+            r = new egret.Rectangle(pic.image.x, pic.image.y, pic.image.width, pic.image.height);
+            egret.log('target rect:' + r);
+            if (r.intersects(rect)) {
+                return r;
+            }
+        }
+        return null;
+    };
+    Preview.prototype.selectImage = function (x, y) {
+        var pic = null;
+        var t = null;
+        // walk backwards selecting top-most first
+        var i = this.displayList.length;
+        while (i--) {
+            pic = this.displayList[i];
+            if (!pic.b)
+                return false;
+            t = pic.transform;
+            if (t.matrix.containsPoint(x, y, t.width, t.height)) {
+                if (this.tool.target !== t) {
+                    // select
+                    this.tool.setTarget(t);
+                    // reorder for layer rendering
+                    // this.displayList.splice(i,1);
+                    // this.displayList.push(pic);
+                    return true;
+                }
+                // already selected
+                return false;
+            }
+        }
+        // deselect
+        var point = new egret.Point(x, y);
+        var rect = new egret.Rectangle(0, 0, this.width, this.height);
+        if (rect.containsPoint(point)) {
+            this.tool.setTarget(null);
+            return false;
+        }
+        ;
+    };
+    Preview.prototype.addResources = function (index) {
+        var list = [UULabel, UUImage, UUContainer, SoundButton, CircleSector, UUBackground];
+        var i = 0;
+        var elements = this.pages[index].elements;
+        console.log('elements...');
+        console.log(JSON.stringify(elements));
+        // var triggerGroup = this.pages[index].properties.triggerGroup;
+        var n = elements.length;
+        for (i = 0; i < n; i++) {
+            var t = LayerSet.getLayer(list, elements[i].type)[0];
+            var com = LayerSet.createInstance(t, elements[i].props);
+            var texture = RES.getRes(elements[i].name);
+            com.texture = texture;
+            com.name = elements[i].id;
+            com.data = elements[i];
+            this.displayList.push(new Picture(com, elements[i].matrix, elements[i].type == 99 ? false : true));
+        }
+        requestAnimationFrame(this.render);
+    };
+    Preview.prototype.render = function () {
+        this.clear();
+        this.drawDisplayList();
+        // this.tool.draw();
+    };
+    Preview.prototype.clear = function () {
+        // this.tool.undraw();
+    };
+    Preview.prototype.reset = function () {
+        this.clear();
+        var i = 0;
+        var n = this.displayList.length;
+        for (i = 0; i < n; i++) {
+            this.displayList[i].undraw(this.displayGroup);
+        }
+        this.displayList = [];
+    };
+    Preview.prototype.drawDisplayList = function () {
+        var i = 0;
+        var n = this.displayList.length;
+        for (i = 0; i < n; i++) {
+            // if (!targetControl || this.tool.target !== this.displayList[i].transform){
+            this.displayList[i].draw(this.displayGroup);
+            // 背景图
+            var item = this.displayList[i].image;
+            if (item.data.type == 99) {
+                this.displayGroup.setChildIndex(item, 0);
+            }
+            // }
+        }
+    };
+    return Preview;
+}(eui.Group));
+__reflect(Preview.prototype, "Preview");
 // TypeScript file
 /**
  * 转盘组件
@@ -1125,28 +1128,10 @@ var CircleSector = (function (_super) {
         }
         mc.graphics.endFill();
     };
+    CircleSector.uuType = UUType.CIRCLE_SECTOR;
     return CircleSector;
 }(eui.Group));
 __reflect(CircleSector.prototype, "CircleSector", ["IUUContainer"]);
-/**
- * 声音组件
- */
-var SoundButton = (function (_super) {
-    __extends(SoundButton, _super);
-    function SoundButton() {
-        var _this = _super.call(this) || this;
-        _this.addEventListener(egret.Event.ADDED_TO_STAGE, _this.onAddToStage, _this);
-        return _this;
-    }
-    SoundButton.prototype.onAddToStage = function (event) {
-        this.init();
-        // this.bindHandler();
-    };
-    SoundButton.prototype.init = function () {
-    };
-    return SoundButton;
-}(eui.Button));
-__reflect(SoundButton.prototype, "SoundButton");
 var Transformable = (function () {
     function Transformable(width, height, matrix, owner) {
         this.width = 0;
@@ -1572,6 +1557,29 @@ var TransformTool = (function () {
 __reflect(TransformTool.prototype, "TransformTool");
 // TypeScript file
 /**
+ * 组件基类
+ */
+var BaseUI = (function () {
+    function BaseUI() {
+    }
+    return BaseUI;
+}());
+__reflect(BaseUI.prototype, "BaseUI");
+// TypeScript file
+/**
+ * 背景
+ */
+var UUBackground = (function (_super) {
+    __extends(UUBackground, _super);
+    function UUBackground() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    UUBackground.uuType = UUType.BACKGROUND;
+    return UUBackground;
+}(eui.Image));
+__reflect(UUBackground.prototype, "UUBackground");
+// TypeScript file
+/**
  * 图形基类
  */
 var UUBitmap = (function (_super) {
@@ -1602,6 +1610,7 @@ var UUContainer = (function (_super) {
         bg.graphics.endFill();
         this.addChild(bg);
     };
+    UUContainer.uuType = UUType.FRAME;
     return UUContainer;
 }(eui.Group));
 __reflect(UUContainer.prototype, "UUContainer");
@@ -1614,21 +1623,28 @@ var UUImage = (function (_super) {
     function UUImage() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
+    UUImage.uuType = UUType.IMAGE;
     return UUImage;
 }(eui.Image));
 __reflect(UUImage.prototype, "UUImage");
-// TypeScript file
 /**
  * 文字组件
  */
 var UULabel = (function (_super) {
     __extends(UULabel, _super);
     function UULabel() {
-        return _super !== null && _super.apply(this, arguments) || this;
+        var _this = _super.call(this) || this;
+        _this.text = '双击此处进行编辑';
+        _this.textColor = 0xff000;
+        _this.size = 16;
+        _this.textAlign = egret.HorizontalAlign.JUSTIFY;
+        _this.name = '';
+        return _this;
     }
+    UULabel.uuType = UUType.TEXT;
     return UULabel;
 }(eui.Label));
-__reflect(UULabel.prototype, "UULabel");
+__reflect(UULabel.prototype, "UULabel", ["ILabel", "IUUBase"]);
 // TypeScript file
 var UURequest = (function () {
     // private req: egret.HttpRequest = new egret.HttpRequest();

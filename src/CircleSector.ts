@@ -5,6 +5,7 @@
 class CircleSector extends eui.Group implements BaseUI, IUUContainer {
     data: any;
     container: any;
+    static uuType = UUType.CIRCLE_SECTOR;
     draw (): void {
         
     }

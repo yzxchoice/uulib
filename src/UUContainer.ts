@@ -2,6 +2,7 @@
 class UUContainer extends eui.Group implements BaseUI {
     data: any;
     items = [];
+    static uuType = UUType.FRAME;
     constructor () {
         super();
         this.addEventListener(egret.Event.ADDED_TO_STAGE, this.onAddToStage, this);

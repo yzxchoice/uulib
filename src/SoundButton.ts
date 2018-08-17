@@ -9,6 +9,7 @@ interface uiData {
  */
 class SoundButton extends eui.Button implements BaseUI {
     data: uiData;
+    static uuType = UUType.SOUND;
     constructor () {
         super();
         this.addEventListener(egret.Event.ADDED_TO_STAGE, this.onAddToStage, this);
