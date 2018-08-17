@@ -4,4 +4,5 @@
  */
 class UUImage extends eui.Image implements BaseUI {
     data: any;
+    static uuType = UUType.IMAGE;
 }
