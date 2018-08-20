@@ -234,433 +234,6 @@ var LayerSet = (function () {
     return LayerSet;
 }());
 __reflect(LayerSet.prototype, "LayerSet");
-/**
- * 声音组件
- */
-var SoundButton = (function (_super) {
-    __extends(SoundButton, _super);
-    function SoundButton() {
-        var _this = _super.call(this) || this;
-        _this.addEventListener(egret.Event.ADDED_TO_STAGE, _this.onAddToStage, _this);
-        return _this;
-    }
-    SoundButton.prototype.onAddToStage = function (event) {
-        this.init();
-        // this.bindHandler();
-    };
-    SoundButton.prototype.init = function () {
-    };
-    SoundButton.uuType = UUType.SOUND;
-    return SoundButton;
-}(eui.Button));
-__reflect(SoundButton.prototype, "SoundButton");
-/**
- * 自定义操作框
- */
-var ControlSet = (function () {
-    function ControlSet() {
-        throw new Error('can not create a instance');
-    }
-    ControlSet.getStandard = function () {
-        var translater = new this.controlClass(ControlType.TRANSLATE);
-        translater.hitTestTarget = true;
-        return [
-            new this.controlClass(ControlType.BORDER),
-            translater,
-            new this.controlClass(ControlType.ROTATE, 0, 0, 0, 0, 10),
-            new this.controlClass(ControlType.ROTATE, 0, 1, 0, 0, 10),
-            new this.controlClass(ControlType.ROTATE, 1, 0, 0, 0, 10),
-            new this.controlClass(ControlType.ROTATE, 1, 1, 0, 0, 10),
-            new this.controlClass(ControlType.SCALE_X, 0, .5, 0, 0, 10),
-            new this.controlClass(ControlType.SCALE_X, 1, .5, 0, 0, 10),
-            new this.controlClass(ControlType.SCALE_Y, .5, 0, 0, 0, 10),
-            new this.controlClass(ControlType.SCALE_Y, .5, 1, 0, 0, 10)
-        ];
-    };
-    ControlSet.getScaler = function () {
-        var translater = new this.controlClass(ControlType.TRANSLATE);
-        translater.hitTestTarget = true;
-        return [
-            new this.controlClass(ControlType.BORDER),
-            translater,
-            new this.controlClass(ControlType.SCALE, 0, 0, 0, 0, 10),
-            new this.controlClass(ControlType.SCALE, 0, 1, 0, 0, 10),
-            new this.controlClass(ControlType.SCALE, 1, 0, 0, 0, 10),
-            new this.controlClass(ControlType.SCALE, 1, 1, 0, 0, 10),
-            new this.controlClass(ControlType.SCALE_X, 0, .5, 0, 0, 10),
-            new this.controlClass(ControlType.SCALE_X, 1, .5, 0, 0, 10),
-            new this.controlClass(ControlType.SCALE_Y, .5, 0, 0, 0, 10),
-            new this.controlClass(ControlType.SCALE_Y, .5, 1, 0, 0, 10)
-        ];
-    };
-    ControlSet.getUniformScaler = function () {
-        var translater = new this.controlClass(ControlType.TRANSLATE);
-        translater.hitTestTarget = true;
-        return [
-            new this.controlClass(ControlType.BORDER),
-            translater,
-            new this.controlClass(ControlType.ROTATE, .5, 0, 0, -20, 20),
-            new this.controlClass(ControlType.SCALE_UNIFORM, 0, 0, 0, 0, 20),
-            new this.controlClass(ControlType.SCALE_UNIFORM, 0, 1, 0, 0, 20),
-            new this.controlClass(ControlType.SCALE_UNIFORM, 1, 0, 0, 0, 20),
-            new this.controlClass(ControlType.SCALE_UNIFORM, 1, 1, 0, 0, 20)
-        ];
-    };
-    ControlSet.getScalerWithRotate = function () {
-        var translater = new this.controlClass(ControlType.TRANSLATE, 0, 0, 0, 0, -1);
-        // translate control is "selected" by clicking
-        // on the target's shape, not the control point
-        translater.hitTestTarget = true;
-        return [
-            new this.controlClass(ControlType.BORDER),
-            translater,
-            new this.controlClass(ControlType.ROTATE, .5, 0, 0, -20, 10),
-            new this.controlClass(ControlType.SCALE, 0, 0, 0, 0, 10),
-            new this.controlClass(ControlType.SCALE, 0, 1, 0, 0, 10),
-            new this.controlClass(ControlType.SCALE, 1, 0, 0, 0, 10),
-            new this.controlClass(ControlType.SCALE, 1, 1, 0, 0, 10),
-            new this.controlClass(ControlType.SCALE_X, 0, .5, 0, 0, 10),
-            new this.controlClass(ControlType.SCALE_X, 1, .5, 0, 0, 10),
-            new this.controlClass(ControlType.SCALE_Y, .5, 0, 0, 0, 10),
-            new this.controlClass(ControlType.SCALE_Y, .5, 1, 0, 0, 10)
-        ];
-    };
-    ControlSet.getDynamic = function () {
-        var dyn = new this.controlClass(ControlType.TRANSLATE);
-        dyn.dynamicUV = true;
-        dyn.hitTestTarget = true;
-        return [
-            new this.controlClass(ControlType.BORDER),
-            dyn
-        ];
-    };
-    return ControlSet;
-}());
-__reflect(ControlSet.prototype, "ControlSet");
-// TypeScript file
-var EgretControl = (function (_super) {
-    __extends(EgretControl, _super);
-    function EgretControl(type, u, v, offsetX, offsetY, size) {
-        var _this = _super.call(this, type, u, v, offsetX, offsetY, size) || this;
-        _this.controlShape = new egret.Shape();
-        return _this;
-    }
-    EgretControl.prototype.undraw = function () {
-        var controlShape = this.controlShape;
-        controlShape.graphics.clear();
-    };
-    EgretControl.prototype.draw = function (container) {
-        // for custom drawing methods, call
-        // that method and skip standard drawing
-        // if it returns false
-        if (this.drawCallback !== null) {
-            if (!this.drawCallback(this, container)) {
-                return;
-            }
-        }
-        // do not draw for non-positive sizes
-        if (this.size <= 0) {
-            return;
-        }
-        var x = 0;
-        var y = 0;
-        var controlShape = this.controlShape;
-        container.addChild(controlShape);
-        // ctx.save();
-        // ctx.beginPath();
-        var fillStyle = this.tool.fillStyle;
-        var strokeStyle = this.tool.strokeStyle;
-        var lineWidth = this.tool.lineWidth;
-        controlShape.graphics.clear();
-        // controlShape.graphics.beginFill(this.tool.fillStyle, 1);
-        // controlShape.graphics.lineStyle(2, this.tool.strokeStyle);
-        switch (this.shape) {
-            case ControlType.SHAPE_CIRCLE: {
-                // ctx.arc(this.x,this.y,this.size/2,0,Math.PI*2);
-                // ctx.fill();
-                // ctx.stroke();
-                controlShape.graphics.beginFill(fillStyle, 1);
-                controlShape.graphics.lineStyle(lineWidth, strokeStyle);
-                controlShape.graphics.drawCircle(this.x, this.y, this.size / 2);
-                controlShape.graphics.endFill();
-                break;
-            }
-            case ControlType.SHAPE_SQUARE: {
-                x = (this.x - this.size / 2) | 0;
-                y = (this.y - this.size / 2) | 0;
-                // ctx.fillRect(x, y, this.size, this.size);
-                // ctx.strokeRect(x, y, this.size, this.size);
-                controlShape.graphics.beginFill(fillStyle, 1);
-                controlShape.graphics.lineStyle(lineWidth, strokeStyle);
-                controlShape.graphics.drawRect(x, y, this.size, this.size);
-                controlShape.graphics.endFill();
-                break;
-            }
-            case ControlType.SHAPE_BORDER: {
-                // render to half pixel for hard lines
-                // ctx.fillStyle = "";
-                controlShape.graphics.lineStyle(lineWidth, strokeStyle);
-                var t = this.tool.target;
-                var m = this.tool.endMatrix;
-                controlShape.graphics.moveTo(m.x, m.y);
-                x = m.x + m.a * t.width;
-                y = m.y + m.b * t.width;
-                controlShape.graphics.lineTo(x, y);
-                x = m.x + m.a * t.width + m.c * t.height;
-                y = m.y + m.d * t.height + m.b * t.width;
-                controlShape.graphics.lineTo(x, y);
-                x = m.x + m.c * t.height;
-                y = m.y + m.d * t.height;
-                controlShape.graphics.lineTo(x, y);
-                controlShape.graphics.lineTo(m.x, m.y);
-                // controlShape.graphics.stroke();
-                break;
-            }
-            default: {
-                // no draw
-                break;
-            }
-        }
-        // ctx.restore();
-    };
-    return EgretControl;
-}(Control));
-__reflect(EgretControl.prototype, "EgretControl");
-/**
- * 矩阵对象
- */
-var Matrix = (function () {
-    function Matrix(a, b, c, d, x, y) {
-        this.a = (a != null) ? a : 1;
-        this.b = b || 0;
-        this.c = c || 0;
-        this.d = (d != null) ? d : 1;
-        this.x = x || 0;
-        this.y = y || 0;
-    }
-    Matrix.prototype.toString = function () {
-        return "matrix(" + this.a + "," + this.b + "," + this.c + "," + this.d + ","
-            + this.x + "," + this.y + ")";
-    };
-    Matrix.prototype.equals = function (m) {
-        if (this.a === m.a
-            && this.b === m.b
-            && this.c === m.c
-            && this.d === m.d
-            && this.x === m.x
-            && this.y === m.y) {
-            return true;
-        }
-        return false;
-    };
-    Matrix.prototype.identity = function () {
-        this.a = 1;
-        this.b = 0;
-        this.c = 0;
-        this.d = 1;
-        this.x = 0;
-        this.y = 0;
-    };
-    Matrix.prototype.clone = function () {
-        return new Matrix(this.a, this.b, this.c, this.d, this.x, this.y);
-    };
-    Matrix.prototype.clone1 = function () {
-        return new egret.Matrix(this.a, this.b, this.c, this.d, this.x, this.y);
-    };
-    Matrix.prototype.copyFrom = function (m) {
-        this.a = m.a;
-        this.b = m.b;
-        this.c = m.c;
-        this.d = m.d;
-        this.x = m.x;
-        this.y = m.y;
-    };
-    /**
-     * 旋转
-     * angle 弧度
-     */
-    Matrix.prototype.rotate = function (angle) {
-        var u = Math.cos(angle);
-        var v = Math.sin(angle);
-        var temp = this.a;
-        this.a = u * this.a - v * this.b;
-        this.b = v * temp + u * this.b;
-        temp = this.c;
-        this.c = u * this.c - v * this.d;
-        this.d = v * temp + u * this.d;
-        temp = this.x;
-        this.x = u * this.x - v * this.y;
-        this.y = v * temp + u * this.y;
-    };
-    /**
-     * 位移
-     */
-    Matrix.prototype.translate = function (x, y) {
-        this.x += x;
-        this.y += y;
-    };
-    Matrix.prototype.concat = function (m) {
-        var a = this.a * m.a;
-        var b = 0;
-        var c = 0;
-        var d = this.d * m.d;
-        var x = this.x * m.a + m.x;
-        var y = this.y * m.d + m.y;
-        if (this.b !== 0 || this.c !== 0 || m.b !== 0 || m.c !== 0) {
-            a += this.b * m.c;
-            d += this.c * m.b;
-            b += this.a * m.b + this.b * m.d;
-            c += this.c * m.a + this.d * m.c;
-            x += this.y * m.c;
-            y += this.x * m.b;
-        }
-        this.a = a;
-        this.b = b;
-        this.c = c;
-        this.d = d;
-        this.x = x;
-        this.y = y;
-    };
-    Matrix.prototype.invert = function () {
-        if (this.b === 0 && this.c === 0 && this.a !== 0 && this.d !== 0) {
-            this.a = 1 / this.a;
-            this.d = 1 / this.d;
-            this.b = 0;
-            this.c = 0;
-            this.x = -this.a * this.x;
-            this.y = -this.d * this.y;
-        }
-        else {
-            var det = this.a * this.d - this.b * this.c;
-            if (det === 0) {
-                this.identity();
-                return;
-            }
-            det = 1 / det;
-            var temp = this.a;
-            this.a = this.d * det;
-            this.b = -this.b * det;
-            this.c = -this.c * det;
-            this.d = temp * det;
-            temp = this.y;
-            this.y = -(this.b * this.x + this.d * this.y);
-            this.x = -(this.a * this.x + this.c * temp);
-        }
-    };
-    Matrix.prototype.getRotationX = function () {
-        return Math.atan2(this.b, this.a);
-    };
-    Matrix.prototype.getRotationY = function () {
-        return Math.atan2(this.c, this.d);
-    };
-    Matrix.prototype.getTransformedX = function (x, y) {
-        return this.x + this.a * x + this.c * y;
-    };
-    Matrix.prototype.getTransformedY = function (x, y) {
-        return this.y + this.d * y + this.b * x;
-    };
-    /**
-     * 缩放
-     */
-    Matrix.prototype.scale = function (x, y) {
-        this.a *= x;
-        this.b *= y;
-        this.c *= x;
-        this.d *= y;
-        this.x *= x;
-        this.y *= y;
-    };
-    Matrix.prototype.containsPoint = function (x, y, w, h) {
-        // find mouse in local target space
-        // and check within bounds of that area
-        var inv = Matrix.temp; // use pooled Matrix to reduce allocations
-        inv.copyFrom(this);
-        inv.invert();
-        var tx = inv.x + inv.a * x + inv.c * y;
-        var ty = inv.y + inv.d * y + inv.b * x;
-        // compare locations in non-transformed space (inverted)
-        if (tx >= 0 && tx <= w && ty >= 0 && ty <= h) {
-            return true;
-        }
-        return false;
-    };
-    Matrix.temp = new Matrix();
-    return Matrix;
-}());
-__reflect(Matrix.prototype, "Matrix");
-var Mouse = (function () {
-    function Mouse() {
-        throw new Error('can not create a instance');
-    }
-    /**
-     * 鼠标点击的坐标
-     */
-    Mouse.get = function (event, elem) {
-        if (!elem) {
-            elem = event.currentTarget;
-        }
-        // if (event.touches){
-        //     if (event.touches.length){
-        //         Mouse.x = parseInt(event.touches[0].pageX);
-        //         Mouse.y = parseInt(event.touches[0].pageY);
-        //     }
-        // }else{
-        //     // mouse events
-        //     Mouse.x = parseInt(event.clientX);
-        //     Mouse.y = parseInt(event.clientY);
-        // }
-        // console.log(event.stageX,event.stageY);
-        // console.log(event.localX,event.localY);
-        var targetPoint = elem.globalToLocal(event.stageX, event.stageY);
-        Mouse.x = targetPoint.x;
-        Mouse.y = targetPoint.y;
-        // console.log(Mouse.x,Mouse.y);
-        // var rect = elem.getBoundingClientRect();
-        // Mouse.x += elem.scrollLeft - elem.clientLeft - rect.left;
-        // Mouse.y += elem.scrollTop - elem.clientTop - rect.top;
-        return Mouse;
-    };
-    Mouse.x = 0;
-    Mouse.y = 0;
-    Mouse.START = "touchBegin";
-    Mouse.MOVE = "touchMove";
-    Mouse.END = "touchEnd";
-    return Mouse;
-}());
-__reflect(Mouse.prototype, "Mouse");
-// TypeScript file
-/**
- * 可操作对象容器
- */
-var Picture = (function () {
-    function Picture(image, m, b) {
-        if (b === void 0) { b = true; }
-        this.image = image;
-        this.b = b;
-        var matrix = new Matrix(m.a, m.b, m.c, m.d, m.x, m.y);
-        this.transform = new Transformable(image.width, image.height, matrix, this);
-        // if(this.image.data.pro)
-    }
-    Picture.prototype.draw = function (container) {
-        console.log('Picture draw...');
-        var data = this.image.data;
-        if (data.type == 1) {
-            data.props = data.props || {};
-            var _a = data.props, size = _a.size, textColor = _a.textColor;
-            this.image.text = data.content;
-            this.image.textColor = textColor || 0x000000;
-            this.image.size = size || 40;
-        }
-        var m = this.transform.matrix;
-        this.image.matrix = new egret.Matrix(m.a, m.b, m.c, m.d, m.x, m.y);
-        container.addChild(this.image);
-    };
-    Picture.prototype.undraw = function (container) {
-        container.removeChild(this.image);
-    };
-    return Picture;
-}());
-__reflect(Picture.prototype, "Picture");
 // TypeScript file
 /**
  * 预览
@@ -975,6 +548,419 @@ var Preview = (function (_super) {
     return Preview;
 }(eui.Group));
 __reflect(Preview.prototype, "Preview");
+/**
+ * 自定义操作框
+ */
+var ControlSet = (function () {
+    function ControlSet() {
+        throw new Error('can not create a instance');
+    }
+    ControlSet.getStandard = function () {
+        var translater = new this.controlClass(ControlType.TRANSLATE);
+        translater.hitTestTarget = true;
+        return [
+            new this.controlClass(ControlType.BORDER),
+            translater,
+            new this.controlClass(ControlType.ROTATE, 0, 0, 0, 0, 10),
+            new this.controlClass(ControlType.ROTATE, 0, 1, 0, 0, 10),
+            new this.controlClass(ControlType.ROTATE, 1, 0, 0, 0, 10),
+            new this.controlClass(ControlType.ROTATE, 1, 1, 0, 0, 10),
+            new this.controlClass(ControlType.SCALE_X, 0, .5, 0, 0, 10),
+            new this.controlClass(ControlType.SCALE_X, 1, .5, 0, 0, 10),
+            new this.controlClass(ControlType.SCALE_Y, .5, 0, 0, 0, 10),
+            new this.controlClass(ControlType.SCALE_Y, .5, 1, 0, 0, 10)
+        ];
+    };
+    ControlSet.getScaler = function () {
+        var translater = new this.controlClass(ControlType.TRANSLATE);
+        translater.hitTestTarget = true;
+        return [
+            new this.controlClass(ControlType.BORDER),
+            translater,
+            new this.controlClass(ControlType.SCALE, 0, 0, 0, 0, 10),
+            new this.controlClass(ControlType.SCALE, 0, 1, 0, 0, 10),
+            new this.controlClass(ControlType.SCALE, 1, 0, 0, 0, 10),
+            new this.controlClass(ControlType.SCALE, 1, 1, 0, 0, 10),
+            new this.controlClass(ControlType.SCALE_X, 0, .5, 0, 0, 10),
+            new this.controlClass(ControlType.SCALE_X, 1, .5, 0, 0, 10),
+            new this.controlClass(ControlType.SCALE_Y, .5, 0, 0, 0, 10),
+            new this.controlClass(ControlType.SCALE_Y, .5, 1, 0, 0, 10)
+        ];
+    };
+    ControlSet.getUniformScaler = function () {
+        var translater = new this.controlClass(ControlType.TRANSLATE);
+        translater.hitTestTarget = true;
+        return [
+            new this.controlClass(ControlType.BORDER),
+            translater,
+            new this.controlClass(ControlType.ROTATE, .5, 0, 0, -20, 20),
+            new this.controlClass(ControlType.SCALE_UNIFORM, 0, 0, 0, 0, 20),
+            new this.controlClass(ControlType.SCALE_UNIFORM, 0, 1, 0, 0, 20),
+            new this.controlClass(ControlType.SCALE_UNIFORM, 1, 0, 0, 0, 20),
+            new this.controlClass(ControlType.SCALE_UNIFORM, 1, 1, 0, 0, 20)
+        ];
+    };
+    ControlSet.getScalerWithRotate = function () {
+        var translater = new this.controlClass(ControlType.TRANSLATE, 0, 0, 0, 0, -1);
+        // translate control is "selected" by clicking
+        // on the target's shape, not the control point
+        translater.hitTestTarget = true;
+        return [
+            new this.controlClass(ControlType.BORDER),
+            translater,
+            new this.controlClass(ControlType.ROTATE, .5, 0, 0, -20, 10),
+            new this.controlClass(ControlType.SCALE, 0, 0, 0, 0, 10),
+            new this.controlClass(ControlType.SCALE, 0, 1, 0, 0, 10),
+            new this.controlClass(ControlType.SCALE, 1, 0, 0, 0, 10),
+            new this.controlClass(ControlType.SCALE, 1, 1, 0, 0, 10),
+            new this.controlClass(ControlType.SCALE_X, 0, .5, 0, 0, 10),
+            new this.controlClass(ControlType.SCALE_X, 1, .5, 0, 0, 10),
+            new this.controlClass(ControlType.SCALE_Y, .5, 0, 0, 0, 10),
+            new this.controlClass(ControlType.SCALE_Y, .5, 1, 0, 0, 10)
+        ];
+    };
+    ControlSet.getDynamic = function () {
+        var dyn = new this.controlClass(ControlType.TRANSLATE);
+        dyn.dynamicUV = true;
+        dyn.hitTestTarget = true;
+        return [
+            new this.controlClass(ControlType.BORDER),
+            dyn
+        ];
+    };
+    return ControlSet;
+}());
+__reflect(ControlSet.prototype, "ControlSet");
+var Demo = (function () {
+    function Demo() {
+    }
+    return Demo;
+}());
+__reflect(Demo.prototype, "Demo");
+// TypeScript file
+var EgretControl = (function (_super) {
+    __extends(EgretControl, _super);
+    function EgretControl(type, u, v, offsetX, offsetY, size) {
+        var _this = _super.call(this, type, u, v, offsetX, offsetY, size) || this;
+        _this.controlShape = new egret.Shape();
+        return _this;
+    }
+    EgretControl.prototype.undraw = function () {
+        var controlShape = this.controlShape;
+        controlShape.graphics.clear();
+    };
+    EgretControl.prototype.draw = function (container) {
+        // for custom drawing methods, call
+        // that method and skip standard drawing
+        // if it returns false
+        if (this.drawCallback !== null) {
+            if (!this.drawCallback(this, container)) {
+                return;
+            }
+        }
+        // do not draw for non-positive sizes
+        if (this.size <= 0) {
+            return;
+        }
+        var x = 0;
+        var y = 0;
+        var controlShape = this.controlShape;
+        container.addChild(controlShape);
+        // ctx.save();
+        // ctx.beginPath();
+        var fillStyle = this.tool.fillStyle;
+        var strokeStyle = this.tool.strokeStyle;
+        var lineWidth = this.tool.lineWidth;
+        controlShape.graphics.clear();
+        // controlShape.graphics.beginFill(this.tool.fillStyle, 1);
+        // controlShape.graphics.lineStyle(2, this.tool.strokeStyle);
+        switch (this.shape) {
+            case ControlType.SHAPE_CIRCLE: {
+                // ctx.arc(this.x,this.y,this.size/2,0,Math.PI*2);
+                // ctx.fill();
+                // ctx.stroke();
+                controlShape.graphics.beginFill(fillStyle, 1);
+                controlShape.graphics.lineStyle(lineWidth, strokeStyle);
+                controlShape.graphics.drawCircle(this.x, this.y, this.size / 2);
+                controlShape.graphics.endFill();
+                break;
+            }
+            case ControlType.SHAPE_SQUARE: {
+                x = (this.x - this.size / 2) | 0;
+                y = (this.y - this.size / 2) | 0;
+                // ctx.fillRect(x, y, this.size, this.size);
+                // ctx.strokeRect(x, y, this.size, this.size);
+                controlShape.graphics.beginFill(fillStyle, 1);
+                controlShape.graphics.lineStyle(lineWidth, strokeStyle);
+                controlShape.graphics.drawRect(x, y, this.size, this.size);
+                controlShape.graphics.endFill();
+                break;
+            }
+            case ControlType.SHAPE_BORDER: {
+                // render to half pixel for hard lines
+                // ctx.fillStyle = "";
+                controlShape.graphics.lineStyle(lineWidth, strokeStyle);
+                var t = this.tool.target;
+                var m = this.tool.endMatrix;
+                controlShape.graphics.moveTo(m.x, m.y);
+                x = m.x + m.a * t.width;
+                y = m.y + m.b * t.width;
+                controlShape.graphics.lineTo(x, y);
+                x = m.x + m.a * t.width + m.c * t.height;
+                y = m.y + m.d * t.height + m.b * t.width;
+                controlShape.graphics.lineTo(x, y);
+                x = m.x + m.c * t.height;
+                y = m.y + m.d * t.height;
+                controlShape.graphics.lineTo(x, y);
+                controlShape.graphics.lineTo(m.x, m.y);
+                // controlShape.graphics.stroke();
+                break;
+            }
+            default: {
+                // no draw
+                break;
+            }
+        }
+        // ctx.restore();
+    };
+    return EgretControl;
+}(Control));
+__reflect(EgretControl.prototype, "EgretControl");
+/**
+ * 矩阵对象
+ */
+var Matrix = (function () {
+    function Matrix(a, b, c, d, x, y) {
+        this.a = (a != null) ? a : 1;
+        this.b = b || 0;
+        this.c = c || 0;
+        this.d = (d != null) ? d : 1;
+        this.x = x || 0;
+        this.y = y || 0;
+    }
+    Matrix.prototype.toString = function () {
+        return "matrix(" + this.a + "," + this.b + "," + this.c + "," + this.d + ","
+            + this.x + "," + this.y + ")";
+    };
+    Matrix.prototype.equals = function (m) {
+        if (this.a === m.a
+            && this.b === m.b
+            && this.c === m.c
+            && this.d === m.d
+            && this.x === m.x
+            && this.y === m.y) {
+            return true;
+        }
+        return false;
+    };
+    Matrix.prototype.identity = function () {
+        this.a = 1;
+        this.b = 0;
+        this.c = 0;
+        this.d = 1;
+        this.x = 0;
+        this.y = 0;
+    };
+    Matrix.prototype.clone = function () {
+        return new Matrix(this.a, this.b, this.c, this.d, this.x, this.y);
+    };
+    Matrix.prototype.clone1 = function () {
+        return new egret.Matrix(this.a, this.b, this.c, this.d, this.x, this.y);
+    };
+    Matrix.prototype.copyFrom = function (m) {
+        this.a = m.a;
+        this.b = m.b;
+        this.c = m.c;
+        this.d = m.d;
+        this.x = m.x;
+        this.y = m.y;
+    };
+    /**
+     * 旋转
+     * angle 弧度
+     */
+    Matrix.prototype.rotate = function (angle) {
+        var u = Math.cos(angle);
+        var v = Math.sin(angle);
+        var temp = this.a;
+        this.a = u * this.a - v * this.b;
+        this.b = v * temp + u * this.b;
+        temp = this.c;
+        this.c = u * this.c - v * this.d;
+        this.d = v * temp + u * this.d;
+        temp = this.x;
+        this.x = u * this.x - v * this.y;
+        this.y = v * temp + u * this.y;
+    };
+    /**
+     * 位移
+     */
+    Matrix.prototype.translate = function (x, y) {
+        this.x += x;
+        this.y += y;
+    };
+    Matrix.prototype.concat = function (m) {
+        var a = this.a * m.a;
+        var b = 0;
+        var c = 0;
+        var d = this.d * m.d;
+        var x = this.x * m.a + m.x;
+        var y = this.y * m.d + m.y;
+        if (this.b !== 0 || this.c !== 0 || m.b !== 0 || m.c !== 0) {
+            a += this.b * m.c;
+            d += this.c * m.b;
+            b += this.a * m.b + this.b * m.d;
+            c += this.c * m.a + this.d * m.c;
+            x += this.y * m.c;
+            y += this.x * m.b;
+        }
+        this.a = a;
+        this.b = b;
+        this.c = c;
+        this.d = d;
+        this.x = x;
+        this.y = y;
+    };
+    Matrix.prototype.invert = function () {
+        if (this.b === 0 && this.c === 0 && this.a !== 0 && this.d !== 0) {
+            this.a = 1 / this.a;
+            this.d = 1 / this.d;
+            this.b = 0;
+            this.c = 0;
+            this.x = -this.a * this.x;
+            this.y = -this.d * this.y;
+        }
+        else {
+            var det = this.a * this.d - this.b * this.c;
+            if (det === 0) {
+                this.identity();
+                return;
+            }
+            det = 1 / det;
+            var temp = this.a;
+            this.a = this.d * det;
+            this.b = -this.b * det;
+            this.c = -this.c * det;
+            this.d = temp * det;
+            temp = this.y;
+            this.y = -(this.b * this.x + this.d * this.y);
+            this.x = -(this.a * this.x + this.c * temp);
+        }
+    };
+    Matrix.prototype.getRotationX = function () {
+        return Math.atan2(this.b, this.a);
+    };
+    Matrix.prototype.getRotationY = function () {
+        return Math.atan2(this.c, this.d);
+    };
+    Matrix.prototype.getTransformedX = function (x, y) {
+        return this.x + this.a * x + this.c * y;
+    };
+    Matrix.prototype.getTransformedY = function (x, y) {
+        return this.y + this.d * y + this.b * x;
+    };
+    /**
+     * 缩放
+     */
+    Matrix.prototype.scale = function (x, y) {
+        this.a *= x;
+        this.b *= y;
+        this.c *= x;
+        this.d *= y;
+        this.x *= x;
+        this.y *= y;
+    };
+    Matrix.prototype.containsPoint = function (x, y, w, h) {
+        // find mouse in local target space
+        // and check within bounds of that area
+        var inv = Matrix.temp; // use pooled Matrix to reduce allocations
+        inv.copyFrom(this);
+        inv.invert();
+        var tx = inv.x + inv.a * x + inv.c * y;
+        var ty = inv.y + inv.d * y + inv.b * x;
+        // compare locations in non-transformed space (inverted)
+        if (tx >= 0 && tx <= w && ty >= 0 && ty <= h) {
+            return true;
+        }
+        return false;
+    };
+    Matrix.temp = new Matrix();
+    return Matrix;
+}());
+__reflect(Matrix.prototype, "Matrix");
+var Mouse = (function () {
+    function Mouse() {
+        throw new Error('can not create a instance');
+    }
+    /**
+     * 鼠标点击的坐标
+     */
+    Mouse.get = function (event, elem) {
+        if (!elem) {
+            elem = event.currentTarget;
+        }
+        // if (event.touches){
+        //     if (event.touches.length){
+        //         Mouse.x = parseInt(event.touches[0].pageX);
+        //         Mouse.y = parseInt(event.touches[0].pageY);
+        //     }
+        // }else{
+        //     // mouse events
+        //     Mouse.x = parseInt(event.clientX);
+        //     Mouse.y = parseInt(event.clientY);
+        // }
+        // console.log(event.stageX,event.stageY);
+        // console.log(event.localX,event.localY);
+        var targetPoint = elem.globalToLocal(event.stageX, event.stageY);
+        Mouse.x = targetPoint.x;
+        Mouse.y = targetPoint.y;
+        // console.log(Mouse.x,Mouse.y);
+        // var rect = elem.getBoundingClientRect();
+        // Mouse.x += elem.scrollLeft - elem.clientLeft - rect.left;
+        // Mouse.y += elem.scrollTop - elem.clientTop - rect.top;
+        return Mouse;
+    };
+    Mouse.x = 0;
+    Mouse.y = 0;
+    Mouse.START = "touchBegin";
+    Mouse.MOVE = "touchMove";
+    Mouse.END = "touchEnd";
+    return Mouse;
+}());
+__reflect(Mouse.prototype, "Mouse");
+// TypeScript file
+/**
+ * 可操作对象容器
+ */
+var Picture = (function () {
+    function Picture(image, m, b) {
+        if (b === void 0) { b = true; }
+        this.image = image;
+        this.b = b;
+        var matrix = new Matrix(m.a, m.b, m.c, m.d, m.x, m.y);
+        this.transform = new Transformable(image.width, image.height, matrix, this);
+        // if(this.image.data.pro)
+    }
+    Picture.prototype.draw = function (container) {
+        console.log('Picture draww22223333...');
+        // let data = this.image.data;
+        // if(data.type == 1){
+        //     data.props = data.props || {};
+        //     let { size, textColor } = data.props;              
+        //     this.image.text = data.content;
+        //     this.image.textColor = textColor || 0x000000;
+        //     this.image.size = size || 40;
+        // }
+        var m = this.transform.matrix;
+        this.image.matrix = new egret.Matrix(m.a, m.b, m.c, m.d, m.x, m.y);
+        container.addChild(this.image);
+    };
+    Picture.prototype.undraw = function (container) {
+        container.removeChild(this.image);
+    };
+    return Picture;
+}());
+__reflect(Picture.prototype, "Picture");
 // TypeScript file
 /**
  * 转盘组件
@@ -1132,6 +1118,26 @@ var CircleSector = (function (_super) {
     return CircleSector;
 }(eui.Group));
 __reflect(CircleSector.prototype, "CircleSector", ["IUUContainer"]);
+/**
+ * 声音组件
+ */
+var SoundButton = (function (_super) {
+    __extends(SoundButton, _super);
+    function SoundButton() {
+        var _this = _super.call(this) || this;
+        _this.addEventListener(egret.Event.ADDED_TO_STAGE, _this.onAddToStage, _this);
+        return _this;
+    }
+    SoundButton.prototype.onAddToStage = function (event) {
+        this.init();
+        // this.bindHandler();
+    };
+    SoundButton.prototype.init = function () {
+    };
+    SoundButton.uuType = UUType.SOUND;
+    return SoundButton;
+}(eui.Button));
+__reflect(SoundButton.prototype, "SoundButton");
 var Transformable = (function () {
     function Transformable(width, height, matrix, owner) {
         this.width = 0;

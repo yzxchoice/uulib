@@ -87,20 +87,40 @@ declare class LayerSet {
     static createInstance(layerClass: any, prop: any): any;
     static getLayer(list: any, type: number): any;
 }
-interface uiData {
-    id: string;
-    name: string;
-    url?: string;
-}
 /**
- * 声音组件
+ * 预览
  */
-declare class SoundButton extends eui.Button implements BaseUI {
-    data: uiData;
-    static uuType: UUType;
+declare class Preview extends eui.Group {
+    private displayList;
+    tool: any;
+    pages: any[];
+    private pageIndex;
     constructor();
-    private onAddToStage(event);
+    private onAddToStageInit(event);
+    private bindHandlers();
+    private initEui();
+    private displayGroup;
+    private getPages();
+    private pre(event);
+    private next(event);
     private init();
+    setupTool(): void;
+    private getFrame();
+    down(event: egret.TouchEvent): boolean;
+    move(event: egret.TouchEvent): void;
+    up(event: egret.TouchEvent): void;
+    findControlByType(type: any): any;
+    applyDynamicControls(event: any): void;
+    getDynamicControl(): any;
+    containsPoint(x: number, y: number): boolean;
+    private getDisplayByName(name);
+    inter(): egret.Rectangle;
+    selectImage(x: number, y: number): boolean;
+    private addResources(index);
+    render(): void;
+    clear(): void;
+    reset(): void;
+    drawDisplayList(): void;
 }
 /**
  * 自定义操作框
@@ -113,6 +133,9 @@ declare class ControlSet {
     static getUniformScaler(): any[];
     static getScalerWithRotate(): any[];
     static getDynamic(): any[];
+}
+declare class Demo {
+    constructor();
 }
 declare class EgretControl extends Control {
     private controlShape;
@@ -205,41 +228,6 @@ declare class Picture {
     undraw(container: any): void;
 }
 /**
- * 预览
- */
-declare class Preview extends eui.Group {
-    private displayList;
-    tool: any;
-    pages: any[];
-    private pageIndex;
-    constructor();
-    private onAddToStageInit(event);
-    private bindHandlers();
-    private initEui();
-    private displayGroup;
-    private getPages();
-    private pre(event);
-    private next(event);
-    private init();
-    setupTool(): void;
-    private getFrame();
-    down(event: egret.TouchEvent): boolean;
-    move(event: egret.TouchEvent): void;
-    up(event: egret.TouchEvent): void;
-    findControlByType(type: any): any;
-    applyDynamicControls(event: any): void;
-    getDynamicControl(): any;
-    containsPoint(x: number, y: number): boolean;
-    private getDisplayByName(name);
-    inter(): egret.Rectangle;
-    selectImage(x: number, y: number): boolean;
-    private addResources(index);
-    render(): void;
-    clear(): void;
-    reset(): void;
-    drawDisplayList(): void;
-}
-/**
  * 转盘组件
  */
 declare class CircleSector extends eui.Group implements BaseUI, IUUContainer {
@@ -263,6 +251,21 @@ declare class CircleSector extends eui.Group implements BaseUI, IUUContainer {
      * 画弧形方法
      */
     drawArc(mc: egret.Shape, x?: number, y?: number, r?: number, angle?: number, startFrom?: number, color?: number): void;
+}
+interface uiData {
+    id: string;
+    name: string;
+    url?: string;
+}
+/**
+ * 声音组件
+ */
+declare class SoundButton extends eui.Button implements BaseUI {
+    data: uiData;
+    static uuType: UUType;
+    constructor();
+    private onAddToStage(event);
+    private init();
 }
 declare class Transformable {
     width: number;
