@@ -16,8 +16,18 @@ class Picture {
 
 
     draw (container) {
+        console.log('Picture draw...');
+        let data = this.image.data;
+        if(data.type == 1){
+            data.props = data.props || {};
+            let { size, textColor } = data.props;              
+            this.image.text = data.content;
+            this.image.textColor = textColor || 0x000000;
+            this.image.size = size || 40;
+        }
         var m = this.transform.matrix;
         this.image.matrix = new egret.Matrix(m.a,m.b,m.c,m.d,m.x,m.y);
+        
         container.addChild(this.image);
     }
 

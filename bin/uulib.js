@@ -642,6 +642,15 @@ var Picture = (function () {
         // if(this.image.data.pro)
     }
     Picture.prototype.draw = function (container) {
+        console.log('Picture draw...');
+        var data = this.image.data;
+        if (data.type == 1) {
+            data.props = data.props || {};
+            var _a = data.props, size = _a.size, textColor = _a.textColor;
+            this.image.text = data.content;
+            this.image.textColor = textColor || 0x000000;
+            this.image.size = size || 40;
+        }
         var m = this.transform.matrix;
         this.image.matrix = new egret.Matrix(m.a, m.b, m.c, m.d, m.x, m.y);
         container.addChild(this.image);
@@ -1172,6 +1181,28 @@ var TransformTool = (function () {
         this.lineWidth = 2;
         this.container = container;
     }
+    TransformTool.prototype.addMask = function () {
+        this.removeMask();
+        var _a = this.preTarget, height = _a.height, width = _a.width, matrix = _a.matrix;
+        var a = matrix.a, b = matrix.b, c = matrix.c, d = matrix.d, x = matrix.x, y = matrix.y;
+        var newMatrix = new egret.Matrix(a, b, c, d, x, y);
+        this.targetMask = new egret.Shape();
+        this.targetMask.graphics.lineStyle(2, 0x1593ff);
+        this.targetMask.graphics.beginFill(0x000000, .3);
+        this.targetMask.graphics.drawRect(0, 0, width, height);
+        this.targetMask.graphics.endFill();
+        this.targetMask.matrix = newMatrix;
+        this.container.addChild(this.targetMask);
+    };
+    TransformTool.prototype.removeMask = function () {
+        if (!this.targetMask)
+            return;
+        this.container.removeChild(this.targetMask);
+        this.targetMask = null;
+    };
+    TransformTool.prototype.setPreTarget = function (preTarget) {
+        this.preTarget = preTarget;
+    };
     TransformTool.prototype.setTarget = function (target) {
         if (this.target === target) {
             return;

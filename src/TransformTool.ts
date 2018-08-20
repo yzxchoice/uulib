@@ -4,6 +4,8 @@
 class TransformTool {
     protected container:any;
     public target:any;
+    public preTarget:any;
+    public targetMask: egret.Shape;
 
     // transform interaction
 	// where interaction starts
@@ -46,6 +48,30 @@ class TransformTool {
 
     constructor (container: any) {
         this.container = container;
+    }
+
+    addMask(){
+        this.removeMask();
+        let { height, width, matrix } = this.preTarget;
+        let { a, b, c, d, x, y } = matrix;
+        let newMatrix = new egret.Matrix(a,b,c,d,x,y);
+        this.targetMask = new egret.Shape();
+        this.targetMask.graphics.lineStyle(2, 0x1593ff);
+        this.targetMask.graphics.beginFill(0x000000, .3);
+        this.targetMask.graphics.drawRect(0,0,width,height);
+        this.targetMask.graphics.endFill();
+        this.targetMask.matrix = newMatrix;  
+        this.container.addChild(this.targetMask);      
+    }
+
+    removeMask(){
+        if(!this.targetMask) return;
+        this.container.removeChild(this.targetMask);   
+        this.targetMask = null;           
+    }
+
+    setPreTarget(preTarget){
+        this.preTarget = preTarget;
     }
 
     setTarget (target: any) {

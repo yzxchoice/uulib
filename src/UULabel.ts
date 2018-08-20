@@ -14,7 +14,7 @@ class UULabel extends eui.Label implements ILabel {
 
     text: string = '双击此处进行编辑'
 
-    textColor: number = 0xff000
+    textColor: any = 0xff000
 
     size: number = 16
 
