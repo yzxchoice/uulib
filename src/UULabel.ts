@@ -4,7 +4,7 @@ interface ILabel extends IUUBase {
     textColor?: number,
     size?: number,
     lineSpacing?: number,
-    textAlign?: string,
+    textAlign?: string
 }
 /**
  * 文字组件
