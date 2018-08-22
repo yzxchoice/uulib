@@ -402,7 +402,7 @@ class TransformTool {
         var m = this.endMatrix;
         this.regX = m.x + m.a * x + m.c * y;
         this.regY = m.y + m.d * y + m.b * x;
-        console.log(this.regX, this.regY);
+        // console.log(this.regX, this.regY);
     }
 
     updateTransform () {
