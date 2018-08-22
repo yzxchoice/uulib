@@ -389,7 +389,7 @@ declare class UULabel extends eui.Label implements ILabel {
     data: any;
     layerName: string;
     text: string;
-    textColor: any;
+    textColor: number;
     size: number;
     lineSpacing: 12;
     textAlign: string;

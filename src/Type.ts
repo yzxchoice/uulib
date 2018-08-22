@@ -26,6 +26,8 @@ enum UUType {
     FRAME = 102
 }
 
+
+
 interface IUUBase {
     /**
      * 组件名称
