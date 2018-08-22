@@ -11,6 +11,7 @@ interface ILabel extends IUUBase {
  */
 class UULabel extends eui.Label implements ILabel {
     data: any;
+    layerName:string = '文字'
 
     text: string = '双击此处进行编辑'
 

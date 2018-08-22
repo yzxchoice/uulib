@@ -326,10 +326,18 @@ class Preview extends eui.Group {
             var t = LayerSet.getLayer(list, elements[i].type)[0];
             var com = LayerSet.createInstance(t,elements[i].props);
             var texture:egret.Texture = RES.getRes(elements[i].name);
-            com.texture = texture;
             com.name = elements[i].id;
             com.data = elements[i];
-            this.displayList.push(new Picture(com, elements[i].matrix, elements[i].type==99?false:true));
+            if(!texture && com.data.hasOwnProperty('src')){
+                RES.getResByUrl("resource/"+elements[i].src, function(texture:egret.Texture):void {
+                    com.texture = texture;
+                    
+                    this.displayList.push(new Picture(com, elements[i].matrix, elements[i].type==99?false:true));
+                }, this, RES.ResourceItem.TYPE_IMAGE);
+            }else {
+                com.texture = texture;
+                this.displayList.push(new Picture(com, elements[i].matrix, elements[i].type==99?false:true));
+            }
             
             
         }

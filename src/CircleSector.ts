@@ -2,8 +2,9 @@
 /**
  * 转盘组件
  */
-class CircleSector extends eui.Group implements BaseUI, IUUContainer {
+class CircleSector extends eui.Group implements IUUBase, IUUContainer {
     data: any;
+    layerName:string = '转盘'
     container: any;
     static uuType = UUType.CIRCLE_SECTOR;
     draw (): void {

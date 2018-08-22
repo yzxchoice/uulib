@@ -34,7 +34,11 @@ interface IUUBase {
     /**
      * 组件数据
      */
-    data: any
+    data: any,
+    /**
+     * 图层名称
+     */
+    layerName?: string
 }
 
 

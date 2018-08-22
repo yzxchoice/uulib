@@ -7,8 +7,9 @@ interface uiData {
 /**
  * 声音组件
  */
-class SoundButton extends eui.Button implements BaseUI {
+class SoundButton extends eui.Button implements IUUBase {
     data: uiData;
+    layerName:string = '声音'
     static uuType = UUType.SOUND;
     constructor () {
         super();

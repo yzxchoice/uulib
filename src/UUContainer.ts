@@ -1,5 +1,5 @@
 // TypeScript file
-class UUContainer extends eui.Group implements BaseUI {
+class UUContainer extends eui.Group implements IUUBase {
     data: any;
     items = [];
     static uuType = UUType.FRAME;

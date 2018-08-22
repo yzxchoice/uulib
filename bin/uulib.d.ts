@@ -80,6 +80,10 @@ interface IUUBase {
      * 组件数据
      */
     data: any;
+    /**
+     * 图层名称
+     */
+    layerName?: string;
 }
 declare class LayerSet {
     static layerClass: any;
@@ -87,40 +91,21 @@ declare class LayerSet {
     static createInstance(layerClass: any, prop: any): any;
     static getLayer(list: any, type: number): any;
 }
+interface uiData {
+    id: string;
+    name: string;
+    url?: string;
+}
 /**
- * 预览
+ * 声音组件
  */
-declare class Preview extends eui.Group {
-    private displayList;
-    tool: any;
-    pages: any[];
-    private pageIndex;
+declare class SoundButton extends eui.Button implements IUUBase {
+    data: uiData;
+    layerName: string;
+    static uuType: UUType;
     constructor();
-    private onAddToStageInit(event);
-    private bindHandlers();
-    private initEui();
-    private displayGroup;
-    private getPages();
-    private pre(event);
-    private next(event);
+    private onAddToStage(event);
     private init();
-    setupTool(): void;
-    private getFrame();
-    down(event: egret.TouchEvent): boolean;
-    move(event: egret.TouchEvent): void;
-    up(event: egret.TouchEvent): void;
-    findControlByType(type: any): any;
-    applyDynamicControls(event: any): void;
-    getDynamicControl(): any;
-    containsPoint(x: number, y: number): boolean;
-    private getDisplayByName(name);
-    inter(): egret.Rectangle;
-    selectImage(x: number, y: number): boolean;
-    private addResources(index);
-    render(): void;
-    clear(): void;
-    reset(): void;
-    drawDisplayList(): void;
 }
 /**
  * 自定义操作框
@@ -133,9 +118,6 @@ declare class ControlSet {
     static getUniformScaler(): any[];
     static getScalerWithRotate(): any[];
     static getDynamic(): any[];
-}
-declare class Demo {
-    constructor();
 }
 declare class EgretControl extends Control {
     private controlShape;
@@ -228,10 +210,46 @@ declare class Picture {
     undraw(container: any): void;
 }
 /**
+ * 预览
+ */
+declare class Preview extends eui.Group {
+    private displayList;
+    tool: any;
+    pages: any[];
+    private pageIndex;
+    constructor();
+    private onAddToStageInit(event);
+    private bindHandlers();
+    private initEui();
+    private displayGroup;
+    private getPages();
+    private pre(event);
+    private next(event);
+    private init();
+    setupTool(): void;
+    private getFrame();
+    down(event: egret.TouchEvent): boolean;
+    move(event: egret.TouchEvent): void;
+    up(event: egret.TouchEvent): void;
+    findControlByType(type: any): any;
+    applyDynamicControls(event: any): void;
+    getDynamicControl(): any;
+    containsPoint(x: number, y: number): boolean;
+    private getDisplayByName(name);
+    inter(): egret.Rectangle;
+    selectImage(x: number, y: number): boolean;
+    private addResources(index);
+    render(): void;
+    clear(): void;
+    reset(): void;
+    drawDisplayList(): void;
+}
+/**
  * 转盘组件
  */
-declare class CircleSector extends eui.Group implements BaseUI, IUUContainer {
+declare class CircleSector extends eui.Group implements IUUBase, IUUContainer {
     data: any;
+    layerName: string;
     container: any;
     static uuType: UUType;
     draw(): void;
@@ -251,21 +269,6 @@ declare class CircleSector extends eui.Group implements BaseUI, IUUContainer {
      * 画弧形方法
      */
     drawArc(mc: egret.Shape, x?: number, y?: number, r?: number, angle?: number, startFrom?: number, color?: number): void;
-}
-interface uiData {
-    id: string;
-    name: string;
-    url?: string;
-}
-/**
- * 声音组件
- */
-declare class SoundButton extends eui.Button implements BaseUI {
-    data: uiData;
-    static uuType: UUType;
-    constructor();
-    private onAddToStage(event);
-    private init();
 }
 declare class Transformable {
     width: number;
@@ -344,17 +347,19 @@ declare class BaseUI {
 /**
  * 背景
  */
-declare class UUBackground extends eui.Image implements BaseUI {
+declare class UUBackground extends eui.Image implements IUUBase {
     data: any;
+    layerName: string;
     static uuType: UUType;
 }
 /**
  * 图形基类
  */
-declare class UUBitmap extends egret.Bitmap implements BaseUI {
+declare class UUBitmap extends egret.Bitmap implements IUUBase {
     data: any;
+    layerName: string;
 }
-declare class UUContainer extends eui.Group implements BaseUI {
+declare class UUContainer extends eui.Group implements IUUBase {
     data: any;
     items: any[];
     static uuType: UUType;
@@ -365,8 +370,9 @@ declare class UUContainer extends eui.Group implements BaseUI {
 /**
  * 图片组件
  */
-declare class UUImage extends eui.Image implements BaseUI {
+declare class UUImage extends eui.Image implements IUUBase {
     data: any;
+    layerName: string;
     static uuType: UUType;
 }
 interface ILabel extends IUUBase {
@@ -381,6 +387,7 @@ interface ILabel extends IUUBase {
  */
 declare class UULabel extends eui.Label implements ILabel {
     data: any;
+    layerName: string;
     text: string;
     textColor: any;
     size: number;
