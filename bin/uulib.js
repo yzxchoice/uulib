@@ -643,15 +643,6 @@ var Picture = (function () {
         // if(this.image.data.pro)
     }
     Picture.prototype.draw = function (container) {
-        console.log('Picture draww22223333...');
-        // let data = this.image.data;
-        // if(data.type == 1){
-        //     data.props = data.props || {};
-        //     let { size, textColor } = data.props;              
-        //     this.image.text = data.content;
-        //     this.image.textColor = textColor || 0x000000;
-        //     this.image.size = size || 40;
-        // }
         var m = this.transform.matrix;
         this.image.matrix = new egret.Matrix(m.a, m.b, m.c, m.d, m.x, m.y);
         container.addChild(this.image);
@@ -950,38 +941,10 @@ var Preview = (function (_super) {
         }
         requestAnimationFrame(this.render);
     };
-<<<<<<< HEAD
     Preview.prototype.render = function () {
         this.clear();
         this.drawDisplayList();
         // this.tool.draw();
-=======
-    Mouse.x = 0;
-    Mouse.y = 0;
-    Mouse.START = "touchBegin";
-    Mouse.MOVE = "touchMove";
-    Mouse.END = "touchEnd";
-    return Mouse;
-}());
-__reflect(Mouse.prototype, "Mouse");
-// TypeScript file
-/**
- * 可操作对象容器
- */
-var Picture = (function () {
-    function Picture(image, m, b) {
-        if (b === void 0) { b = true; }
-        this.image = image;
-        this.b = b;
-        var matrix = new Matrix(m.a, m.b, m.c, m.d, m.x, m.y);
-        this.transform = new Transformable(image.width, image.height, matrix, this);
-        // if(this.image.data.pro)
-    }
-    Picture.prototype.draw = function (container) {
-        var m = this.transform.matrix;
-        this.image.matrix = new egret.Matrix(m.a, m.b, m.c, m.d, m.x, m.y);
-        container.addChild(this.image);
->>>>>>> 305395931fc6196c648612522e3ecc8febaaadf9
     };
     Preview.prototype.clear = function () {
         // this.tool.undraw();
