@@ -942,15 +942,6 @@ var Picture = (function () {
         // if(this.image.data.pro)
     }
     Picture.prototype.draw = function (container) {
-        console.log('Picture draww22223333...');
-        // let data = this.image.data;
-        // if(data.type == 1){
-        //     data.props = data.props || {};
-        //     let { size, textColor } = data.props;              
-        //     this.image.text = data.content;
-        //     this.image.textColor = textColor || 0x000000;
-        //     this.image.size = size || 40;
-        // }
         var m = this.transform.matrix;
         this.image.matrix = new egret.Matrix(m.a, m.b, m.c, m.d, m.x, m.y);
         container.addChild(this.image);
@@ -1486,7 +1477,7 @@ var TransformTool = (function () {
         var m = this.endMatrix;
         this.regX = m.x + m.a * x + m.c * y;
         this.regY = m.y + m.d * y + m.b * x;
-        console.log(this.regX, this.regY);
+        // console.log(this.regX, this.regY);
     };
     TransformTool.prototype.updateTransform = function () {
         // apply transforms (pre, post)
