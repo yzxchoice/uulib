@@ -6,6 +6,8 @@ class CircleSector extends eui.Group implements IUUBase, IUUContainer {
     data: any;
     layerName:string = '转盘'
     container: any;
+    width:number = 400;
+    height:number = 400;
     static uuType = UUType.CIRCLE_SECTOR;
     draw (): void {
         
@@ -21,6 +23,13 @@ class CircleSector extends eui.Group implements IUUBase, IUUContainer {
         this.addEventListener(egret.Event.REMOVED_FROM_STAGE, this.onRemoveFromStage, this);
     }
 
+    getProps () {
+        return {
+            width: this.width | 400,
+            height: this.height | 400
+        }
+    }
+
     private onAddToStage (event:egret.Event) {
         this.init();
         this.drawSector(); 
@@ -31,6 +40,8 @@ class CircleSector extends eui.Group implements IUUBase, IUUContainer {
     }
     
     private init () {
+        this.width = 400;
+        this.height = 400;
         this.main.anchorOffsetX = 200;
         this.main.anchorOffsetY = 200;
         this.main.x = 200;

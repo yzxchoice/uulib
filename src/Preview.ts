@@ -79,7 +79,7 @@ class Preview extends eui.Group {
         if(this.pageIndex > 0){
             this.reset();
             this.pageIndex --;
-            this.addResources(this.pageIndex);
+            this.renderResources(this.pageIndex);
             this.render();
         }
     }
@@ -88,13 +88,13 @@ class Preview extends eui.Group {
         if(this.pageIndex < this.pages.length - 1){
             this.reset();
             this.pageIndex ++;
-            this.addResources(this.pageIndex);
+            this.renderResources(this.pageIndex);
             this.render();
         }
     }
 
     private init (): void {
-        this.addResources(this.pageIndex);
+        this.renderResources(this.pageIndex);
         this.setupTool();
 	
         // selects pictures on mouse down
@@ -313,37 +313,27 @@ class Preview extends eui.Group {
         };
     }
 
-    private addResources (index: number): void {
+    async renderResources (index: number) {
         
-        var list = [UULabel, UUImage, UUContainer, SoundButton, CircleSector, UUBackground];
-        var i = 0;
         var elements = this.pages[index].elements;
-        console.log('elements...');
-        console.log(JSON.stringify(elements));
-        // var triggerGroup = this.pages[index].properties.triggerGroup;
         var n = elements.length;
-        for (i=0; i<n; i++){
-            var t = LayerSet.getLayer(list, elements[i].type)[0];
-            var com = LayerSet.createInstance(t,elements[i].props);
+        for (let i=0; i<n; i++){
             var texture:egret.Texture = RES.getRes(elements[i].name);
+                    
+            var t = LayerSet.getLayer(Utils.getComs(), elements[i].type)[0];
+            var com = LayerSet.createInstance(t,elements[i].props);
             com.name = elements[i].id;
             com.data = elements[i];
-            if(!texture && com.data.hasOwnProperty('src')){
-                RES.getResByUrl("resource/"+elements[i].src, function(texture:egret.Texture):void {
-                    com.texture = texture;
-                    
-                    this.displayList.push(new Picture(com, elements[i].matrix, elements[i].type==99?false:true));
-                }, this, RES.ResourceItem.TYPE_IMAGE);
+            if(!texture && (elements[i].type === UUType.IMAGE || elements[i].type === UUType.BACKGROUND)){
+                com.texture = await Utils.getTexture("resource/"+elements[i].src);
             }else {
                 com.texture = texture;
-                this.displayList.push(new Picture(com, elements[i].matrix, elements[i].type==99?false:true));
             }
+            this.displayList.push(new Picture(com, elements[i].matrix, elements[i].type==UUType.BACKGROUND?false:true));
+            requestAnimationFrame(this.render);
             
-            
-        }
-        requestAnimationFrame(this.render);
+        }    
     }
-
     render () {
         this.clear();
         this.drawDisplayList();
