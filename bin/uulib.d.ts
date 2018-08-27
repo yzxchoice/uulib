@@ -315,17 +315,24 @@ declare class CircleSector extends eui.Group implements IUUBase, IUUContainer {
     height: number;
     static uuType: UUType;
     draw(): void;
-    awards: string[];
+    awards: {
+        text: string;
+        url: string;
+    }[];
     private main;
     constructor();
     getProps(): {
-        width: number;
-        height: number;
+        awards: {
+            text: string;
+            url: string;
+        }[];
     };
+    setProps(d: any): void;
     private onAddToStage(event);
     private onRemoveFromStage(event);
     private init();
-    private drawSector();
+    redraw(): void;
+    drawSector(): Promise<void>;
     private down(event);
     private rnd(n, m);
     rotateFn(item: number, txt: string): void;

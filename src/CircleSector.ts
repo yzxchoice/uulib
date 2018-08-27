@@ -13,7 +13,30 @@ class CircleSector extends eui.Group implements IUUBase, IUUContainer {
         
     }
     awards = [    
-            '大保健', '话费10元', '话费20元', '话费30元', '保时捷911', '土豪金项链'
+            {
+                text: '文本1',
+                url: '/assets/1.png'
+            },
+            {
+                text: '文本2',
+                url: '/assets/2.png'
+            },
+            {
+                text: '文本3',
+                url: '/assets/3.png'
+            },
+            {
+                text: '文本4',
+                url: '/assets/4.png'
+            },
+            {
+                text: '文本5',
+                url: '/assets/5.png'
+            },
+            {
+                text: '文本6',
+                url: '/assets/5.png'
+            }
     ];
     private main: eui.Group = new eui.Group();
     constructor () {
@@ -25,9 +48,12 @@ class CircleSector extends eui.Group implements IUUBase, IUUContainer {
 
     getProps () {
         return {
-            width: this.width | 400,
-            height: this.height | 400
+            awards: this.awards
         }
+    }
+
+    setProps (d) {
+        this.awards = d;
     }
 
     private onAddToStage (event:egret.Event) {
@@ -56,7 +82,12 @@ class CircleSector extends eui.Group implements IUUBase, IUUContainer {
         this.addChild(this.main);
     }
 
-    private drawSector () {
+    redraw () {
+        this.main.removeChildren();
+        this.drawSector();
+    }
+
+    async drawSector () {
         var shape:egret.Shape = new egret.Shape();
         shape.touchEnabled = true;
         this.main.addChild(shape);
@@ -91,7 +122,7 @@ class CircleSector extends eui.Group implements IUUBase, IUUContainer {
             // s.graphics.drawRect(0, 0, g.width, g.height);
             // s.graphics.endFill();
             // g.addChild(s);
-            var label: eui.Label = new eui.Label(this.awards[i]);
+            var label: eui.Label = new eui.Label(this.awards[i].text);
             label.textColor = 0xE5302F;
             label.size = 18;
             // label.horizontalCenter = 50;
@@ -99,8 +130,9 @@ class CircleSector extends eui.Group implements IUUBase, IUUContainer {
             label.y = 10;
             g.addChild(label);
             var img: egret.Bitmap = new egret.Bitmap();
-            var texture:egret.Texture = RES.getRes((i%5+1)+"_png");
-            img.texture = texture;
+            // var texture:egret.Texture = RES.getRes((i%5+1)+"_png");
+            var t = await Utils.getTexture("resource/"+this.awards[i].url);
+            img.texture = <egret.Texture>t;
             img.x = - img.width / 2;
             img.y = label.height + 20;
             g.addChild(img);
@@ -120,7 +152,7 @@ class CircleSector extends eui.Group implements IUUBase, IUUContainer {
 
     private down (event: egret.TouchEvent) {
         var item = this.rnd(1,this.awards.length);
-        this.rotateFn(item, this.awards[item-1]);
+        this.rotateFn(item, this.awards[item-1].text);
     }
 
     private rnd(n, m){

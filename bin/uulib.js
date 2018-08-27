@@ -1036,7 +1036,30 @@ var CircleSector = (function (_super) {
         _this.width = 400;
         _this.height = 400;
         _this.awards = [
-            '大保健', '话费10元', '话费20元', '话费30元', '保时捷911', '土豪金项链'
+            {
+                text: '文本1',
+                url: '/assets/1.png'
+            },
+            {
+                text: '文本2',
+                url: '/assets/2.png'
+            },
+            {
+                text: '文本3',
+                url: '/assets/3.png'
+            },
+            {
+                text: '文本4',
+                url: '/assets/4.png'
+            },
+            {
+                text: '文本5',
+                url: '/assets/5.png'
+            },
+            {
+                text: '文本6',
+                url: '/assets/5.png'
+            }
         ];
         _this.main = new eui.Group();
         _this.touchEnabled = false;
@@ -1048,9 +1071,11 @@ var CircleSector = (function (_super) {
     };
     CircleSector.prototype.getProps = function () {
         return {
-            width: this.width | 400,
-            height: this.height | 400
+            awards: this.awards
         };
+    };
+    CircleSector.prototype.setProps = function (d) {
+        this.awards = d;
     };
     CircleSector.prototype.onAddToStage = function (event) {
         this.init();
@@ -1075,62 +1100,78 @@ var CircleSector = (function (_super) {
         this.main.addChild(s);
         this.addChild(this.main);
     };
+    CircleSector.prototype.redraw = function () {
+        this.main.removeChildren();
+        this.drawSector();
+    };
     CircleSector.prototype.drawSector = function () {
-        var shape = new egret.Shape();
-        shape.touchEnabled = true;
-        this.main.addChild(shape);
-        var arc = 360 / this.awards.length;
-        var lastAngle = 0;
-        var r = 200;
-        var fillStyle = 0xffffff;
-        var strokeStyle = 0x007eff;
-        var lineWidth = 2;
-        for (var i = 0; i < this.awards.length; i++) {
-            if (i % 2 === 0)
-                fillStyle = 0xFFFFFF;
-            else
-                fillStyle = 0xFD5757;
-            lastAngle = i * arc;
-            this.drawArc(shape, r, r, r, arc, lastAngle, fillStyle);
-            var g = new eui.Group();
-            g.width = 2 * r * Math.sin(arc * 2 * Math.PI / 360 / 2);
-            g.height = r;
-            g.x = 200 + Math.cos(lastAngle * Math.PI / 180 + arc * Math.PI / 180 / 2) * 200;
-            g.y = 200 + Math.sin(lastAngle * Math.PI / 180 + arc * Math.PI / 180 / 2) * 200;
-            g.touchEnabled = false;
-            g.rotation = (lastAngle * Math.PI / 180 + arc * Math.PI / 180 / 2 + Math.PI / 2) * 180 / Math.PI;
-            // var s: egret.Shape = new egret.Shape();
-            // s.graphics.beginFill(0x000000, 0);
-            // s.graphics.lineStyle(1, 0xf2f2f2);
-            // s.graphics.drawRect(0, 0, g.width, g.height);
-            // s.graphics.endFill();
-            // g.addChild(s);
-            var label = new eui.Label(this.awards[i]);
-            label.textColor = 0xE5302F;
-            label.size = 18;
-            // label.horizontalCenter = 50;
-            label.x = -label.width / 2;
-            label.y = 10;
-            g.addChild(label);
-            var img = new egret.Bitmap();
-            var texture = RES.getRes((i % 5 + 1) + "_png");
-            img.texture = texture;
-            img.x = -img.width / 2;
-            img.y = label.height + 20;
-            g.addChild(img);
-            this.main.addChild(g);
-        }
-        var jt = new eui.Image();
-        var texture = RES.getRes("jt2_png");
-        jt.texture = texture;
-        jt.horizontalCenter = 0;
-        jt.verticalCenter = 0;
-        jt.addEventListener(Mouse.START, this.down, this);
-        this.addChild(jt);
+        return __awaiter(this, void 0, void 0, function () {
+            var shape, arc, lastAngle, r, fillStyle, strokeStyle, lineWidth, i, g, label, img, t, jt, texture;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        shape = new egret.Shape();
+                        shape.touchEnabled = true;
+                        this.main.addChild(shape);
+                        arc = 360 / this.awards.length;
+                        lastAngle = 0;
+                        r = 200;
+                        fillStyle = 0xffffff;
+                        strokeStyle = 0x007eff;
+                        lineWidth = 2;
+                        i = 0;
+                        _a.label = 1;
+                    case 1:
+                        if (!(i < this.awards.length)) return [3 /*break*/, 4];
+                        if (i % 2 === 0)
+                            fillStyle = 0xFFFFFF;
+                        else
+                            fillStyle = 0xFD5757;
+                        lastAngle = i * arc;
+                        this.drawArc(shape, r, r, r, arc, lastAngle, fillStyle);
+                        g = new eui.Group();
+                        g.width = 2 * r * Math.sin(arc * 2 * Math.PI / 360 / 2);
+                        g.height = r;
+                        g.x = 200 + Math.cos(lastAngle * Math.PI / 180 + arc * Math.PI / 180 / 2) * 200;
+                        g.y = 200 + Math.sin(lastAngle * Math.PI / 180 + arc * Math.PI / 180 / 2) * 200;
+                        g.touchEnabled = false;
+                        g.rotation = (lastAngle * Math.PI / 180 + arc * Math.PI / 180 / 2 + Math.PI / 2) * 180 / Math.PI;
+                        label = new eui.Label(this.awards[i].text);
+                        label.textColor = 0xE5302F;
+                        label.size = 18;
+                        // label.horizontalCenter = 50;
+                        label.x = -label.width / 2;
+                        label.y = 10;
+                        g.addChild(label);
+                        img = new egret.Bitmap();
+                        return [4 /*yield*/, Utils.getTexture("resource/" + this.awards[i].url)];
+                    case 2:
+                        t = _a.sent();
+                        img.texture = t;
+                        img.x = -img.width / 2;
+                        img.y = label.height + 20;
+                        g.addChild(img);
+                        this.main.addChild(g);
+                        _a.label = 3;
+                    case 3:
+                        i++;
+                        return [3 /*break*/, 1];
+                    case 4:
+                        jt = new eui.Image();
+                        texture = RES.getRes("jt2_png");
+                        jt.texture = texture;
+                        jt.horizontalCenter = 0;
+                        jt.verticalCenter = 0;
+                        jt.addEventListener(Mouse.START, this.down, this);
+                        this.addChild(jt);
+                        return [2 /*return*/];
+                }
+            });
+        });
     };
     CircleSector.prototype.down = function (event) {
         var item = this.rnd(1, this.awards.length);
-        this.rotateFn(item, this.awards[item - 1]);
+        this.rotateFn(item, this.awards[item - 1].text);
     };
     CircleSector.prototype.rnd = function (n, m) {
         var random = Math.floor(Math.random() * (m - n + 1) + n);
