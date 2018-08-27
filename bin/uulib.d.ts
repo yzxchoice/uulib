@@ -79,17 +79,77 @@ interface IUUBase {
     /**
      * 组件数据
      */
-    data: any;
+    data?: any;
     /**
      * 图层名称
      */
     layerName?: string;
+    getProps?(): any;
+    texture?: any;
+}
+interface ILabel {
+    text: string;
+    textColor?: number;
+    size?: number;
+    fontFamily?: string;
+    textAlign?: string;
+    lineSpacing?: number;
+}
+interface ITrigger {
+    delay: number;
+    eventType: number;
+    /**
+     * 触发对象ID
+     */
+    sourceId: string;
+    sourceType?: string;
+    /**
+     * 目标对象ID
+     */
+    targetId: string;
+    targetState?: number;
+    targetType?: string;
+}
+interface IProperty {
+    /**
+     * 事件对象
+     */
+    triggerGroup: Array<ITrigger>;
+}
+interface UUData<T> {
+    id: string;
+    name: string;
+    /**
+     * 页面ID
+     */
+    pageId: number;
+    /**
+     * 图层类型
+     */
+    type: number;
+    /**
+     * 矩阵
+     */
+    matrix: Matrix;
+    /**
+     * 图片url
+     */
+    src?: string;
+    /**
+     * 显示属性
+     */
+    props: T;
+    /**
+     * 事件等操作
+     */
+    properties?: IProperty;
 }
 declare class LayerSet {
     static layerClass: any;
     constructor();
     static createInstance(layerClass: any, prop: any): any;
     static getLayer(list: any, type: number): any;
+    static identity<T>(arg: T): T;
 }
 interface uiData {
     id: string;
@@ -238,7 +298,7 @@ declare class Preview extends eui.Group {
     private getDisplayByName(name);
     inter(): egret.Rectangle;
     selectImage(x: number, y: number): boolean;
-    private addResources(index);
+    renderResources(index: number): Promise<void>;
     render(): void;
     clear(): void;
     reset(): void;
@@ -251,11 +311,17 @@ declare class CircleSector extends eui.Group implements IUUBase, IUUContainer {
     data: any;
     layerName: string;
     container: any;
+    width: number;
+    height: number;
     static uuType: UUType;
     draw(): void;
     awards: string[];
     private main;
     constructor();
+    getProps(): {
+        width: number;
+        height: number;
+    };
     private onAddToStage(event);
     private onRemoveFromStage(event);
     private init();
@@ -344,6 +410,22 @@ declare class BaseUI {
      */
     data: any;
 }
+declare class Utils {
+    constructor();
+    static getComs(): (typeof SoundButton | typeof UULabel | typeof UUImage | typeof UUContainer | typeof CircleSector)[];
+    static getTexture(url: string): Promise<{}>;
+    static trans(arr: Array<any>, templateId: number): {
+        "groups": {
+            "keys": string;
+            "name": string;
+        }[];
+        "resources": {
+            "url": string;
+            "type": string;
+            "name": string;
+        }[];
+    };
+}
 /**
  * 背景
  */
@@ -362,10 +444,16 @@ declare class UUBitmap extends egret.Bitmap implements IUUBase {
 declare class UUContainer extends eui.Group implements IUUBase {
     data: any;
     items: any[];
+    width: number;
+    height: number;
     static uuType: UUType;
     constructor();
     private onAddToStage(event);
     private init();
+    getProps(): {
+        width: number;
+        height: number;
+    };
 }
 /**
  * 图片组件
@@ -375,27 +463,23 @@ declare class UUImage extends eui.Image implements IUUBase {
     layerName: string;
     static uuType: UUType;
 }
-interface ILabel extends IUUBase {
-    text: string;
-    textColor?: number;
-    size?: number;
-    lineSpacing?: number;
-    textAlign?: string;
-}
 /**
  * 文字组件
  */
-declare class UULabel extends eui.Label implements ILabel {
-    data: any;
+declare class UULabel extends eui.Label implements IUUBase {
+    data: UUData<ILabel>;
     layerName: string;
     text: string;
-    textColor: any;
+    textColor: number;
     size: number;
+    fontFamily: string;
     lineSpacing: 12;
     textAlign: string;
     name: string;
     static uuType: UUType;
     constructor();
+    getProps(): ILabel;
+    setProps(data: UUData<ILabel>): void;
 }
 declare class UURequest {
     constructor();

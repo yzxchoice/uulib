@@ -26,6 +26,8 @@ enum UUType {
     FRAME = 102
 }
 
+
+
 interface IUUBase {
     /**
      * 组件名称
@@ -34,13 +36,77 @@ interface IUUBase {
     /**
      * 组件数据
      */
-    data: any,
+    data?: any,
     /**
      * 图层名称
      */
-    layerName?: string
+    layerName?: string,
+
+    getProps? (): any,
+
+    texture?: any
 }
 
+interface ILabel {
+    text: string,
+    textColor?: number,
+    size?: number,
+    fontFamily?: string,
+    textAlign?: string,
+    lineSpacing?: number
+}
+
+interface ITrigger {
+    delay: number,
+    eventType: number,
+    /**
+     * 触发对象ID
+     */
+    sourceId: string,
+    sourceType?: string,
+    /**
+     * 目标对象ID
+     */
+    targetId: string,
+    targetState?: number,
+    targetType?: string
+}
+
+interface IProperty {
+    /**
+     * 事件对象
+     */
+    triggerGroup: Array<ITrigger>
+}
+
+interface UUData<T> {
+    id: string,
+    name: string,
+    /**
+     * 页面ID
+     */
+    pageId: number,
+    /**
+     * 图层类型
+     */
+    type: number,
+    /**
+     * 矩阵
+     */
+    matrix: Matrix,
+    /**
+     * 图片url
+     */
+    src?: string,
+    /**
+     * 显示属性
+     */
+    props: T,
+    /**
+     * 事件等操作
+     */
+    properties?: IProperty
+}
 
 
 class LayerSet {
@@ -64,6 +130,14 @@ class LayerSet {
             return item.uuType == type;
         })
     }
+
+    static identity<T> (arg: T): T {
+        return arg;
+    }
+
+    // static getInstance () {
+    //     let m: UUData<ILabel> = this.identity;
+    // }
 
     // static createInstance<A>(c: new () => A, prop: any): A {
     //     var translater = new c();

@@ -1,23 +1,18 @@
 // TypeScript file
-interface ILabel extends IUUBase {
-    text: string,
-    textColor?: number,
-    size?: number,
-    lineSpacing?: number,
-    textAlign?: string
-}
+
 /**
  * 文字组件
  */
-class UULabel extends eui.Label implements ILabel {
-    data: any;
+class UULabel extends eui.Label implements IUUBase {
+    data: UUData<ILabel>;
     layerName:string = '文字'
 
-    text: string = '双击此处进行编辑'
+    text: string = '请输入文本'
 
-    textColor: any = 0xff000
+    textColor: number = 0x000000
 
-    size: number = 16
+    size: number = 40
+    fontFamily: string = 'Arial'
 
     lineSpacing: 12
 
@@ -31,5 +26,21 @@ class UULabel extends eui.Label implements ILabel {
         super();
     }
 
-    
+    getProps (): ILabel {
+        return {
+            text: this.text,
+            textColor: this.textColor,
+            size: this.size,
+            fontFamily: this.fontFamily
+            // textAlign: this.textAlign,
+            // lineSpacing: this.lineSpacing
+        }
+    }
+
+    setProps (data: UUData<ILabel>) {
+        this.text = data.props.text;
+        this.textColor = data.props.textColor;
+        this.size = data.props.size;
+        this.fontFamily = data.props.fontFamily;
+    }
 }

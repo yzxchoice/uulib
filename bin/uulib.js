@@ -8,6 +8,41 @@ var __extends = this && this.__extends || function __extends(t, e) {
 for (var i in e) e.hasOwnProperty(i) && (t[i] = e[i]);
 r.prototype = e.prototype, t.prototype = new r();
 };
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (this && this.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (_) try {
+            if (f = 1, y && (t = y[op[0] & 2 ? "return" : op[0] ? "throw" : "next"]) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [0, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
 /**
  * transform 枚举
  */
@@ -230,6 +265,9 @@ var LayerSet = (function () {
         return list.filter(function (item) {
             return item.uuType == type;
         });
+    };
+    LayerSet.identity = function (arg) {
+        return arg;
     };
     return LayerSet;
 }());
@@ -720,7 +758,7 @@ var Preview = (function (_super) {
         if (this.pageIndex > 0) {
             this.reset();
             this.pageIndex--;
-            this.addResources(this.pageIndex);
+            this.renderResources(this.pageIndex);
             this.render();
         }
     };
@@ -728,12 +766,12 @@ var Preview = (function (_super) {
         if (this.pageIndex < this.pages.length - 1) {
             this.reset();
             this.pageIndex++;
-            this.addResources(this.pageIndex);
+            this.renderResources(this.pageIndex);
             this.render();
         }
     };
     Preview.prototype.init = function () {
-        this.addResources(this.pageIndex);
+        this.renderResources(this.pageIndex);
         this.setupTool();
         // selects pictures on mouse down
         this.addEventListener(Mouse.START, this.down, this);
@@ -914,32 +952,43 @@ var Preview = (function (_super) {
         }
         ;
     };
-    Preview.prototype.addResources = function (index) {
-        var list = [UULabel, UUImage, UUContainer, SoundButton, CircleSector, UUBackground];
-        var i = 0;
-        var elements = this.pages[index].elements;
-        console.log('elements...');
-        console.log(JSON.stringify(elements));
-        // var triggerGroup = this.pages[index].properties.triggerGroup;
-        var n = elements.length;
-        for (i = 0; i < n; i++) {
-            var t = LayerSet.getLayer(list, elements[i].type)[0];
-            var com = LayerSet.createInstance(t, elements[i].props);
-            var texture = RES.getRes(elements[i].name);
-            com.name = elements[i].id;
-            com.data = elements[i];
-            if (!texture && com.data.hasOwnProperty('src')) {
-                RES.getResByUrl("resource/" + elements[i].src, function (texture) {
-                    com.texture = texture;
-                    this.displayList.push(new Picture(com, elements[i].matrix, elements[i].type == 99 ? false : true));
-                }, this, RES.ResourceItem.TYPE_IMAGE);
-            }
-            else {
-                com.texture = texture;
-                this.displayList.push(new Picture(com, elements[i].matrix, elements[i].type == 99 ? false : true));
-            }
-        }
-        requestAnimationFrame(this.render);
+    Preview.prototype.renderResources = function (index) {
+        return __awaiter(this, void 0, void 0, function () {
+            var elements, n, i, texture, t, com, _a;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        elements = this.pages[index].elements;
+                        n = elements.length;
+                        i = 0;
+                        _b.label = 1;
+                    case 1:
+                        if (!(i < n)) return [3 /*break*/, 6];
+                        texture = RES.getRes(elements[i].name);
+                        t = LayerSet.getLayer(Utils.getComs(), elements[i].type)[0];
+                        com = LayerSet.createInstance(t, elements[i].props);
+                        com.name = elements[i].id;
+                        com.data = elements[i];
+                        if (!(!texture && (elements[i].type === UUType.IMAGE || elements[i].type === UUType.BACKGROUND))) return [3 /*break*/, 3];
+                        _a = com;
+                        return [4 /*yield*/, Utils.getTexture("resource/" + elements[i].src)];
+                    case 2:
+                        _a.texture = _b.sent();
+                        return [3 /*break*/, 4];
+                    case 3:
+                        com.texture = texture;
+                        _b.label = 4;
+                    case 4:
+                        this.displayList.push(new Picture(com, elements[i].matrix, elements[i].type == UUType.BACKGROUND ? false : true));
+                        requestAnimationFrame(this.render);
+                        _b.label = 5;
+                    case 5:
+                        i++;
+                        return [3 /*break*/, 1];
+                    case 6: return [2 /*return*/];
+                }
+            });
+        });
     };
     Preview.prototype.render = function () {
         this.clear();
@@ -984,6 +1033,8 @@ var CircleSector = (function (_super) {
     function CircleSector() {
         var _this = _super.call(this) || this;
         _this.layerName = '转盘';
+        _this.width = 400;
+        _this.height = 400;
         _this.awards = [
             '大保健', '话费10元', '话费20元', '话费30元', '保时捷911', '土豪金项链'
         ];
@@ -995,6 +1046,12 @@ var CircleSector = (function (_super) {
     }
     CircleSector.prototype.draw = function () {
     };
+    CircleSector.prototype.getProps = function () {
+        return {
+            width: this.width | 400,
+            height: this.height | 400
+        };
+    };
     CircleSector.prototype.onAddToStage = function (event) {
         this.init();
         this.drawSector();
@@ -1003,6 +1060,8 @@ var CircleSector = (function (_super) {
         this.dispose();
     };
     CircleSector.prototype.init = function () {
+        this.width = 400;
+        this.height = 400;
         this.main.anchorOffsetX = 200;
         this.main.anchorOffsetY = 200;
         this.main.x = 200;
@@ -1566,6 +1625,54 @@ var BaseUI = (function () {
     return BaseUI;
 }());
 __reflect(BaseUI.prototype, "BaseUI");
+var Utils = (function () {
+    function Utils() {
+    }
+    Utils.getComs = function () {
+        return [UULabel, UUImage, UUContainer, SoundButton, CircleSector, UUBackground];
+    };
+    Utils.getTexture = function (url) {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            RES.getResByUrl(url, function (texture) {
+                resolve(texture);
+            }, _this, RES.ResourceItem.TYPE_IMAGE);
+        });
+    };
+    Utils.trans = function (arr, templateId) {
+        var obj = {
+            "groups": [
+                {
+                    "keys": "data_json",
+                    "name": "preloadpic"
+                }
+            ],
+            "resources": [
+                {
+                    "url": templateId + "/data.json",
+                    "type": "json",
+                    "name": "data_json"
+                }
+            ]
+        };
+        arr.forEach(function (item, index) {
+            item.elements.forEach(function (elem) {
+                if (elem.hasOwnProperty('src') && elem.src != '') {
+                    var n = elem.src.substring(elem.src.lastIndexOf("/") + 1).replace('.', '_');
+                    obj.resources.push({
+                        url: elem.src,
+                        type: 'image',
+                        name: n
+                    });
+                    obj.groups[0].keys = obj.groups[0].keys == '' ? n : obj.groups[0].keys + ',' + n;
+                }
+            });
+        });
+        return obj;
+    };
+    return Utils;
+}());
+__reflect(Utils.prototype, "Utils");
 // TypeScript file
 /**
  * 背景
@@ -1601,6 +1708,8 @@ var UUContainer = (function (_super) {
     function UUContainer() {
         var _this = _super.call(this) || this;
         _this.items = [];
+        _this.width = 300;
+        _this.height = 300;
         _this.addEventListener(egret.Event.ADDED_TO_STAGE, _this.onAddToStage, _this);
         return _this;
     }
@@ -1608,12 +1717,20 @@ var UUContainer = (function (_super) {
         this.init();
     };
     UUContainer.prototype.init = function () {
+        this.width = 300;
+        this.height = 300;
         var bg = new egret.Shape;
         bg.graphics.lineStyle(1, 0x999999);
         bg.graphics.beginFill(0xffffff, 1);
         bg.graphics.drawRect(0, 0, this.width, this.height);
         bg.graphics.endFill();
         this.addChild(bg);
+    };
+    UUContainer.prototype.getProps = function () {
+        return {
+            width: this.width | 300,
+            height: this.height | 300
+        };
     };
     UUContainer.uuType = UUType.FRAME;
     return UUContainer;
@@ -1634,6 +1751,7 @@ var UUImage = (function (_super) {
     return UUImage;
 }(eui.Image));
 __reflect(UUImage.prototype, "UUImage", ["IUUBase"]);
+// TypeScript file
 /**
  * 文字组件
  */
@@ -1642,17 +1760,34 @@ var UULabel = (function (_super) {
     function UULabel() {
         var _this = _super.call(this) || this;
         _this.layerName = '文字';
-        _this.text = '双击此处进行编辑';
-        _this.textColor = 0xff000;
-        _this.size = 16;
+        _this.text = '请输入文本';
+        _this.textColor = 0x000000;
+        _this.size = 40;
+        _this.fontFamily = 'Arial';
         _this.textAlign = egret.HorizontalAlign.JUSTIFY;
         _this.name = '';
         return _this;
     }
+    UULabel.prototype.getProps = function () {
+        return {
+            text: this.text,
+            textColor: this.textColor,
+            size: this.size,
+            fontFamily: this.fontFamily
+            // textAlign: this.textAlign,
+            // lineSpacing: this.lineSpacing
+        };
+    };
+    UULabel.prototype.setProps = function (data) {
+        this.text = data.props.text;
+        this.textColor = data.props.textColor;
+        this.size = data.props.size;
+        this.fontFamily = data.props.fontFamily;
+    };
     UULabel.uuType = UUType.TEXT;
     return UULabel;
 }(eui.Label));
-__reflect(UULabel.prototype, "UULabel", ["ILabel", "IUUBase"]);
+__reflect(UULabel.prototype, "UULabel", ["IUUBase"]);
 // TypeScript file
 var UURequest = (function () {
     // private req: egret.HttpRequest = new egret.HttpRequest();
