@@ -44,6 +44,9 @@ interface IUUBase {
 
     getProps? (): any,
 
+    /**
+     * 资源类组件 
+     */
     texture?: any
 }
 
@@ -72,11 +75,24 @@ interface ITrigger {
     targetType?: string
 }
 
+/**
+ * 资源对象
+ */
+interface IResource {
+    id?: string,
+    name?: string,
+    url: string
+}
+
 interface IProperty {
     /**
      * 事件对象
      */
-    triggerGroup: Array<ITrigger>
+    triggerGroup: Array<ITrigger>,
+    /**
+     * 页面背景音
+     */
+    music: IResource
 }
 
 interface UUData<T> {
@@ -105,7 +121,12 @@ interface UUData<T> {
     /**
      * 事件等操作
      */
-    properties?: IProperty
+    properties?: IProperty,
+
+    /**
+     * 组件音效
+     */
+    sound?: IResource
 }
 
 

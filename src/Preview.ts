@@ -122,6 +122,15 @@ class Preview extends eui.Group {
 
     down (event: egret.TouchEvent) {
         console.log(event.target);
+        let d: UUData<any> = event.target.data;
+
+        if(d.sound) {
+            Utils.getSound(d.sound.url).then( (res) => {
+                var sound: egret.Sound = <egret.Sound>res;
+                sound.play(0, 1);
+            });
+            
+        }
         if(this.pages[this.pageIndex].hasOwnProperty("properties") && this.pages[this.pageIndex].properties.hasOwnProperty("triggerGroup")){
         
             var triggerGroup = this.pages[this.pageIndex].properties.triggerGroup;

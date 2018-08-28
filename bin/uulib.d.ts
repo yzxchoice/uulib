@@ -85,6 +85,9 @@ interface IUUBase {
      */
     layerName?: string;
     getProps?(): any;
+    /**
+     * 资源类组件
+     */
     texture?: any;
 }
 interface ILabel {
@@ -110,11 +113,23 @@ interface ITrigger {
     targetState?: number;
     targetType?: string;
 }
+/**
+ * 资源对象
+ */
+interface IResource {
+    id?: string;
+    name?: string;
+    url: string;
+}
 interface IProperty {
     /**
      * 事件对象
      */
     triggerGroup: Array<ITrigger>;
+    /**
+     * 页面背景音
+     */
+    music: IResource;
 }
 interface UUData<T> {
     id: string;
@@ -143,6 +158,10 @@ interface UUData<T> {
      * 事件等操作
      */
     properties?: IProperty;
+    /**
+     * 组件音效
+     */
+    sound?: IResource;
 }
 declare class LayerSet {
     static layerClass: any;
@@ -421,6 +440,7 @@ declare class Utils {
     constructor();
     static getComs(): (typeof SoundButton | typeof UULabel | typeof UUImage | typeof UUContainer | typeof CircleSector)[];
     static getTexture(url: string): Promise<{}>;
+    static getSound(url: string): Promise<{}>;
     static trans(arr: Array<any>, templateId: number): {
         "groups": {
             "keys": string;
