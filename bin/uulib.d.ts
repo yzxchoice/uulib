@@ -70,6 +70,10 @@ declare enum UUType {
      * 容器框
      */
     FRAME = 102,
+    /**
+     * 轮播图组件
+     */
+    SLIDESHOW = 103,
 }
 interface IUUBase {
     /**
@@ -324,6 +328,41 @@ declare class Preview extends eui.Group {
     drawDisplayList(): void;
 }
 /**
+ * 轮播图组件
+ */
+declare class Slideshow extends eui.Group implements IUUBase, IUUContainer {
+    data: any;
+    layerName: string;
+    container: any;
+    width: number;
+    height: number;
+    static uuType: UUType;
+    private activeIndex;
+    private duration;
+    private delayed;
+    draw(): void;
+    dispose(): void;
+    awards: {
+        url: string;
+    }[];
+    private imgBox;
+    constructor();
+    getProps(): {
+        awards: {
+            url: string;
+        }[];
+    };
+    setProps(d: any): void;
+    private onAddToStage(event);
+    private onRemoveFromStage(event);
+    private init();
+    private onclickLeft();
+    private onclickRight();
+    private resetLeft();
+    private resetRight();
+    private resetImgBox();
+}
+/**
  * 转盘组件
  */
 declare class CircleSector extends eui.Group implements IUUBase, IUUContainer {
@@ -438,7 +477,7 @@ declare class BaseUI {
 }
 declare class Utils {
     constructor();
-    static getComs(): (typeof SoundButton | typeof UULabel | typeof UUImage | typeof UUContainer | typeof CircleSector)[];
+    static getComs(): (typeof SoundButton | typeof UULabel | typeof UUImage | typeof UUContainer | typeof CircleSector | typeof Slideshow)[];
     static getTexture(url: string): Promise<{}>;
     static getSound(url: string): Promise<{}>;
     static trans(arr: Array<any>, templateId: number): {

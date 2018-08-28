@@ -23,7 +23,11 @@ enum UUType {
     /**
      * 容器框
      */
-    FRAME = 102
+    FRAME = 102,
+    /**
+     * 轮播图组件
+     */
+    SLIDESHOW = 103,
 }
 
 
