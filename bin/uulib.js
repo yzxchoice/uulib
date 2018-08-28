@@ -795,6 +795,13 @@ var Preview = (function (_super) {
     Preview.prototype.down = function (event) {
         var _this = this;
         console.log(event.target);
+        var d = event.target.data;
+        if (d.sound) {
+            Utils.getSound(d.sound.url).then(function (res) {
+                var sound = res;
+                sound.play(0, 1);
+            });
+        }
         if (this.pages[this.pageIndex].hasOwnProperty("properties") && this.pages[this.pageIndex].properties.hasOwnProperty("triggerGroup")) {
             var triggerGroup = this.pages[this.pageIndex].properties.triggerGroup;
             console.log('triggerGroup...');
@@ -1678,6 +1685,16 @@ var Utils = (function () {
             RES.getResByUrl(url, function (texture) {
                 resolve(texture);
             }, _this, RES.ResourceItem.TYPE_IMAGE);
+        });
+    };
+    Utils.getSound = function (url) {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            var sound = new egret.Sound();
+            sound.addEventListener(egret.Event.COMPLETE, function (event) {
+                resolve(event.target);
+            }, _this);
+            sound.load(url);
         });
     };
     Utils.trans = function (arr, templateId) {

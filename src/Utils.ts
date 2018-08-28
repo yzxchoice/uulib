@@ -14,6 +14,16 @@ class Utils {
         })
     }
 
+	static getSound (url: string) {
+		return new Promise( (resolve, reject) => {
+            var sound = new egret.Sound();
+			sound.addEventListener(egret.Event.COMPLETE, (event:egret.Event) => {
+				resolve(event.target);
+			}, this);
+			sound.load(url);
+        })
+	}
+
 	static trans ( arr: Array<any>, templateId: number) {
 
 		var obj = {
