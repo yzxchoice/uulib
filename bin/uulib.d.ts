@@ -102,6 +102,19 @@ interface ILabel {
     textAlign?: string;
     lineSpacing?: number;
 }
+interface CircleSectorItem {
+    text: string;
+    url: string;
+}
+interface ICircleSector {
+    awards: Array<CircleSectorItem>;
+}
+interface SlideshowItem {
+    url: string;
+}
+interface ISlideshow {
+    awards: Array<SlideshowItem>;
+}
 interface ITrigger {
     delay: number;
     eventType: number;
@@ -337,22 +350,23 @@ declare class Slideshow extends eui.Group implements IUUBase, IUUContainer {
     width: number;
     height: number;
     static uuType: UUType;
-    private activeIndex;
+    private _activeIndex;
+    activeIndex: number;
+    private btn_left;
+    private btn_right;
     private duration;
     private delayed;
+    private isAnimating;
     draw(): void;
     dispose(): void;
-    awards: {
-        url: string;
-    }[];
+    awards: Array<SlideshowItem>;
     private imgBox;
     constructor();
     getProps(): {
-        awards: {
-            url: string;
-        }[];
+        awards: SlideshowItem[];
     };
     setProps(d: any): void;
+    redraw(): void;
     private onAddToStage(event);
     private onRemoveFromStage(event);
     private init();
@@ -373,17 +387,11 @@ declare class CircleSector extends eui.Group implements IUUBase, IUUContainer {
     height: number;
     static uuType: UUType;
     draw(): void;
-    awards: {
-        text: string;
-        url: string;
-    }[];
+    awards: CircleSectorItem[];
     private main;
     constructor();
     getProps(): {
-        awards: {
-            text: string;
-            url: string;
-        }[];
+        awards: CircleSectorItem[];
     };
     setProps(d: any): void;
     private onAddToStage(event);

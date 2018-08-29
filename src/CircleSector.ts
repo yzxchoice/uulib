@@ -2,7 +2,7 @@
 /**
  * 转盘组件
  */
-class CircleSector extends eui.Group implements IUUBase, IUUContainer {
+class CircleSector extends eui.Group implements IUUBase, IUUContainer, IUUComponent {
     data: any;
     layerName:string = '转盘'
     container: any;
@@ -12,7 +12,7 @@ class CircleSector extends eui.Group implements IUUBase, IUUContainer {
     draw (): void {
         
     }
-    awards = [    
+    awards: CircleSectorItem[] = [    
             {
                 text: '文本1',
                 url: '/assets/1.png'

@@ -2,23 +2,41 @@
 /**
  * 轮播图组件
  */
-class Slideshow extends eui.Group implements IUUBase, IUUContainer {
+class Slideshow extends eui.Group implements IUUBase, IUUContainer, IUUComponent {
     data: any;
     layerName:string = '轮播图'
     container: any;
     width:number = 600;
     height:number = 400;
     static uuType = UUType.SLIDESHOW;
-    private activeIndex: number = 0;
+    
+    private _activeIndex : number = 0;
+    public get activeIndex() : number {
+        return this._activeIndex;
+    }
+    public set activeIndex(v : number) {
+        this._activeIndex = v;
+        this.btn_left.visible = true;
+        this.btn_right.visible = true;
+        if(v == 0){
+            this.btn_left.visible = false;
+        }   
+        if(v == this.awards.length - 1){
+            this.btn_right.visible = true;
+        }
+    }
+    private btn_left: eui.Button;
+    private btn_right: eui.Button;
     private duration: number = 500;
     private delayed: number = 100; 
+    private isAnimating: boolean = false;
     draw (): void {
         
     }
 	dispose(){
 
 	}
-    awards = [    
+    awards: Array<SlideshowItem> = [    
 		{
 			url: '/assets/pic/post_item_44.png'
 		},
@@ -53,6 +71,10 @@ class Slideshow extends eui.Group implements IUUBase, IUUContainer {
         this.awards = d;
     }
 
+    redraw () {
+        this.resetImgBox();
+    }
+
     private onAddToStage (event:egret.Event) {
 		this.init()
     }
@@ -62,6 +84,7 @@ class Slideshow extends eui.Group implements IUUBase, IUUContainer {
     }
 
 	private async init(){
+        console.log('Slideshow init ...');
 		var hLayout:eui.HorizontalLayout = new eui.HorizontalLayout();
         hLayout.gap = 10;
         hLayout.paddingTop = 30;
@@ -73,11 +96,13 @@ class Slideshow extends eui.Group implements IUUBase, IUUContainer {
 		btn_left.label = 'left';
         btn_left.enabled = true;
         btn_left.addEventListener(egret.TouchEvent.TOUCH_TAP, this.onclickLeft, this);
+        this.btn_left = btn_left;
 		let btn_right = new eui.Button();
         btn_right.width = 80;
 		btn_right.label = 'right';
         btn_right.enabled = true;        
         btn_right.addEventListener(egret.TouchEvent.TOUCH_TAP, this.onclickRight, this);        
+        this.btn_right = btn_right;
 		let group = new eui.Group();
         group.width = 600;
         group.height = 400;
@@ -85,10 +110,14 @@ class Slideshow extends eui.Group implements IUUBase, IUUContainer {
 		this.resetImgBox();
 		this.addChild(btn_left);
 		this.addChild(group);
-		this.addChild(btn_right);		
+		this.addChild(btn_right);
+        btn_left.visible = false;        
+        this.mask = new egret.Rectangle(0,0,this.width,this.height);
 	}
     private onclickLeft(){
         if(this.activeIndex <= 0) return;
+        if(this.isAnimating) return;
+        this.isAnimating = true;
         let image = this.imgBox.getChildAt(0);
         var tw = egret.Tween.get( image );
         tw.to( { x:image.width }, this.duration )
@@ -99,13 +128,16 @@ class Slideshow extends eui.Group implements IUUBase, IUUContainer {
                         setTimeout(() => {
                             this.activeIndex -= 1;
                             this.resetLeft();
+                            this.isAnimating = false;
                         }, 10);
                     })
             } )
             .wait( this.delayed );
     }
     private onclickRight(){
-        if(this.activeIndex >= this.awards.length) return;
+        if(this.activeIndex >= this.awards.length - 1) return;
+        if(this.isAnimating) return;  
+        this.isAnimating = true;              
         let image = this.imgBox.getChildAt(this.imgBox.numChildren - 1);
         var tw = egret.Tween.get( image );
         tw.to( { x:image.width }, this.duration )
@@ -116,6 +148,7 @@ class Slideshow extends eui.Group implements IUUBase, IUUContainer {
                         setTimeout(() => {
                             this.activeIndex += 1;
                             this.resetRight();
+                            this.isAnimating = false;                            
                         }, 10);
                     })
             } )

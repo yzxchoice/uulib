@@ -1046,9 +1046,10 @@ var Slideshow = (function (_super) {
         _this.layerName = '轮播图';
         _this.width = 600;
         _this.height = 400;
-        _this.activeIndex = 0;
+        _this._activeIndex = 0;
         _this.duration = 500;
         _this.delayed = 100;
+        _this.isAnimating = false;
         _this.awards = [
             {
                 url: '/assets/pic/post_item_44.png'
@@ -1071,6 +1072,24 @@ var Slideshow = (function (_super) {
         _this.addEventListener(egret.Event.REMOVED_FROM_STAGE, _this.onRemoveFromStage, _this);
         return _this;
     }
+    Object.defineProperty(Slideshow.prototype, "activeIndex", {
+        get: function () {
+            return this._activeIndex;
+        },
+        set: function (v) {
+            this._activeIndex = v;
+            this.btn_left.visible = true;
+            this.btn_right.visible = true;
+            if (v == 0) {
+                this.btn_left.visible = false;
+            }
+            if (v == this.awards.length) {
+                this.btn_right.visible = true;
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
     Slideshow.prototype.draw = function () {
     };
     Slideshow.prototype.dispose = function () {
@@ -1081,7 +1100,11 @@ var Slideshow = (function (_super) {
         };
     };
     Slideshow.prototype.setProps = function (d) {
+        this.imgBox.removeChildren();
         this.awards = d;
+    };
+    Slideshow.prototype.redraw = function () {
+        this.resetImgBox();
     };
     Slideshow.prototype.onAddToStage = function (event) {
         this.init();
@@ -1092,6 +1115,7 @@ var Slideshow = (function (_super) {
         return __awaiter(this, void 0, void 0, function () {
             var hLayout, btn_left, btn_right, group;
             return __generator(this, function (_a) {
+                console.log('Slideshow init ...');
                 hLayout = new eui.HorizontalLayout();
                 hLayout.gap = 10;
                 hLayout.paddingTop = 30;
@@ -1103,11 +1127,14 @@ var Slideshow = (function (_super) {
                 btn_left.label = 'left';
                 btn_left.enabled = true;
                 btn_left.addEventListener(egret.TouchEvent.TOUCH_TAP, this.onclickLeft, this);
+                btn_left.visible = false;
+                this.btn_left = btn_left;
                 btn_right = new eui.Button();
                 btn_right.width = 80;
                 btn_right.label = 'right';
                 btn_right.enabled = true;
                 btn_right.addEventListener(egret.TouchEvent.TOUCH_TAP, this.onclickRight, this);
+                this.btn_right = btn_right;
                 group = new eui.Group();
                 group.width = 600;
                 group.height = 400;
@@ -1116,6 +1143,7 @@ var Slideshow = (function (_super) {
                 this.addChild(btn_left);
                 this.addChild(group);
                 this.addChild(btn_right);
+                this.mask = new egret.Rectangle(0, 0, this.width, this.height);
                 return [2 /*return*/];
             });
         });
@@ -1124,6 +1152,9 @@ var Slideshow = (function (_super) {
         var _this = this;
         if (this.activeIndex <= 0)
             return;
+        if (this.isAnimating)
+            return;
+        this.isAnimating = true;
         var image = this.imgBox.getChildAt(0);
         var tw = egret.Tween.get(image);
         tw.to({ x: image.width }, this.duration)
@@ -1134,6 +1165,7 @@ var Slideshow = (function (_super) {
                 setTimeout(function () {
                     _this.activeIndex -= 1;
                     _this.resetLeft();
+                    _this.isAnimating = false;
                 }, 10);
             });
         })
@@ -1141,8 +1173,11 @@ var Slideshow = (function (_super) {
     };
     Slideshow.prototype.onclickRight = function () {
         var _this = this;
-        if (this.activeIndex >= this.awards.length)
+        if (this.activeIndex >= this.awards.length - 1)
             return;
+        if (this.isAnimating)
+            return;
+        this.isAnimating = true;
         var image = this.imgBox.getChildAt(this.imgBox.numChildren - 1);
         var tw = egret.Tween.get(image);
         tw.to({ x: image.width }, this.duration)
@@ -1153,6 +1188,7 @@ var Slideshow = (function (_super) {
                 setTimeout(function () {
                     _this.activeIndex += 1;
                     _this.resetRight();
+                    _this.isAnimating = false;
                 }, 10);
             });
         })

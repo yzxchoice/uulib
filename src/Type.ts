@@ -63,6 +63,22 @@ interface ILabel {
     lineSpacing?: number
 }
 
+interface CircleSectorItem {
+    text: string;
+    url: string;
+}
+
+interface ICircleSector {
+    awards: Array<CircleSectorItem>;
+}
+
+interface SlideshowItem {
+    url: string;
+}
+interface ISlideshow {
+    awards: Array<SlideshowItem>;
+}
+
 interface ITrigger {
     delay: number,
     eventType: number,
