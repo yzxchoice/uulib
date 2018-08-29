@@ -24,8 +24,10 @@ enum UUType {
      * 容器框
      */
     FRAME = 102,
-
-    CARD = 112
+    /**
+     * 轮播图组件
+     */
+    SLIDESHOW = 103,
 }
 
 /**
@@ -77,6 +79,26 @@ interface IQuestions {
 interface IQuestion {
     select: boolean | string,
     resource: IResource
+}
+
+interface CircleSectorItem {
+    text: string;
+    url: string;
+}
+
+interface ICircleSector {
+    awards: Array<CircleSectorItem>;
+}
+
+interface SlideshowItem {
+    url: string;
+}
+interface ISlideshow {
+    awards: Array<SlideshowItem>;
+}
+
+interface IItems {
+    awards: Array<IResource>
 }
 
 interface ITrigger {

@@ -70,6 +70,7 @@ declare enum UUType {
      * 容器框
      */
     FRAME = 102,
+<<<<<<< HEAD
     CARD = 112,
 }
 /**
@@ -80,6 +81,12 @@ interface IResource {
     name?: string;
     text?: string;
     url?: string;
+=======
+    /**
+     * 轮播图组件
+     */
+    SLIDESHOW = 103,
+>>>>>>> dd8a229d9972da6f0c0f6505108f5cf1d4c9d271
 }
 interface IUUBase {
     /**
@@ -108,6 +115,7 @@ interface ILabel {
     textAlign?: string;
     lineSpacing?: number;
 }
+<<<<<<< HEAD
 interface IQuestions {
     items: Array<IQuestion>;
     toItems: Array<IQuestion>;
@@ -115,6 +123,20 @@ interface IQuestions {
 interface IQuestion {
     select: boolean | string;
     resource: IResource;
+=======
+interface CircleSectorItem {
+    text: string;
+    url: string;
+}
+interface ICircleSector {
+    awards: Array<CircleSectorItem>;
+}
+interface SlideshowItem {
+    url: string;
+}
+interface ISlideshow {
+    awards: Array<SlideshowItem>;
+>>>>>>> dd8a229d9972da6f0c0f6505108f5cf1d4c9d271
 }
 interface ITrigger {
     delay: number;
@@ -342,17 +364,70 @@ declare class Preview extends eui.Group {
     reset(): void;
     drawDisplayList(): void;
 }
+<<<<<<< HEAD
 declare class Card extends eui.Group implements IUUBase, IUUContainer {
     static uuType: UUType;
+=======
+/**
+ * 轮播图组件
+ */
+declare class Slideshow extends eui.Group implements IUUBase, IUUContainer {
+    data: any;
+    layerName: string;
+    container: any;
+    width: number;
+    height: number;
+    static uuType: UUType;
+    private _activeIndex;
+    activeIndex: number;
+    private btn_left;
+    private btn_right;
+    private duration;
+    private delayed;
+    private isAnimating;
+    draw(): void;
+    dispose(): void;
+    awards: Array<SlideshowItem>;
+    private imgBox;
+    constructor();
+    getProps(): {
+        awards: SlideshowItem[];
+    };
+    setProps(d: any): void;
+    redraw(): void;
+    private onAddToStage(event);
+    private onRemoveFromStage(event);
+    private init();
+    private onclickLeft();
+    private onclickRight();
+    private resetLeft();
+    private resetRight();
+    private resetImgBox();
+}
+/**
+ * 转盘组件
+ */
+declare class CircleSector extends eui.Group implements IUUBase, IUUContainer {
+>>>>>>> dd8a229d9972da6f0c0f6505108f5cf1d4c9d271
     data: any;
     container: any;
     width: number;
     height: number;
+<<<<<<< HEAD
     ques: IQuestions;
     private itemContainer;
     private toitemContainer;
     getProps(): {
         ques: IQuestions;
+=======
+    static uuType: UUType;
+    draw(): void;
+    awards: CircleSectorItem[];
+    private main;
+    constructor();
+    getProps(): {
+        awards: CircleSectorItem[];
+>>>>>>> dd8a229d9972da6f0c0f6505108f5cf1d4c9d271
     };
     setProps(d: any): void;
     constructor();
@@ -467,7 +542,11 @@ declare class CircleSector extends eui.Group implements IUUBase, IUUContainer {
 }
 declare class Utils {
     constructor();
+<<<<<<< HEAD
     static getComs(): (typeof SoundButton | typeof UULabel | typeof UUImage | typeof UUContainer | typeof CircleSector | typeof Card)[];
+=======
+    static getComs(): (typeof SoundButton | typeof UULabel | typeof UUImage | typeof UUContainer | typeof CircleSector | typeof Slideshow)[];
+>>>>>>> dd8a229d9972da6f0c0f6505108f5cf1d4c9d271
     static getTexture(url: string): Promise<{}>;
     static getSound(url: string): Promise<{}>;
     static trans(arr: Array<any>, templateId: number): {
