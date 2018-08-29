@@ -28,6 +28,8 @@ enum UUType {
      * 轮播图组件
      */
     SLIDESHOW = 103,
+
+    CARD = 112
 }
 
 /**
