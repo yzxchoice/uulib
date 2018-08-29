@@ -23,10 +23,20 @@ enum UUType {
     /**
      * 容器框
      */
-    FRAME = 102
+    FRAME = 102,
+
+    CARD = 112
 }
 
-
+/**
+ * 资源对象
+ */
+interface IResource {
+    id?: string,
+    name?: string,
+    text?: string,
+    url?: string
+}
 
 interface IUUBase {
     /**
@@ -59,6 +69,16 @@ interface ILabel {
     lineSpacing?: number
 }
 
+interface IQuestions {
+    items: Array<IQuestion>,
+    toItems: Array<IQuestion>
+}
+
+interface IQuestion {
+    select: boolean | string,
+    resource: IResource
+}
+
 interface ITrigger {
     delay: number,
     eventType: number,
@@ -75,14 +95,6 @@ interface ITrigger {
     targetType?: string
 }
 
-/**
- * 资源对象
- */
-interface IResource {
-    id?: string,
-    name?: string,
-    url: string
-}
 
 interface IProperty {
     /**

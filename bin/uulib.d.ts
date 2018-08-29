@@ -70,6 +70,16 @@ declare enum UUType {
      * 容器框
      */
     FRAME = 102,
+    CARD = 112,
+}
+/**
+ * 资源对象
+ */
+interface IResource {
+    id?: string;
+    name?: string;
+    text?: string;
+    url?: string;
 }
 interface IUUBase {
     /**
@@ -98,6 +108,14 @@ interface ILabel {
     textAlign?: string;
     lineSpacing?: number;
 }
+interface IQuestions {
+    items: Array<IQuestion>;
+    toItems: Array<IQuestion>;
+}
+interface IQuestion {
+    select: boolean | string;
+    resource: IResource;
+}
 interface ITrigger {
     delay: number;
     eventType: number;
@@ -112,14 +130,6 @@ interface ITrigger {
     targetId: string;
     targetState?: number;
     targetType?: string;
-}
-/**
- * 资源对象
- */
-interface IResource {
-    id?: string;
-    name?: string;
-    url: string;
 }
 interface IProperty {
     /**
@@ -185,6 +195,15 @@ declare class SoundButton extends eui.Button implements IUUBase {
     constructor();
     private onAddToStage(event);
     private init();
+}
+/**
+ * 组件基类
+ */
+declare class BaseUI {
+    /**
+     * 绑定数据
+     */
+    data: any;
 }
 /**
  * 自定义操作框
@@ -323,44 +342,24 @@ declare class Preview extends eui.Group {
     reset(): void;
     drawDisplayList(): void;
 }
-/**
- * 转盘组件
- */
-declare class CircleSector extends eui.Group implements IUUBase, IUUContainer {
+declare class Card extends eui.Group implements IUUBase, IUUContainer {
+    static uuType: UUType;
     data: any;
-    layerName: string;
     container: any;
     width: number;
     height: number;
-    static uuType: UUType;
-    draw(): void;
-    awards: {
-        text: string;
-        url: string;
-    }[];
-    private main;
-    constructor();
+    ques: IQuestions;
+    private itemContainer;
+    private toitemContainer;
     getProps(): {
-        awards: {
-            text: string;
-            url: string;
-        }[];
+        ques: IQuestions;
     };
     setProps(d: any): void;
-    private onAddToStage(event);
-    private onRemoveFromStage(event);
-    private init();
-    redraw(): void;
-    drawSector(): Promise<void>;
-    private down(event);
-    private rnd(n, m);
-    rotateFn(item: number, txt: string): void;
+    constructor();
+    private onAddToStage();
+    draw(): Promise<void>;
+    reset(): void;
     dispose(): void;
-    private onComplete(param1);
-    /**
-     * 画弧形方法
-     */
-    drawArc(mc: egret.Shape, x?: number, y?: number, r?: number, angle?: number, startFrom?: number, color?: number): void;
 }
 declare class Transformable {
     width: number;
@@ -428,17 +427,47 @@ declare class TransformTool {
     sanitizeStartMatrix(): void;
 }
 /**
- * 组件基类
+ * 转盘组件
  */
-declare class BaseUI {
-    /**
-     * 绑定数据
-     */
+declare class CircleSector extends eui.Group implements IUUBase, IUUContainer {
     data: any;
+    layerName: string;
+    container: any;
+    width: number;
+    height: number;
+    static uuType: UUType;
+    draw(): void;
+    awards: {
+        text: string;
+        url: string;
+    }[];
+    private main;
+    constructor();
+    getProps(): {
+        awards: {
+            text: string;
+            url: string;
+        }[];
+    };
+    setProps(d: any): void;
+    private onAddToStage(event);
+    private onRemoveFromStage(event);
+    private init();
+    redraw(): void;
+    drawSector(): Promise<void>;
+    private down(event);
+    private rnd(n, m);
+    rotateFn(item: number, txt: string): void;
+    dispose(): void;
+    private onComplete(param1);
+    /**
+     * 画弧形方法
+     */
+    drawArc(mc: egret.Shape, x?: number, y?: number, r?: number, angle?: number, startFrom?: number, color?: number): void;
 }
 declare class Utils {
     constructor();
-    static getComs(): (typeof SoundButton | typeof UULabel | typeof UUImage | typeof UUContainer | typeof CircleSector)[];
+    static getComs(): (typeof SoundButton | typeof UULabel | typeof UUImage | typeof UUContainer | typeof CircleSector | typeof Card)[];
     static getTexture(url: string): Promise<{}>;
     static getSound(url: string): Promise<{}>;
     static trans(arr: Array<any>, templateId: number): {

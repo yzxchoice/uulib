@@ -124,7 +124,7 @@ class Preview extends eui.Group {
         console.log(event.target);
         let d: UUData<any> = event.target.data;
 
-        if(d.sound) {
+        if(d && d.sound) {
             Utils.getSound(d.sound.url).then( (res) => {
                 var sound: egret.Sound = <egret.Sound>res;
                 sound.play(0, 1);
