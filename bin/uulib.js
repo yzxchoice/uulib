@@ -252,6 +252,10 @@ var UUType;
      * 轮播图组件
      */
     UUType[UUType["SLIDESHOW"] = 103] = "SLIDESHOW";
+    /**
+     * 老虎机组件
+     */
+    UUType[UUType["SLOT_MACHINE"] = 104] = "SLOT_MACHINE";
 })(UUType || (UUType = {}));
 var LayerSet = (function () {
     function LayerSet() {
@@ -276,27 +280,208 @@ var LayerSet = (function () {
     return LayerSet;
 }());
 __reflect(LayerSet.prototype, "LayerSet");
+// TypeScript file
 /**
- * 声音组件
+ * 轮播图组件
  */
-var SoundButton = (function (_super) {
-    __extends(SoundButton, _super);
-    function SoundButton() {
+var Slideshow = (function (_super) {
+    __extends(Slideshow, _super);
+    function Slideshow() {
         var _this = _super.call(this) || this;
-        _this.layerName = '声音';
+        _this.layerName = '轮播图';
+        _this.width = 600;
+        _this.height = 400;
+        _this._activeIndex = 0;
+        _this.duration = 500;
+        _this.delayed = 100;
+        _this.isAnimating = false;
+        _this.awards = [
+            {
+                url: '/assets/pic/post_item_44.png'
+            },
+            {
+                url: '/assets/pic/post_item_45.png'
+            },
+            {
+                url: '/assets/pic/post_item_42.png'
+            },
+            {
+                url: '/assets/pic/post_item_43.png'
+            },
+            {
+                url: '/assets/pic/post_item_46.png'
+            },
+        ];
+        _this.touchEnabled = false;
         _this.addEventListener(egret.Event.ADDED_TO_STAGE, _this.onAddToStage, _this);
+        _this.addEventListener(egret.Event.REMOVED_FROM_STAGE, _this.onRemoveFromStage, _this);
         return _this;
     }
-    SoundButton.prototype.onAddToStage = function (event) {
+    Object.defineProperty(Slideshow.prototype, "activeIndex", {
+        get: function () {
+            return this._activeIndex;
+        },
+        set: function (v) {
+            this._activeIndex = v;
+            this.btn_left.visible = true;
+            this.btn_right.visible = true;
+            if (v == 0) {
+                this.btn_left.visible = false;
+            }
+            if (v == this.awards.length - 1) {
+                this.btn_right.visible = true;
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Slideshow.prototype.draw = function () {
+    };
+    Slideshow.prototype.dispose = function () {
+    };
+    Slideshow.prototype.getProps = function () {
+        return {
+            awards: this.awards
+        };
+    };
+    Slideshow.prototype.setProps = function (d) {
+        this.awards = d.awards;
+    };
+    Slideshow.prototype.redraw = function () {
+        this.resetImgBox();
+    };
+    Slideshow.prototype.onAddToStage = function (event) {
         this.init();
-        // this.bindHandler();
     };
-    SoundButton.prototype.init = function () {
+    Slideshow.prototype.onRemoveFromStage = function (event) {
     };
-    SoundButton.uuType = UUType.SOUND;
-    return SoundButton;
-}(eui.Button));
-__reflect(SoundButton.prototype, "SoundButton", ["IUUBase"]);
+    Slideshow.prototype.init = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var hLayout, btn_left, btn_right, group;
+            return __generator(this, function (_a) {
+                console.log('Slideshow init ...');
+                hLayout = new eui.HorizontalLayout();
+                hLayout.gap = 10;
+                hLayout.paddingTop = 30;
+                hLayout.horizontalAlign = egret.HorizontalAlign.JUSTIFY;
+                hLayout.verticalAlign = egret.VerticalAlign.MIDDLE;
+                this.layout = hLayout; /// 水平布局
+                btn_left = new eui.Button();
+                btn_left.width = 80;
+                btn_left.label = 'left';
+                btn_left.enabled = true;
+                btn_left.addEventListener(egret.TouchEvent.TOUCH_TAP, this.onclickLeft, this);
+                this.btn_left = btn_left;
+                btn_right = new eui.Button();
+                btn_right.width = 80;
+                btn_right.label = 'right';
+                btn_right.enabled = true;
+                btn_right.addEventListener(egret.TouchEvent.TOUCH_TAP, this.onclickRight, this);
+                this.btn_right = btn_right;
+                group = new eui.Group();
+                group.width = 600;
+                group.height = 400;
+                this.imgBox = group;
+                this.resetImgBox();
+                this.addChild(btn_left);
+                this.addChild(group);
+                this.addChild(btn_right);
+                btn_left.visible = false;
+                this.mask = new egret.Rectangle(0, 0, this.width, this.height);
+                return [2 /*return*/];
+            });
+        });
+    };
+    Slideshow.prototype.onclickLeft = function () {
+        var _this = this;
+        if (this.activeIndex <= 0)
+            return;
+        if (this.isAnimating)
+            return;
+        this.isAnimating = true;
+        var image = this.imgBox.getChildAt(0);
+        var tw = egret.Tween.get(image);
+        tw.to({ x: image.width }, this.duration)
+            .call(function () {
+            _this.imgBox.setChildIndex(image, _this.imgBox.numChildren);
+            tw.to({ x: 0 }, _this.duration)
+                .call(function () {
+                setTimeout(function () {
+                    _this.activeIndex -= 1;
+                    _this.resetLeft();
+                    _this.isAnimating = false;
+                }, 10);
+            });
+        })
+            .wait(this.delayed);
+    };
+    Slideshow.prototype.onclickRight = function () {
+        var _this = this;
+        if (this.activeIndex >= this.awards.length - 1)
+            return;
+        if (this.isAnimating)
+            return;
+        this.isAnimating = true;
+        var image = this.imgBox.getChildAt(this.imgBox.numChildren - 1);
+        var tw = egret.Tween.get(image);
+        tw.to({ x: image.width }, this.duration)
+            .call(function () {
+            _this.imgBox.setChildIndex(image, 1);
+            tw.to({ x: 0 }, _this.duration)
+                .call(function () {
+                setTimeout(function () {
+                    _this.activeIndex += 1;
+                    _this.resetRight();
+                    _this.isAnimating = false;
+                }, 10);
+            });
+        })
+            .wait(this.delayed);
+    };
+    Slideshow.prototype.resetLeft = function () {
+        console.log('resetLeft...');
+        var item = this.awards.shift();
+        this.awards.push(item);
+        this.resetImgBox();
+    };
+    Slideshow.prototype.resetRight = function () {
+        console.log('resetRight..');
+        var item = this.awards.pop();
+        this.awards.unshift(item);
+        this.resetImgBox();
+    };
+    Slideshow.prototype.resetImgBox = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var i, len, img, t;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        this.imgBox.removeChildren();
+                        i = 0, len = this.awards.length;
+                        _a.label = 1;
+                    case 1:
+                        if (!(i < len)) return [3 /*break*/, 4];
+                        img = new egret.Bitmap();
+                        return [4 /*yield*/, Utils.getTexture("resource/" + this.awards[i].url)];
+                    case 2:
+                        t = _a.sent();
+                        img.width = this.imgBox.width;
+                        img.height = this.imgBox.height;
+                        img.texture = t;
+                        this.imgBox.addChild(img);
+                        _a.label = 3;
+                    case 3:
+                        i++;
+                        return [3 /*break*/, 1];
+                    case 4: return [2 /*return*/];
+                }
+            });
+        });
+    };
+    Slideshow.uuType = UUType.SLIDESHOW;
+    return Slideshow;
+}(eui.Group));
+__reflect(Slideshow.prototype, "Slideshow", ["IUUBase", "IUUContainer", "IUUComponent"]);
 /**
  * 自定义操作框
  */
@@ -1037,209 +1222,6 @@ var Preview = (function (_super) {
 __reflect(Preview.prototype, "Preview");
 // TypeScript file
 /**
- * 轮播图组件
- */
-var Slideshow = (function (_super) {
-    __extends(Slideshow, _super);
-    function Slideshow() {
-        var _this = _super.call(this) || this;
-        _this.layerName = '轮播图';
-        _this.width = 600;
-        _this.height = 400;
-        _this._activeIndex = 0;
-        _this.duration = 500;
-        _this.delayed = 100;
-        _this.isAnimating = false;
-        _this.awards = [
-            {
-                url: '/assets/pic/post_item_44.png'
-            },
-            {
-                url: '/assets/pic/post_item_45.png'
-            },
-            {
-                url: '/assets/pic/post_item_42.png'
-            },
-            {
-                url: '/assets/pic/post_item_43.png'
-            },
-            {
-                url: '/assets/pic/post_item_46.png'
-            },
-        ];
-        _this.touchEnabled = false;
-        _this.addEventListener(egret.Event.ADDED_TO_STAGE, _this.onAddToStage, _this);
-        _this.addEventListener(egret.Event.REMOVED_FROM_STAGE, _this.onRemoveFromStage, _this);
-        return _this;
-    }
-    Object.defineProperty(Slideshow.prototype, "activeIndex", {
-        get: function () {
-            return this._activeIndex;
-        },
-        set: function (v) {
-            this._activeIndex = v;
-            this.btn_left.visible = true;
-            this.btn_right.visible = true;
-            if (v == 0) {
-                this.btn_left.visible = false;
-            }
-            if (v == this.awards.length) {
-                this.btn_right.visible = true;
-            }
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Slideshow.prototype.draw = function () {
-    };
-    Slideshow.prototype.dispose = function () {
-    };
-    Slideshow.prototype.getProps = function () {
-        return {
-            awards: this.awards
-        };
-    };
-    Slideshow.prototype.setProps = function (d) {
-        this.imgBox.removeChildren();
-        this.awards = d;
-    };
-    Slideshow.prototype.redraw = function () {
-        this.resetImgBox();
-    };
-    Slideshow.prototype.onAddToStage = function (event) {
-        this.init();
-    };
-    Slideshow.prototype.onRemoveFromStage = function (event) {
-    };
-    Slideshow.prototype.init = function () {
-        return __awaiter(this, void 0, void 0, function () {
-            var hLayout, btn_left, btn_right, group;
-            return __generator(this, function (_a) {
-                console.log('Slideshow init ...');
-                hLayout = new eui.HorizontalLayout();
-                hLayout.gap = 10;
-                hLayout.paddingTop = 30;
-                hLayout.horizontalAlign = egret.HorizontalAlign.JUSTIFY;
-                hLayout.verticalAlign = egret.VerticalAlign.MIDDLE;
-                this.layout = hLayout; /// 水平布局
-                btn_left = new eui.Button();
-                btn_left.width = 80;
-                btn_left.label = 'left';
-                btn_left.enabled = true;
-                btn_left.addEventListener(egret.TouchEvent.TOUCH_TAP, this.onclickLeft, this);
-                btn_left.visible = false;
-                this.btn_left = btn_left;
-                btn_right = new eui.Button();
-                btn_right.width = 80;
-                btn_right.label = 'right';
-                btn_right.enabled = true;
-                btn_right.addEventListener(egret.TouchEvent.TOUCH_TAP, this.onclickRight, this);
-                this.btn_right = btn_right;
-                group = new eui.Group();
-                group.width = 600;
-                group.height = 400;
-                this.imgBox = group;
-                this.resetImgBox();
-                this.addChild(btn_left);
-                this.addChild(group);
-                this.addChild(btn_right);
-                this.mask = new egret.Rectangle(0, 0, this.width, this.height);
-                return [2 /*return*/];
-            });
-        });
-    };
-    Slideshow.prototype.onclickLeft = function () {
-        var _this = this;
-        if (this.activeIndex <= 0)
-            return;
-        if (this.isAnimating)
-            return;
-        this.isAnimating = true;
-        var image = this.imgBox.getChildAt(0);
-        var tw = egret.Tween.get(image);
-        tw.to({ x: image.width }, this.duration)
-            .call(function () {
-            _this.imgBox.setChildIndex(image, _this.imgBox.numChildren);
-            tw.to({ x: 0 }, _this.duration)
-                .call(function () {
-                setTimeout(function () {
-                    _this.activeIndex -= 1;
-                    _this.resetLeft();
-                    _this.isAnimating = false;
-                }, 10);
-            });
-        })
-            .wait(this.delayed);
-    };
-    Slideshow.prototype.onclickRight = function () {
-        var _this = this;
-        if (this.activeIndex >= this.awards.length - 1)
-            return;
-        if (this.isAnimating)
-            return;
-        this.isAnimating = true;
-        var image = this.imgBox.getChildAt(this.imgBox.numChildren - 1);
-        var tw = egret.Tween.get(image);
-        tw.to({ x: image.width }, this.duration)
-            .call(function () {
-            _this.imgBox.setChildIndex(image, 1);
-            tw.to({ x: 0 }, _this.duration)
-                .call(function () {
-                setTimeout(function () {
-                    _this.activeIndex += 1;
-                    _this.resetRight();
-                    _this.isAnimating = false;
-                }, 10);
-            });
-        })
-            .wait(this.delayed);
-    };
-    Slideshow.prototype.resetLeft = function () {
-        console.log('resetLeft...');
-        var item = this.awards.shift();
-        this.awards.push(item);
-        this.resetImgBox();
-    };
-    Slideshow.prototype.resetRight = function () {
-        console.log('resetRight..');
-        var item = this.awards.pop();
-        this.awards.unshift(item);
-        this.resetImgBox();
-    };
-    Slideshow.prototype.resetImgBox = function () {
-        return __awaiter(this, void 0, void 0, function () {
-            var i, len, img, t;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        this.imgBox.removeChildren();
-                        i = 0, len = this.awards.length;
-                        _a.label = 1;
-                    case 1:
-                        if (!(i < len)) return [3 /*break*/, 4];
-                        img = new egret.Bitmap();
-                        return [4 /*yield*/, Utils.getTexture("resource/" + this.awards[i].url)];
-                    case 2:
-                        t = _a.sent();
-                        img.width = this.imgBox.width;
-                        img.height = this.imgBox.height;
-                        img.texture = t;
-                        this.imgBox.addChild(img);
-                        _a.label = 3;
-                    case 3:
-                        i++;
-                        return [3 /*break*/, 1];
-                    case 4: return [2 /*return*/];
-                }
-            });
-        });
-    };
-    Slideshow.uuType = UUType.SLIDESHOW;
-    return Slideshow;
-}(eui.Group));
-__reflect(Slideshow.prototype, "Slideshow", ["IUUBase", "IUUContainer"]);
-// TypeScript file
-/**
  * 转盘组件
  */
 var CircleSector = (function (_super) {
@@ -1289,7 +1271,7 @@ var CircleSector = (function (_super) {
         };
     };
     CircleSector.prototype.setProps = function (d) {
-        this.awards = d;
+        this.awards = d.awards;
     };
     CircleSector.prototype.onAddToStage = function (event) {
         this.init();
@@ -1446,7 +1428,28 @@ var CircleSector = (function (_super) {
     CircleSector.uuType = UUType.CIRCLE_SECTOR;
     return CircleSector;
 }(eui.Group));
-__reflect(CircleSector.prototype, "CircleSector", ["IUUBase", "IUUContainer"]);
+__reflect(CircleSector.prototype, "CircleSector", ["IUUBase", "IUUContainer", "IUUComponent"]);
+/**
+ * 声音组件
+ */
+var SoundButton = (function (_super) {
+    __extends(SoundButton, _super);
+    function SoundButton() {
+        var _this = _super.call(this) || this;
+        _this.layerName = '声音';
+        _this.addEventListener(egret.Event.ADDED_TO_STAGE, _this.onAddToStage, _this);
+        return _this;
+    }
+    SoundButton.prototype.onAddToStage = function (event) {
+        this.init();
+        // this.bindHandler();
+    };
+    SoundButton.prototype.init = function () {
+    };
+    SoundButton.uuType = UUType.SOUND;
+    return SoundButton;
+}(eui.Button));
+__reflect(SoundButton.prototype, "SoundButton", ["IUUBase"]);
 var Transformable = (function () {
     function Transformable(width, height, matrix, owner) {
         this.width = 0;
@@ -1884,7 +1887,7 @@ var Utils = (function () {
     function Utils() {
     }
     Utils.getComs = function () {
-        return [UULabel, UUImage, UUContainer, SoundButton, CircleSector, UUBackground, Slideshow];
+        return [UULabel, UUImage, UUContainer, SoundButton, CircleSector, UUBackground, Slideshow, SlotMachine];
     };
     Utils.getTexture = function (url) {
         var _this = this;

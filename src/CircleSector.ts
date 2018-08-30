@@ -52,8 +52,8 @@ class CircleSector extends eui.Group implements IUUBase, IUUContainer, IUUCompon
         }
     }
 
-    setProps (d) {
-        this.awards = d;
+    setProps (d: ICircleSector) {
+        this.awards = d.awards;
     }
 
     private onAddToStage (event:egret.Event) {
