@@ -74,10 +74,23 @@ declare enum UUType {
      * 轮播图组件
      */
     SLIDESHOW = 103,
+<<<<<<< HEAD
     /**
      * 老虎机组件
      */
     SLOT_MACHINE = 104,
+=======
+    CARD = 112,
+}
+/**
+ * 资源对象
+ */
+interface IResource {
+    id?: string;
+    name?: string;
+    text?: string;
+    url?: string;
+>>>>>>> e25dd18de84fcd338f00513d84b0f8c8509c68a2
 }
 interface IUUBase {
     /**
@@ -106,6 +119,14 @@ interface ILabel {
     textAlign?: string;
     lineSpacing?: number;
 }
+interface IQuestions {
+    items: Array<IQuestion>;
+    toItems: Array<IQuestion>;
+}
+interface IQuestion {
+    select: boolean | string;
+    resource: IResource;
+}
 interface CircleSectorItem {
     text: string;
     url: string;
@@ -119,10 +140,15 @@ interface SlideshowItem {
 interface ISlideshow {
     awards: Array<SlideshowItem>;
 }
+<<<<<<< HEAD
 interface ISlotMachine {
     awards: Array<SlideshowItem>;
     bgColor: number | string;
     bdUrl: string;
+=======
+interface IItems {
+    awards: Array<IResource>;
+>>>>>>> e25dd18de84fcd338f00513d84b0f8c8509c68a2
 }
 interface ITrigger {
     delay: number;
@@ -138,14 +164,6 @@ interface ITrigger {
     targetId: string;
     targetState?: number;
     targetType?: string;
-}
-/**
- * 资源对象
- */
-interface IResource {
-    id?: string;
-    name?: string;
-    url: string;
 }
 interface IProperty {
     /**
@@ -221,7 +239,11 @@ declare class Slideshow extends eui.Group implements IUUBase, IUUContainer, IUUC
     getProps(): {
         awards: SlideshowItem[];
     };
+<<<<<<< HEAD
     setProps(d: ISlideshow): void;
+=======
+    setProps(d: any): void;
+>>>>>>> e25dd18de84fcd338f00513d84b0f8c8509c68a2
     redraw(): void;
     private onAddToStage(event);
     private onRemoveFromStage(event);
@@ -231,6 +253,18 @@ declare class Slideshow extends eui.Group implements IUUBase, IUUContainer, IUUC
     private resetLeft();
     private resetRight();
     private resetImgBox();
+<<<<<<< HEAD
+=======
+}
+/**
+ * 组件基类
+ */
+declare class BaseUI {
+    /**
+     * 绑定数据
+     */
+    data: any;
+>>>>>>> e25dd18de84fcd338f00513d84b0f8c8509c68a2
 }
 /**
  * 自定义操作框
@@ -374,38 +408,55 @@ declare class Preview extends eui.Group {
     reset(): void;
     drawDisplayList(): void;
 }
+<<<<<<< HEAD
 /**
  * 转盘组件
  */
 declare class CircleSector extends eui.Group implements IUUBase, IUUContainer, IUUComponent {
     data: any;
-    layerName: string;
+=======
+declare class Card extends eui.Group implements IUUBase, IUUContainer {
+    static uuType: UUType;
+    data: any;
     container: any;
     width: number;
     height: number;
-    static uuType: UUType;
-    draw(): void;
-    awards: CircleSectorItem[];
-    private main;
+    ques: IQuestions;
+    private itemContainer;
+    private toitemContainer;
+    getProps(): {
+        ques: IQuestions;
+    };
+    setProps(d: any): void;
     constructor();
+    private onAddToStage();
+    draw(): Promise<void>;
+    reset(): void;
+    dispose(): void;
+}
+interface uiData {
+    id: string;
+    name: string;
+    url?: string;
+}
+/**
+ * 声音组件
+ */
+declare class SoundButton extends eui.Button implements IUUBase {
+    data: uiData;
+>>>>>>> e25dd18de84fcd338f00513d84b0f8c8509c68a2
+    layerName: string;
+    static uuType: UUType;
+    constructor();
+<<<<<<< HEAD
     getProps(): {
         awards: CircleSectorItem[];
     };
     setProps(d: ICircleSector): void;
+=======
+>>>>>>> e25dd18de84fcd338f00513d84b0f8c8509c68a2
     private onAddToStage(event);
-    private onRemoveFromStage(event);
     private init();
-    redraw(): void;
-    drawSector(): Promise<void>;
-    private down(event);
-    private rnd(n, m);
-    rotateFn(item: number, txt: string): void;
-    dispose(): void;
-    private onComplete(param1);
-    /**
-     * 画弧形方法
-     */
-    drawArc(mc: egret.Shape, x?: number, y?: number, r?: number, angle?: number, startFrom?: number, color?: number): void;
 }
 interface uiData {
     id: string;
@@ -489,17 +540,45 @@ declare class TransformTool {
     sanitizeStartMatrix(): void;
 }
 /**
- * 组件基类
+ * 转盘组件
  */
-declare class BaseUI {
-    /**
-     * 绑定数据
-     */
+declare class CircleSector extends eui.Group implements IUUBase, IUUContainer, IUUComponent {
     data: any;
+    layerName: string;
+    container: any;
+    width: number;
+    height: number;
+    static uuType: UUType;
+    draw(): void;
+    awards: CircleSectorItem[];
+    private main;
+    constructor();
+    getProps(): {
+        awards: CircleSectorItem[];
+    };
+    setProps(d: any): void;
+    private onAddToStage(event);
+    private onRemoveFromStage(event);
+    private init();
+    redraw(): void;
+    drawSector(): Promise<void>;
+    private down(event);
+    private rnd(n, m);
+    rotateFn(item: number, txt: string): void;
+    dispose(): void;
+    private onComplete(param1);
+    /**
+     * 画弧形方法
+     */
+    drawArc(mc: egret.Shape, x?: number, y?: number, r?: number, angle?: number, startFrom?: number, color?: number): void;
 }
 declare class Utils {
     constructor();
+<<<<<<< HEAD
     static getComs(): any[];
+=======
+    static getComs(): (typeof Slideshow | typeof UULabel | typeof UUImage | typeof UUContainer | typeof SoundButton | typeof CircleSector)[];
+>>>>>>> e25dd18de84fcd338f00513d84b0f8c8509c68a2
     static getTexture(url: string): Promise<{}>;
     static getSound(url: string): Promise<{}>;
     static trans(arr: Array<any>, templateId: number): {

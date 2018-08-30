@@ -32,9 +32,19 @@ enum UUType {
      * 老虎机组件
      */
     SLOT_MACHINE = 104,
+
+    CARD = 112
 }
 
-
+/**
+ * 资源对象
+ */
+interface IResource {
+    id?: string,
+    name?: string,
+    text?: string,
+    url?: string
+}
 
 interface IUUBase {
     /**
@@ -67,6 +77,16 @@ interface ILabel {
     lineSpacing?: number
 }
 
+interface IQuestions {
+    items: Array<IQuestion>,
+    toItems: Array<IQuestion>
+}
+
+interface IQuestion {
+    select: boolean | string,
+    resource: IResource
+}
+
 interface CircleSectorItem {
     text: string;
     url: string;
@@ -83,11 +103,16 @@ interface ISlideshow {
     awards: Array<SlideshowItem>;
 }
 
+<<<<<<< HEAD
 
 interface ISlotMachine {
     awards: Array<SlideshowItem>;
     bgColor: number | string;
     bdUrl: string;
+=======
+interface IItems {
+    awards: Array<IResource>
+>>>>>>> e25dd18de84fcd338f00513d84b0f8c8509c68a2
 }
 
 interface ITrigger {
@@ -106,14 +131,6 @@ interface ITrigger {
     targetType?: string
 }
 
-/**
- * 资源对象
- */
-interface IResource {
-    id?: string,
-    name?: string,
-    url: string
-}
 
 interface IProperty {
     /**
