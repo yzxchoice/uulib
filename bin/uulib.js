@@ -1917,6 +1917,8 @@ var CircleSector = (function (_super) {
                     case 2:
                         t = _a.sent();
                         img.texture = t;
+                        img.width = 80;
+                        img.height = 80;
                         img.x = -img.width / 2;
                         img.y = label.height + 20;
                         g.addChild(img);
@@ -2024,6 +2026,13 @@ var Utils = (function () {
                 resolve(event.target);
             }, _this);
             sound.load(url);
+        });
+    };
+    Utils.getScript = function (arr) {
+        return new Promise(function (resolve, reject) {
+            loadScript(arr, function () {
+                resolve();
+            });
         });
     };
     Utils.trans = function (arr, templateId) {

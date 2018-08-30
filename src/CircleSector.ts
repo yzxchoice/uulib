@@ -133,6 +133,8 @@ class CircleSector extends eui.Group implements IUUBase, IUUContainer, IUUCompon
             // var texture:egret.Texture = RES.getRes((i%5+1)+"_png");
             var t = await Utils.getTexture("resource/"+this.awards[i].url);
             img.texture = <egret.Texture>t;
+            img.width = 80;
+            img.height = 80;
             img.x = - img.width / 2;
             img.y = label.height + 20;
             g.addChild(img);

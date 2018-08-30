@@ -525,6 +525,7 @@ declare class Utils {
     static getComs(): (typeof Slideshow | typeof UULabel | typeof UUImage | typeof UUContainer | typeof SoundButton | typeof CircleSector)[];
     static getTexture(url: string): Promise<{}>;
     static getSound(url: string): Promise<{}>;
+    static getScript(arr: Array<string>): Promise<{}>;
     static trans(arr: Array<any>, templateId: number): {
         "groups": {
             "keys": string;
