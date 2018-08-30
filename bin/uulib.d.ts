@@ -74,12 +74,10 @@ declare enum UUType {
      * 轮播图组件
      */
     SLIDESHOW = 103,
-<<<<<<< HEAD
     /**
      * 老虎机组件
      */
     SLOT_MACHINE = 104,
-=======
     CARD = 112,
 }
 /**
@@ -90,7 +88,6 @@ interface IResource {
     name?: string;
     text?: string;
     url?: string;
->>>>>>> e25dd18de84fcd338f00513d84b0f8c8509c68a2
 }
 interface IUUBase {
     /**
@@ -140,15 +137,13 @@ interface SlideshowItem {
 interface ISlideshow {
     awards: Array<SlideshowItem>;
 }
-<<<<<<< HEAD
 interface ISlotMachine {
     awards: Array<SlideshowItem>;
     bgColor: number | string;
     bdUrl: string;
-=======
+}
 interface IItems {
     awards: Array<IResource>;
->>>>>>> e25dd18de84fcd338f00513d84b0f8c8509c68a2
 }
 interface ITrigger {
     delay: number;
@@ -239,11 +234,7 @@ declare class Slideshow extends eui.Group implements IUUBase, IUUContainer, IUUC
     getProps(): {
         awards: SlideshowItem[];
     };
-<<<<<<< HEAD
     setProps(d: ISlideshow): void;
-=======
-    setProps(d: any): void;
->>>>>>> e25dd18de84fcd338f00513d84b0f8c8509c68a2
     redraw(): void;
     private onAddToStage(event);
     private onRemoveFromStage(event);
@@ -253,8 +244,6 @@ declare class Slideshow extends eui.Group implements IUUBase, IUUContainer, IUUC
     private resetLeft();
     private resetRight();
     private resetImgBox();
-<<<<<<< HEAD
-=======
 }
 /**
  * 组件基类
@@ -264,7 +253,6 @@ declare class BaseUI {
      * 绑定数据
      */
     data: any;
->>>>>>> e25dd18de84fcd338f00513d84b0f8c8509c68a2
 }
 /**
  * 自定义操作框
@@ -408,13 +396,6 @@ declare class Preview extends eui.Group {
     reset(): void;
     drawDisplayList(): void;
 }
-<<<<<<< HEAD
-/**
- * 转盘组件
- */
-declare class CircleSector extends eui.Group implements IUUBase, IUUContainer, IUUComponent {
-    data: any;
-=======
 declare class Card extends eui.Group implements IUUBase, IUUContainer {
     static uuType: UUType;
     data: any;
@@ -434,29 +415,48 @@ declare class Card extends eui.Group implements IUUBase, IUUContainer {
     reset(): void;
     dispose(): void;
 }
-interface uiData {
-    id: string;
-    name: string;
-    url?: string;
-}
 /**
- * 声音组件
+ * 轮播图组件
  */
-declare class SoundButton extends eui.Button implements IUUBase {
-    data: uiData;
->>>>>>> e25dd18de84fcd338f00513d84b0f8c8509c68a2
+declare class SlotMachine extends eui.Group implements IUUBase, IUUContainer, IUUComponent {
+    data: any;
     layerName: string;
+    container: any;
     static uuType: UUType;
+    private btn_start;
+    private isAnimating;
+    draw(): void;
+    dispose(): void;
+    private itemWidth;
+    private itemHeight;
+    private gap;
+    private tweenFlag;
+    private defaultWidth;
+    private defaultHeight;
+    bgColor: string | number;
+    bdUrl: string;
+    private awardsTotal;
+    private _awards;
+    awards: Array<SlideshowItem>;
+    private itemGroup;
     constructor();
-<<<<<<< HEAD
     getProps(): {
-        awards: CircleSectorItem[];
+        bgColor: string | number;
+        bdUrl: string;
+        awards: SlideshowItem[];
     };
-    setProps(d: ICircleSector): void;
-=======
->>>>>>> e25dd18de84fcd338f00513d84b0f8c8509c68a2
+    setProps(d: ISlotMachine): void;
+    redraw(): void;
     private onAddToStage(event);
+    private onRemoveFromStage(event);
     private init();
+    private createMainBox();
+    private createItemBox();
+    private createItem(url);
+    private createImg(url);
+    private createStartBtn();
+    private onClick(evt);
+    private tween(item, step, duration?);
 }
 interface uiData {
     id: string;
@@ -556,7 +556,7 @@ declare class CircleSector extends eui.Group implements IUUBase, IUUContainer, I
     getProps(): {
         awards: CircleSectorItem[];
     };
-    setProps(d: any): void;
+    setProps(d: ICircleSector): void;
     private onAddToStage(event);
     private onRemoveFromStage(event);
     private init();
@@ -574,11 +574,7 @@ declare class CircleSector extends eui.Group implements IUUBase, IUUContainer, I
 }
 declare class Utils {
     constructor();
-<<<<<<< HEAD
-    static getComs(): any[];
-=======
-    static getComs(): (typeof Slideshow | typeof UULabel | typeof UUImage | typeof UUContainer | typeof SoundButton | typeof CircleSector)[];
->>>>>>> e25dd18de84fcd338f00513d84b0f8c8509c68a2
+    static getComs(): (typeof Slideshow | typeof UULabel | typeof UUImage | typeof UUContainer | typeof SoundButton | typeof CircleSector | typeof SlotMachine)[];
     static getTexture(url: string): Promise<{}>;
     static getSound(url: string): Promise<{}>;
     static trans(arr: Array<any>, templateId: number): {
@@ -647,6 +643,7 @@ declare class UULabel extends eui.Label implements IUUBase {
     constructor();
     getProps(): ILabel;
     setProps(data: UUData<ILabel>): void;
+    redraw(): void;
 }
 declare class UURequest {
     constructor();

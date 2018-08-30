@@ -103,16 +103,15 @@ interface ISlideshow {
     awards: Array<SlideshowItem>;
 }
 
-<<<<<<< HEAD
 
 interface ISlotMachine {
     awards: Array<SlideshowItem>;
     bgColor: number | string;
     bdUrl: string;
-=======
+}
+
 interface IItems {
     awards: Array<IResource>
->>>>>>> e25dd18de84fcd338f00513d84b0f8c8509c68a2
 }
 
 interface ITrigger {
