@@ -3,7 +3,7 @@ class Utils {
 	}
 
 	static getComs () {
-		return [UULabel, UUImage, UUContainer, SoundButton, CircleSector, UUBackground, Slideshow];
+		return [UULabel, UUImage, UUContainer, SoundButton, CircleSector, UUBackground, Slideshow, SlotMachine];
 	}
 
 	static getTexture(url: string) {

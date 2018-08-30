@@ -28,6 +28,10 @@ enum UUType {
      * 轮播图组件
      */
     SLIDESHOW = 103,
+    /**
+     * 老虎机组件
+     */
+    SLOT_MACHINE = 104,
 
     CARD = 112
 }
@@ -97,6 +101,13 @@ interface SlideshowItem {
 }
 interface ISlideshow {
     awards: Array<SlideshowItem>;
+}
+
+
+interface ISlotMachine {
+    awards: Array<SlideshowItem>;
+    bgColor: number | string;
+    bdUrl: string;
 }
 
 interface IItems {

@@ -67,8 +67,8 @@ class Slideshow extends eui.Group implements IUUBase, IUUContainer, IUUComponent
         }
     }
 
-    setProps (d) {
-        this.awards = d;
+    setProps (d: ISlideshow) {
+        this.awards = d.awards;
     }
 
     redraw () {

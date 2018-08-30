@@ -21,6 +21,7 @@ class UULabel extends eui.Label implements IUUBase {
     name: string = ''
 
     static uuType = UUType.TEXT;
+    
 
     constructor () {
         super();
@@ -42,5 +43,9 @@ class UULabel extends eui.Label implements IUUBase {
         this.textColor = data.props.textColor;
         this.size = data.props.size;
         this.fontFamily = data.props.fontFamily;
+    }
+
+    redraw(){
+
     }
 }
