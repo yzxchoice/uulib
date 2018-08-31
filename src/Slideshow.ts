@@ -6,8 +6,7 @@ class Slideshow extends eui.Group implements IUUBase, IUUContainer, IUUComponent
     data: any;
     layerName:string = '轮播图'
     container: any;
-    width:number = 600;
-    height:number = 400;
+    
     static uuType = UUType.SLIDESHOW;
     
     private _activeIndex : number = 0;
@@ -36,6 +35,8 @@ class Slideshow extends eui.Group implements IUUBase, IUUContainer, IUUComponent
 	dispose(){
 
 	}
+    width:number = 800;
+    height:number = 600;
     awards: Array<SlideshowItem> = [    
 		{
 			url: '/assets/pic/post_item_44.png'

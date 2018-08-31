@@ -22,8 +22,8 @@ class SlotMachine extends eui.Group implements IUUBase, IUUContainer, IUUCompone
 	private gap: number = 10;
 	private tweenFlag: number = 3; // 动画标记
 	// 组件宽、高固定
-	private defaultWidth: number = 800;
-    private defaultHeight: number = 400;
+	width: number = 800;
+	height: number = 400;
 	// props中用到的参数
 	bgColor: string | number = '0x666699';
 	bdUrl: string = '/assets/pic/draw_card_bg.png';
@@ -116,8 +116,6 @@ class SlotMachine extends eui.Group implements IUUBase, IUUContainer, IUUCompone
     }
 
 	private async init(){
-		this.width = this.defaultWidth;
-		this.height = this.height;
 		let vLayout = new eui.VerticalLayout();
 		vLayout.horizontalAlign = 'center';
 		this.layout = vLayout;
