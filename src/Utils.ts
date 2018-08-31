@@ -24,6 +24,14 @@ class Utils {
         })
 	}
 
+	static getScript (arr: Array<string>) {
+		return new Promise( (resolve, reject) => {
+			loadScript(arr, () => {
+				resolve();
+			});
+		})
+	}
+
 	static trans ( arr: Array<any>, templateId: number) {
 
 		var obj = {
