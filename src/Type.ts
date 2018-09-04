@@ -37,13 +37,22 @@ enum UUType {
 }
 
 /**
- * 资源对象
+ * 基础资源对象
  */
 interface IResource {
     id?: string,
     name?: string,
     text?: string,
     url?: string
+}
+
+/**
+ * 自定义组件绑定数据实体
+ */
+interface IComponentData {
+    awards: Array<IResource>
+    bgColor?: number | string,
+    bgurl?: string
 }
 
 interface IUUBase {
@@ -110,10 +119,6 @@ interface ISlotMachine {
     bdUrl: string;
 }
 
-interface IItems {
-    awards: Array<IResource>
-}
-
 interface ITrigger {
     delay: number,
     eventType: number,
@@ -142,6 +147,9 @@ interface IProperty {
     music: IResource
 }
 
+/**
+ * prop 对象实体
+ */
 interface UUData<T> {
     id: string,
     name: string,
