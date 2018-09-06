@@ -1,6 +1,7 @@
 // TypeScript file
 interface IUUComponent {
-    getProps: () => any;
-    setProps: (props: any) => void;
+    getProps ();
+    setProps (props: any);
     redraw: () => void;
+    dispose ():void;
 }

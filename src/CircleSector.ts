@@ -2,41 +2,41 @@
 /**
  * 转盘组件
  */
-class CircleSector extends eui.Group implements IUUBase, IUUContainer, IUUComponent {
-    data: any;
+class CircleSector extends BaseComponent implements IUUBase, IUUContainer, IUUComponent {
+    data: UUData<IComponentData>;
     layerName:string = '转盘'
     container: any;
     width:number = 400;
     height:number = 400;
     static uuType = UUType.CIRCLE_SECTOR;
-    draw (): void {
-        
-    }
-    awards: CircleSectorItem[] = [    
-            {
-                text: '文本1',
-                url: '/assets/1.png'
-            },
-            {
-                text: '文本2',
-                url: '/assets/2.png'
-            },
-            {
-                text: '文本3',
-                url: '/assets/3.png'
-            },
-            {
-                text: '文本4',
-                url: '/assets/4.png'
-            },
-            {
-                text: '文本5',
-                url: '/assets/5.png'
-            },
-            {
-                text: '文本6',
-                url: '/assets/5.png'
-            }
+
+    tweens: Array<egret.Tween> = [];
+    
+    awards: Array<IResource> = [    
+        {
+            text: '文本1',
+            url: '/assets/1.png'
+        },
+        {
+            text: '文本2',
+            url: '/assets/2.png'
+        },
+        {
+            text: '文本3',
+            url: '/assets/3.png'
+        },
+        {
+            text: '文本4',
+            url: '/assets/4.png'
+        },
+        {
+            text: '文本5',
+            url: '/assets/5.png'
+        },
+        {
+            text: '文本6',
+            url: '/assets/5.png'
+        }
     ];
     private main: eui.Group = new eui.Group();
     constructor () {
@@ -46,14 +46,8 @@ class CircleSector extends eui.Group implements IUUBase, IUUContainer, IUUCompon
         this.addEventListener(egret.Event.REMOVED_FROM_STAGE, this.onRemoveFromStage, this);
     }
 
-    getProps () {
-        return {
-            awards: this.awards
-        }
-    }
-
-    setProps (d: ICircleSector) {
-        this.awards = d.awards;
+    draw (): void {
+        
     }
 
     private onAddToStage (event:egret.Event) {
@@ -171,18 +165,15 @@ class CircleSector extends eui.Group implements IUUBase, IUUContainer, IUUCompon
 			angles = 360 - angles + 270;
 		}
         egret.Tween.pauseTweens(this.main);
-		egret.Tween.get( this.main ).to( {rotation: angles+1800}, 8000, egret.Ease.sineOut )
-        .call(this.onComplete, this, [txt]);//设置回调函数及作用域，可用于侦听动画完成;
+		var t = egret.Tween.get( this.main );
+        t.to( {rotation: angles+1800}, 8000, egret.Ease.sineOut );
+        this.tweens.push(t);
     }
 
-    dispose () {
-        egret.Tween.pauseTweens(this.main);
-        // egret.Tween.removeTweens(this.main);
-    }
-
-    private onComplete(param1: string) {
-        alert(param1);
-    }
+    // dispose () {
+    //     egret.Tween.pauseTweens(this.main);
+    //     // egret.Tween.removeTweens(this.main);
+    // }
 
     /**
      * 画弧形方法
