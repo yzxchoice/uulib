@@ -2,7 +2,7 @@
 /**
  * 转盘组件
  */
-class CircleSector extends BaseComponent implements IUUBase, IUUContainer, IUUComponent {
+class CircleSector extends BaseComponent implements IUUBase, IUUComponent {
     data: UUData<IComponentData>;
     layerName:string = '转盘'
     container: any;

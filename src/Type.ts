@@ -69,8 +69,6 @@ interface IUUBase {
      */
     layerName?: string,
 
-    getProps? (): any,
-
     /**
      * 资源类组件 
      */
