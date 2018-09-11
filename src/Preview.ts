@@ -9,6 +9,7 @@ class Preview extends eui.Group {
     private pageIndex: number = 0;
     // w: number = 1200;
     // h: number = 900;
+    public tweenControl: TweenControl = new TweenControl();
     public constructor () {
         super();
         
@@ -130,6 +131,12 @@ class Preview extends eui.Group {
                 sound.play(0, 1);
             });
             
+        }
+        if(event.target.data.hasOwnProperty("properties") && event.target.data.properties.hasOwnProperty('anims')){
+            this.tweenControl.setTarget(event.target);
+            let tweener: ITween = event.target.data.properties.anims[0];
+            this.tweenControl.setValue(tweener.start, tweener.control, tweener.end);
+            this.tweenControl.start();
         }
         if(this.pages[this.pageIndex].hasOwnProperty("properties") && this.pages[this.pageIndex].properties.hasOwnProperty("triggerGroup")){
         
@@ -347,6 +354,8 @@ class Preview extends eui.Group {
         this.clear();
         this.drawDisplayList();
         // this.tool.draw();
+
+        this.displayGroup.addChild(this.tweenControl);
     }
 
     clear () {

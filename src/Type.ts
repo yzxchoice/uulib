@@ -37,12 +37,33 @@ enum UUType {
 }
 
 /**
+ * 动画类型
+ */
+enum animType {
+    /**
+     * 直线
+     */
+    line = 1,
+    /**
+     * 圆
+     */
+    circle = 2,
+    /**
+     * 三次贝塞尔曲线
+     */
+    curve = 3
+}
+
+/**
  * 基础资源对象
  */
 interface IResource {
     id?: string,
     name?: string,
     text?: string,
+    /**
+     * 图片地址
+     */
     url?: string
 }
 
@@ -133,16 +154,46 @@ interface ITrigger {
     targetType?: string
 }
 
+/**
+ * 动画对象
+ */
+interface ITween {
+    /**
+     * 动画类型
+     */
+    type: number,
+    /**
+     * 开始点
+     */
+    start?: egret.Point,
+    /**
+     * 控制点
+     */
+    control?: egret.Point,
+    /**
+     * 结束点
+     */
+    end?: egret.Point,
+    /**
+     * 动画音效
+     */
+    music?: IResource
+}
+
 
 interface IProperty {
     /**
      * 事件对象
      */
-    triggerGroup: Array<ITrigger>,
+    triggerGroup?: Array<ITrigger>,
     /**
      * 页面背景音
      */
-    music: IResource
+    music?: IResource,
+    /**
+     * 动画对象
+     */
+    anims?: Array<ITween>
 }
 
 /**

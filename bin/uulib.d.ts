@@ -95,12 +95,32 @@ declare enum UUType {
     CARD = 112,
 }
 /**
+ * 动画类型
+ */
+declare enum animType {
+    /**
+     * 直线
+     */
+    line = 1,
+    /**
+     * 圆
+     */
+    circle = 2,
+    /**
+     * 三次贝塞尔曲线
+     */
+    curve = 3,
+}
+/**
  * 基础资源对象
  */
 interface IResource {
     id?: string;
     name?: string;
     text?: string;
+    /**
+     * 图片地址
+     */
     url?: string;
 }
 /**
@@ -179,15 +199,44 @@ interface ITrigger {
     targetState?: number;
     targetType?: string;
 }
+/**
+ * 动画对象
+ */
+interface ITween {
+    /**
+     * 动画类型
+     */
+    type: number;
+    /**
+     * 开始点
+     */
+    start?: egret.Point;
+    /**
+     * 控制点
+     */
+    control?: egret.Point;
+    /**
+     * 结束点
+     */
+    end?: egret.Point;
+    /**
+     * 动画音效
+     */
+    music?: IResource;
+}
 interface IProperty {
     /**
      * 事件对象
      */
-    triggerGroup: Array<ITrigger>;
+    triggerGroup?: Array<ITrigger>;
     /**
      * 页面背景音
      */
-    music: IResource;
+    music?: IResource;
+    /**
+     * 动画对象
+     */
+    anims?: Array<ITween>;
 }
 /**
  * prop 对象实体
@@ -378,6 +427,7 @@ declare class Preview extends eui.Group {
     tool: any;
     pages: any[];
     private pageIndex;
+    tweenControl: TweenControl;
     constructor();
     private onAddToStageInit(event);
     private bindHandlers();
@@ -538,6 +588,26 @@ declare class TransformTool {
     commit(): void;
     sanitizeStartMatrix(): void;
 }
+declare class TweenControl extends eui.Group {
+    private isMoving;
+    private _start;
+    private _control;
+    private _anchor;
+    target: any;
+    tool: TransformTool;
+    data: UUData<null>;
+    private tweener;
+    constructor();
+    private onAddToStage();
+    start(): void;
+    private moveOver();
+    factor: number;
+    setTarget(target: any): void;
+    /**
+     * 设置控制点值
+     */
+    setValue(start: egret.Point, control?: egret.Point, anchor?: egret.Point): void;
+}
 declare class Card extends eui.Group implements IUUBase, IUUContainer {
     static uuType: UUType;
     data: any;
@@ -559,7 +629,7 @@ declare class Card extends eui.Group implements IUUBase, IUUContainer {
 }
 declare class Utils {
     constructor();
-    static getComs(): (typeof CircleSector | typeof UULabel | typeof UUImage | typeof UUContainer | typeof SoundButton | typeof Slideshow | typeof SlotMachine)[];
+    static getComs(): (typeof CircleSector | typeof UULabel | typeof UUContainer | typeof SoundButton | typeof UUBackground | typeof Slideshow | typeof SlotMachine)[];
     static getTexture(url: string): Promise<{}>;
     static getSound(url: string): Promise<{}>;
     static getScript(arr: Array<string>): Promise<{}>;
@@ -608,7 +678,7 @@ declare class UUContainer extends eui.Group implements IUUBase {
  * 图片组件
  */
 declare class UUImage extends eui.Image implements IUUBase {
-    data: any;
+    data: UUData<IResource>;
     layerName: string;
     static uuType: UUType;
 }
