@@ -287,6 +287,24 @@ var UUType;
     UUType[UUType["SLOT_MACHINE"] = 104] = "SLOT_MACHINE";
     UUType[UUType["CARD"] = 112] = "CARD";
 })(UUType || (UUType = {}));
+/**
+ * 动画类型
+ */
+var animType;
+(function (animType) {
+    /**
+     * 直线
+     */
+    animType[animType["line"] = 1] = "line";
+    /**
+     * 圆
+     */
+    animType[animType["circle"] = 2] = "circle";
+    /**
+     * 三次贝塞尔曲线
+     */
+    animType[animType["curve"] = 3] = "curve";
+})(animType || (animType = {}));
 var LayerSet = (function () {
     function LayerSet() {
         throw new Error('can not create a instance');
@@ -924,13 +942,14 @@ __reflect(Picture.prototype, "Picture");
  */
 var Preview = (function (_super) {
     __extends(Preview, _super);
-    // w: number = 1200;
-    // h: number = 900;
     function Preview() {
         var _this = _super.call(this) || this;
         _this.displayList = [];
         _this.pages = [];
         _this.pageIndex = 0;
+        // w: number = 1200;
+        // h: number = 900;
+        _this.tweenControl = new TweenControl();
         _this.displayGroup = new eui.Group();
         // this.tool = new TransformTool(this);
         _this.getPages();
@@ -1028,6 +1047,12 @@ var Preview = (function (_super) {
                 var sound = res;
                 sound.play(0, 1);
             });
+        }
+        if (event.target.data.hasOwnProperty("properties") && event.target.data.properties.hasOwnProperty('anims')) {
+            this.tweenControl.setTarget(event.target);
+            var tweener = event.target.data.properties.anims[0];
+            this.tweenControl.setValue(tweener.start, tweener.control, tweener.end);
+            this.tweenControl.start();
         }
         if (this.pages[this.pageIndex].hasOwnProperty("properties") && this.pages[this.pageIndex].properties.hasOwnProperty("triggerGroup")) {
             var triggerGroup = this.pages[this.pageIndex].properties.triggerGroup;
@@ -1228,6 +1253,7 @@ var Preview = (function (_super) {
         this.clear();
         this.drawDisplayList();
         // this.tool.draw();
+        this.displayGroup.addChild(this.tweenControl);
     };
     Preview.prototype.clear = function () {
         // this.tool.undraw();
@@ -2019,6 +2045,72 @@ var TransformTool = (function () {
     return TransformTool;
 }());
 __reflect(TransformTool.prototype, "TransformTool");
+var TweenControl = (function (_super) {
+    __extends(TweenControl, _super);
+    function TweenControl() {
+        var _this = _super.call(this) || this;
+        // private ball:egret.Shape;
+        _this.isMoving = false;
+        _this.addEventListener(egret.Event.ADDED_TO_STAGE, _this.onAddToStage, _this);
+        return _this;
+    }
+    TweenControl.prototype.onAddToStage = function () {
+        var btn = new eui.Button();
+        btn.label = "go";
+        btn.addEventListener(egret.TouchEvent.TOUCH_TAP, this.start, this);
+        this.addChild(btn);
+    };
+    TweenControl.prototype.start = function () {
+        if (this.isMoving) {
+            return;
+        }
+        this.isMoving = true;
+        egret.Tween.get(this).to({ factor: 1 }, 2000).call(this.moveOver, this);
+    };
+    TweenControl.prototype.moveOver = function () {
+        this.isMoving = false;
+    };
+    Object.defineProperty(TweenControl.prototype, "factor", {
+        get: function () {
+            return 0;
+        },
+        set: function (value) {
+            switch (this.tweener.type) {
+                case animType.circle:
+                    var PI = Math.PI;
+                    this.target.x = Math.cos(PI / 180 * (360 * value - 90)) * 100 + this._start.x;
+                    this.target.y = Math.sin(PI / 180 * (360 * value - 90)) * 100 + this._start.y;
+                    break;
+                case animType.curve:
+                    this.target.x = (1 - value) * (1 - value) * this._start.x + 2 * value * (1 - value) * this._control.x + value * value * this._anchor.x;
+                    this.target.y = (1 - value) * (1 - value) * this._start.y + 2 * value * (1 - value) * this._control.y + value * value * this._anchor.y;
+                    break;
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    TweenControl.prototype.setTarget = function (target) {
+        // this.tool = tool;
+        if (!target)
+            return;
+        this.target = target;
+        this.data = this.target.data;
+        if (this.data.hasOwnProperty('properties') && this.data.properties.hasOwnProperty('anims')) {
+            this.tweener = this.data.properties.anims[0];
+        }
+    };
+    /**
+     * 设置控制点值
+     */
+    TweenControl.prototype.setValue = function (start, control, anchor) {
+        this._start = start;
+        this._control = control;
+        this._anchor = anchor;
+    };
+    return TweenControl;
+}(eui.Group));
+__reflect(TweenControl.prototype, "TweenControl");
 var Card = (function (_super) {
     __extends(Card, _super);
     function Card() {
