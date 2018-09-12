@@ -93,7 +93,9 @@ interface IUUBase {
     /**
      * 资源类组件 
      */
-    texture?: any
+    texture?: any,
+
+    getProps?: () => any
 }
 
 interface ILabel {

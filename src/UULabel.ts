@@ -38,11 +38,11 @@ class UULabel extends eui.Label implements IUUBase {
         }
     }
 
-    setProps (data: UUData<ILabel>) {
-        this.text = data.props.text;
-        this.textColor = data.props.textColor;
-        this.size = data.props.size;
-        this.fontFamily = data.props.fontFamily;
+    setProps (props: ILabel) {
+        this.text = props.text;
+        this.textColor = props.textColor;
+        this.size = props.size;
+        this.fontFamily = props.fontFamily;
     }
 
     redraw(){

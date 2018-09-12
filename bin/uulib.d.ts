@@ -144,11 +144,11 @@ interface IUUBase {
      * 图层名称
      */
     layerName?: string;
-    getProps?(): any;
     /**
      * 资源类组件
      */
     texture?: any;
+    getProps?: () => any;
 }
 interface ILabel {
     text: string;
@@ -279,34 +279,6 @@ declare class LayerSet {
     static createInstance(layerClass: any, prop: any): any;
     static getLayer(list: any, type: number): any;
     static identity<T>(arg: T): T;
-}
-/**
- * 转盘组件
- */
-declare class CircleSector extends BaseComponent implements IUUBase, IUUContainer, IUUComponent {
-    data: UUData<IComponentData>;
-    layerName: string;
-    container: any;
-    width: number;
-    height: number;
-    static uuType: UUType;
-    tweens: Array<egret.Tween>;
-    awards: Array<IResource>;
-    private main;
-    constructor();
-    draw(): void;
-    private onAddToStage(event);
-    private onRemoveFromStage(event);
-    private init();
-    redraw(): void;
-    drawSector(): Promise<void>;
-    private down(event);
-    private rnd(n, m);
-    rotateFn(item: number, txt: string): void;
-    /**
-     * 画弧形方法
-     */
-    drawArc(mc: egret.Shape, x?: number, y?: number, r?: number, angle?: number, startFrom?: number, color?: number): void;
 }
 declare class UURequest {
     constructor();
@@ -456,56 +428,59 @@ declare class Preview extends eui.Group {
     drawDisplayList(): void;
 }
 /**
- * 组件基类
- */
-declare class BaseUI {
-    /**
-     * 绑定数据
-     */
-    data: any;
-}
-/**
  * 轮播图组件
  */
-declare class SlotMachine extends eui.Group implements IUUBase, IUUContainer, IUUComponent {
+declare class Slideshow extends eui.Group implements IUUBase, IUUContainer, IUUComponent {
     data: any;
     layerName: string;
     container: any;
     static uuType: UUType;
-    private btn_start;
+    private _activeIndex;
+    activeIndex: number;
+    private btn_left;
+    private btn_right;
+    private duration;
+    private delayed;
     private isAnimating;
     draw(): void;
     dispose(): void;
-    private itemWidth;
-    private itemHeight;
-    private gap;
-    private tweenFlag;
     width: number;
     height: number;
-    bgColor: string | number;
-    bdUrl: string;
-    private awardsTotal;
-    private _awards;
     awards: Array<SlideshowItem>;
-    private itemGroup;
+    private imgBox;
     constructor();
     getProps(): {
-        bgColor: string | number;
-        bdUrl: string;
         awards: SlideshowItem[];
     };
-    setProps(d: ISlotMachine): void;
+    setProps(d: ISlideshow): void;
     redraw(): void;
     private onAddToStage(event);
     private onRemoveFromStage(event);
     private init();
-    private createMainBox();
-    private createItemBox();
-    private createItem(url);
-    private createImg(url);
-    private createStartBtn();
-    private onClick(evt);
-    private tween(item, step, duration?);
+    private onclickLeft();
+    private onclickRight();
+    private resetLeft();
+    private resetRight();
+    private resetImgBox();
+}
+declare class Card extends eui.Group implements IUUBase, IUUContainer {
+    static uuType: UUType;
+    data: any;
+    container: any;
+    width: number;
+    height: number;
+    ques: IQuestions;
+    private itemContainer;
+    private toitemContainer;
+    getProps(): {
+        ques: IQuestions;
+    };
+    setProps(d: any): void;
+    constructor();
+    private onAddToStage();
+    draw(): Promise<void>;
+    reset(): void;
+    dispose(): void;
 }
 interface uiData {
     id: string;
@@ -608,28 +583,37 @@ declare class TweenControl extends eui.Group {
      */
     setValue(start: egret.Point, control?: egret.Point, anchor?: egret.Point): void;
 }
-declare class Card extends eui.Group implements IUUBase, IUUContainer {
-    static uuType: UUType;
-    data: any;
+/**
+ * 转盘组件
+ */
+declare class CircleSector extends BaseComponent implements IUUBase, IUUComponent {
+    data: UUData<IComponentData>;
+    layerName: string;
     container: any;
     width: number;
     height: number;
-    ques: IQuestions;
-    private itemContainer;
-    private toitemContainer;
-    getProps(): {
-        ques: IQuestions;
-    };
-    setProps(d: any): void;
+    static uuType: UUType;
+    tweens: Array<egret.Tween>;
+    awards: Array<IResource>;
+    private main;
     constructor();
-    private onAddToStage();
-    draw(): Promise<void>;
-    reset(): void;
-    dispose(): void;
+    draw(): void;
+    private onAddToStage(event);
+    private onRemoveFromStage(event);
+    private init();
+    redraw(): void;
+    drawSector(): Promise<void>;
+    private down(event);
+    private rnd(n, m);
+    rotateFn(item: number, txt: string): void;
+    /**
+     * 画弧形方法
+     */
+    drawArc(mc: egret.Shape, x?: number, y?: number, r?: number, angle?: number, startFrom?: number, color?: number): void;
 }
 declare class Utils {
     constructor();
-    static getComs(): (typeof CircleSector | typeof UULabel | typeof UUContainer | typeof SoundButton | typeof UUBackground | typeof Slideshow | typeof SlotMachine)[];
+    static getComs(): (typeof UULabel | typeof UUContainer | typeof SoundButton | typeof CircleSector | typeof UUBackground | typeof Slideshow | typeof SlotMachine)[];
     static getTexture(url: string): Promise<{}>;
     static getSound(url: string): Promise<{}>;
     static getScript(arr: Array<string>): Promise<{}>;
@@ -698,42 +682,49 @@ declare class UULabel extends eui.Label implements IUUBase {
     static uuType: UUType;
     constructor();
     getProps(): ILabel;
-    setProps(data: UUData<ILabel>): void;
+    setProps(props: ILabel): void;
     redraw(): void;
 }
 /**
  * 轮播图组件
  */
-declare class Slideshow extends eui.Group implements IUUBase, IUUContainer, IUUComponent {
+declare class SlotMachine extends eui.Group implements IUUBase, IUUContainer, IUUComponent {
     data: any;
     layerName: string;
     container: any;
     static uuType: UUType;
-    private _activeIndex;
-    activeIndex: number;
-    private btn_left;
-    private btn_right;
-    private duration;
-    private delayed;
+    private btn_start;
     private isAnimating;
     draw(): void;
     dispose(): void;
+    private itemWidth;
+    private itemHeight;
+    private gap;
+    private tweenFlag;
     width: number;
     height: number;
+    bgColor: string | number;
+    bdUrl: string;
+    private awardsTotal;
+    private _awards;
     awards: Array<SlideshowItem>;
-    private imgBox;
+    private itemGroup;
     constructor();
     getProps(): {
+        bgColor: string | number;
+        bdUrl: string;
         awards: SlideshowItem[];
     };
-    setProps(d: ISlideshow): void;
+    setProps(d: ISlotMachine): void;
     redraw(): void;
     private onAddToStage(event);
     private onRemoveFromStage(event);
     private init();
-    private onclickLeft();
-    private onclickRight();
-    private resetLeft();
-    private resetRight();
-    private resetImgBox();
+    private createMainBox();
+    private createItemBox();
+    private createItem(url);
+    private createImg(url);
+    private createStartBtn();
+    private onClick(evt);
+    private tween(item, step, duration?);
 }
