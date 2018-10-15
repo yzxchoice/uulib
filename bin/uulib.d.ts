@@ -574,7 +574,7 @@ declare class TweenControl extends eui.Group {
     private tweener;
     constructor();
     private onAddToStage();
-    start(): void;
+    start(): Promise<{}>;
     private moveOver();
     factor: number;
     setTarget(target: any): void;

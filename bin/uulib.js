@@ -1866,11 +1866,19 @@ var TweenControl = (function (_super) {
         this.addChild(btn);
     };
     TweenControl.prototype.start = function () {
+        var _this = this;
         if (this.isMoving) {
             return;
         }
         this.isMoving = true;
-        egret.Tween.get(this).to({ factor: 1 }, 2000).call(this.moveOver, this);
+        return new Promise(function (resolve) {
+            egret.Tween.get(_this)
+                .to({ factor: 1 }, 2000)
+                .call(function () {
+                resolve('finish');
+            });
+        });
+        // egret.Tween.get(this).to({factor: 1}, 2000).call(this.moveOver, this);
     };
     TweenControl.prototype.moveOver = function () {
         this.isMoving = false;
@@ -1889,6 +1897,10 @@ var TweenControl = (function (_super) {
                 case animType.curve:
                     this.target.x = (1 - value) * (1 - value) * this._start.x + 2 * value * (1 - value) * this._control.x + value * value * this._anchor.x;
                     this.target.y = (1 - value) * (1 - value) * this._start.y + 2 * value * (1 - value) * this._control.y + value * value * this._anchor.y;
+                    break;
+                case animType.line:
+                    this.target.x = this._start.x + (this._control.x - this._start.x) * value;
+                    this.target.y = this._start.y + (this._control.y - this._start.y) * value;
                     break;
             }
         },
