@@ -688,15 +688,13 @@ declare class UULabel extends eui.Label implements IUUBase {
 /**
  * 轮播图组件
  */
-declare class SlotMachine extends eui.Group implements IUUBase, IUUContainer, IUUComponent {
+declare class SlotMachine extends eui.Group implements IUUBase {
     data: any;
     layerName: string;
     container: any;
     static uuType: UUType;
     private btn_start;
     private isAnimating;
-    draw(): void;
-    dispose(): void;
     private itemWidth;
     private itemHeight;
     private gap;
@@ -709,14 +707,7 @@ declare class SlotMachine extends eui.Group implements IUUBase, IUUContainer, IU
     private _awards;
     awards: Array<SlideshowItem>;
     private itemGroup;
-    constructor();
-    getProps(): {
-        bgColor: string | number;
-        bdUrl: string;
-        awards: SlideshowItem[];
-    };
-    setProps(d: ISlotMachine): void;
-    redraw(): void;
+    constructor(props: any);
     private onAddToStage(event);
     private onRemoveFromStage(event);
     private init();

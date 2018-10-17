@@ -2,7 +2,7 @@
 /**
  * 轮播图组件
  */
-class SlotMachine extends eui.Group implements IUUBase, IUUContainer, IUUComponent {
+class SlotMachine extends eui.Group implements IUUBase {
     data: any;
     layerName:string = '老虎机'
     container: any;
@@ -11,12 +11,7 @@ class SlotMachine extends eui.Group implements IUUBase, IUUContainer, IUUCompone
     
     private btn_start: eui.Button;
     private isAnimating: boolean = false;
-    draw (): void {
-        
-    }
-	dispose(){
 
-	}
 	private itemWidth: number = 250;
 	private itemHeight: number = 250;
 	private gap: number = 10;
@@ -28,49 +23,8 @@ class SlotMachine extends eui.Group implements IUUBase, IUUContainer, IUUCompone
 	bgColor: string | number = '0x666699';
 	bdUrl: string = '/assets/pic/draw_card_bg.png';
 	
-	private awardsTotal: Array<SlideshowItem> = [    
-		{
-			url: '/assets/pic/post_item_2.png'
-		},
-		{
-			url: '/assets/pic/post_item_3.png'
-		},
-		{
-			url: '/assets/pic/post_item_1.png'
-		},
-		{
-			url: '/assets/pic/post_item_4.png'
-		},
-		{
-			url: '/assets/pic/post_item_6.png'
-		},
-		{
-			url: '/assets/pic/post_item_5.png'
-		},
-		{
-			url: '/assets/pic/post_item_2.png'
-		},
-    ];
-	private _awards : Array<SlideshowItem> = [    
-		{
-			url: '/assets/pic/post_item_2.png'
-		},
-		{
-			url: '/assets/pic/post_item_3.png'
-		},
-		{
-			url: '/assets/pic/post_item_1.png'
-		},
-		{
-			url: '/assets/pic/post_item_4.png'
-		},
-		{
-			url: '/assets/pic/post_item_6.png'
-		},
-		{
-			url: '/assets/pic/post_item_5.png'
-		},
-    ]
+	private awardsTotal: Array<SlideshowItem> = [];
+	private _awards : Array<SlideshowItem> = [];
 	public get awards() : Array<SlideshowItem> {
 		return this._awards;
 	}
@@ -81,30 +35,14 @@ class SlotMachine extends eui.Group implements IUUBase, IUUContainer, IUUCompone
 	}
 	
     private itemGroup: eui.Group;
-    constructor () {
+    constructor (props) {
         super();
+		this.awards = props.awards;
+		this.bgColor = props.bgColor;
+		this.bdUrl = props.bdUrl;
         this.touchEnabled = false;
         this.addEventListener(egret.Event.ADDED_TO_STAGE, this.onAddToStage, this);
         this.addEventListener(egret.Event.REMOVED_FROM_STAGE, this.onRemoveFromStage, this);
-    }
-
-    getProps () {
-        return {
-			bgColor: this.bgColor,
-			bdUrl: this.bdUrl,
-            awards: this.awards,
-        }
-    }
-
-	setProps (d: ISlotMachine) {
-        this.awards = d.awards;
-		this.bdUrl = d.bdUrl;
-		this.bgColor = d.bgColor;
-    }
-
-    redraw () {
-		this.removeChildren();
-		this.init();
     }
 
     private onAddToStage (event:egret.Event) {

@@ -2318,7 +2318,7 @@ __reflect(UULabel.prototype, "UULabel", ["IUUBase"]);
  */
 var SlotMachine = (function (_super) {
     __extends(SlotMachine, _super);
-    function SlotMachine() {
+    function SlotMachine(props) {
         var _this = _super.call(this) || this;
         _this.layerName = '老虎机';
         _this.isAnimating = false;
@@ -2332,58 +2332,16 @@ var SlotMachine = (function (_super) {
         // props中用到的参数
         _this.bgColor = '0x666699';
         _this.bdUrl = '/assets/pic/draw_card_bg.png';
-        _this.awardsTotal = [
-            {
-                url: '/assets/pic/post_item_2.png'
-            },
-            {
-                url: '/assets/pic/post_item_3.png'
-            },
-            {
-                url: '/assets/pic/post_item_1.png'
-            },
-            {
-                url: '/assets/pic/post_item_4.png'
-            },
-            {
-                url: '/assets/pic/post_item_6.png'
-            },
-            {
-                url: '/assets/pic/post_item_5.png'
-            },
-            {
-                url: '/assets/pic/post_item_2.png'
-            },
-        ];
-        _this._awards = [
-            {
-                url: '/assets/pic/post_item_2.png'
-            },
-            {
-                url: '/assets/pic/post_item_3.png'
-            },
-            {
-                url: '/assets/pic/post_item_1.png'
-            },
-            {
-                url: '/assets/pic/post_item_4.png'
-            },
-            {
-                url: '/assets/pic/post_item_6.png'
-            },
-            {
-                url: '/assets/pic/post_item_5.png'
-            },
-        ];
+        _this.awardsTotal = [];
+        _this._awards = [];
+        _this.awards = props.awards;
+        _this.bgColor = props.bgColor;
+        _this.bdUrl = props.bdUrl;
         _this.touchEnabled = false;
         _this.addEventListener(egret.Event.ADDED_TO_STAGE, _this.onAddToStage, _this);
         _this.addEventListener(egret.Event.REMOVED_FROM_STAGE, _this.onRemoveFromStage, _this);
         return _this;
     }
-    SlotMachine.prototype.draw = function () {
-    };
-    SlotMachine.prototype.dispose = function () {
-    };
     Object.defineProperty(SlotMachine.prototype, "awards", {
         get: function () {
             return this._awards;
@@ -2396,22 +2354,6 @@ var SlotMachine = (function (_super) {
         enumerable: true,
         configurable: true
     });
-    SlotMachine.prototype.getProps = function () {
-        return {
-            bgColor: this.bgColor,
-            bdUrl: this.bdUrl,
-            awards: this.awards,
-        };
-    };
-    SlotMachine.prototype.setProps = function (d) {
-        this.awards = d.awards;
-        this.bdUrl = d.bdUrl;
-        this.bgColor = d.bgColor;
-    };
-    SlotMachine.prototype.redraw = function () {
-        this.removeChildren();
-        this.init();
-    };
     SlotMachine.prototype.onAddToStage = function (event) {
         this.init();
     };
@@ -2618,4 +2560,4 @@ var SlotMachine = (function (_super) {
     SlotMachine.uuType = UUType.SLOT_MACHINE;
     return SlotMachine;
 }(eui.Group));
-__reflect(SlotMachine.prototype, "SlotMachine", ["IUUBase", "IUUContainer", "IUUComponent"]);
+__reflect(SlotMachine.prototype, "SlotMachine", ["IUUBase"]);
