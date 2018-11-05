@@ -4,6 +4,9 @@
  */
 class Preview extends eui.Group {
     private displayList = [];
+    private drawTarget;
+    private distanceX: number;
+    private distanceY: number;
     tool: any;
     pages = [];
     private pageIndex: number = 0;
@@ -99,7 +102,8 @@ class Preview extends eui.Group {
         this.setupTool();
 	
         // selects pictures on mouse down
-        this.addEventListener(Mouse.START, this.down, this);
+        // this.addEventListener(Mouse.START, this.down, this);
+        // this.addEventListener(Mouse.START, this.down2, this);
 
         this.render();
     }
@@ -125,38 +129,38 @@ class Preview extends eui.Group {
         console.log(event.target);
         let d: UUData<any> = event.target.data;
 
-        if(d && d.sound) {
-            Utils.getSound(d.sound.url).then( (res) => {
-                var sound: egret.Sound = <egret.Sound>res;
-                sound.play(0, 1);
-            });
+        // if(d && d.sound) {
+        //     Utils.getSound(d.sound.url).then( (res) => {
+        //         var sound: egret.Sound = <egret.Sound>res;
+        //         sound.play(0, 1);
+        //     });
             
-        }
-        if(event.target.data.hasOwnProperty("properties") && event.target.data.properties.hasOwnProperty('anims')){
-            this.tweenControl.setTarget(event.target);
-            let tweener: ITween = event.target.data.properties.anims[0];
-            this.tweenControl.setValue(tweener.start, tweener.control, tweener.end);
-            this.tweenControl.start();
-        }
-        if(this.pages[this.pageIndex].hasOwnProperty("properties") && this.pages[this.pageIndex].properties.hasOwnProperty("triggerGroup")){
+        // }
+        // if(event.target.data.hasOwnProperty("properties") && event.target.data.properties.hasOwnProperty('anims')){
+        //     this.tweenControl.setTarget(event.target);
+        //     let tweener: ITween = event.target.data.properties.anims[0];
+        //     this.tweenControl.setValue(tweener.start, tweener.control, tweener.end);
+        //     this.tweenControl.start();
+        // }
+        // if(this.pages[this.pageIndex].hasOwnProperty("properties") && this.pages[this.pageIndex].properties.hasOwnProperty("triggerGroup")){
         
-            var triggerGroup = this.pages[this.pageIndex].properties.triggerGroup;
-            console.log('triggerGroup...');
-            console.log(JSON.stringify(triggerGroup));
-            triggerGroup.forEach( (item) => {
-                if(item.sourceId == event.target.name){
-                    if(event.target.data.hasOwnProperty("sound")){
-                        var sound:egret.Sound = RES.getRes(event.target.data.name);
-                        sound.play(0, 1);
-                    }else {
-                        console.log('item.targetId = ' + item.targetId);
-                        egret.Tween.get( this.getDisplayByName(item.targetId)[0].image ).to( {alpha: 0}, 300, egret.Ease.sineIn );
-                    }
+        //     var triggerGroup = this.pages[this.pageIndex].properties.triggerGroup;
+        //     console.log('triggerGroup...');
+        //     console.log(JSON.stringify(triggerGroup));
+        //     triggerGroup.forEach( (item) => {
+        //         if(item.sourceId == event.target.name){
+        //             if(event.target.data.hasOwnProperty("sound")){
+        //                 var sound:egret.Sound = RES.getRes(event.target.data.name);
+        //                 sound.play(0, 1);
+        //             }else {
+        //                 console.log('item.targetId = ' + item.targetId);
+        //                 egret.Tween.get( this.getDisplayByName(item.targetId)[0].image ).to( {alpha: 0}, 300, egret.Ease.sineIn );
+        //             }
                     
-                }
-            })
+        //         }
+        //     })
             
-        }
+        // }
 
         
 
@@ -203,6 +207,38 @@ class Preview extends eui.Group {
         
         requestAnimationFrame(this.render);
         event.preventDefault();
+    }
+
+    down2(evt: egret.TouchEvent) {
+        let target = evt.target;
+        let isDraw = target.isDraw;
+        if(isDraw) {
+            this.drawTarget = target;
+            this.addEventListener(Mouse.MOVE, this.move2, this);
+            this.addEventListener(Mouse.END, this.up2, this);
+
+            let targetPoint = target.localToGlobal(0, 0);
+            
+            this.distanceX = evt.stageX - targetPoint.x;
+            this.distanceY = evt.stageY - targetPoint.y;
+        }
+        evt.preventDefault();
+    }
+
+    move2(evt: egret.TouchEvent) {
+        let targetPoint = this.drawTarget.parent.globalToLocal(evt.stageX - this.distanceX, evt.stageY - this.distanceY);   
+        requestAnimationFrame(() => {
+            this.drawTarget.x = targetPoint.x;
+            this.drawTarget.y = targetPoint.y;
+        });
+             
+        evt.preventDefault();        
+    } 
+
+    up2(evt: egret.TouchEvent) {
+        this.removeEventListener(Mouse.MOVE, this.move2, this);
+        this.removeEventListener(Mouse.END, this.up2, this);
+        evt.preventDefault();                
     }
 
     findControlByType(type: any) {

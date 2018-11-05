@@ -1,17 +1,3 @@
-declare class BaseComponent extends eui.Group implements IUUComponent {
-    awards: Array<IResource>;
-    tweens: Array<egret.Tween>;
-    constructor();
-    getProps(): {
-        awards: IResource[];
-    };
-    setProps(d: IComponentData): void;
-    redraw(): void;
-    /**
-     * 切换页和删除图层的时候回收组件释放当前组件动画等
-     */
-    dispose(): void;
-}
 /**
  * transform 枚举
  */
@@ -85,6 +71,10 @@ declare enum UUType {
      */
     FRAME = 102,
     /**
+     * Group
+     */
+    GROUP = 1021,
+    /**
      * 轮播图组件
      */
     SLIDESHOW = 103,
@@ -93,6 +83,34 @@ declare enum UUType {
      */
     SLOT_MACHINE = 104,
     CARD = 112,
+    /**
+     * 弹出框卡片组件
+     */
+    CARDALERT = 1001,
+    /**
+     * 图片单选
+     */
+    SELECT_IMAGE = 1002,
+    /**
+     * 图片拖拽1
+     */
+    DRAW_ONE = 2001,
+    /**
+     * 拖拽组件 border盒组件
+     */
+    DRAG_BORDER_BOX = 3001,
+    /**
+     * 拖拽组件 image盒组件
+     */
+    DRAG_IMAGE_BOX = 3002,
+    /**
+     * 点击组件 image盒组件
+     */
+    CLICK_IMAGE_BOX = 3003,
+    /**
+    * 功能按钮
+    */
+    FUNCTION_BUTTON = 9001,
 }
 /**
  * 动画类型
@@ -122,6 +140,8 @@ interface IResource {
      * 图片地址
      */
     url?: string;
+    answer?: boolean;
+    rightAnswer?: ILabel;
 }
 /**
  * 自定义组件绑定数据实体
@@ -148,15 +168,33 @@ interface IUUBase {
      * 资源类组件
      */
     texture?: any;
+    /**
+     * 是否可拖动
+     */
+    isDraw?: boolean;
     getProps?: () => any;
 }
+interface ISize {
+    width: number;
+    height: number;
+}
+interface IPosition {
+    x: number;
+    y: number;
+}
+interface IBaseMessage extends ISize, IPosition {
+}
 interface ILabel {
-    text: string;
+    text?: string;
     textColor?: number;
     size?: number;
     fontFamily?: string;
     textAlign?: string;
     lineSpacing?: number;
+}
+interface IImage extends IResource, ISize {
+}
+interface IGroup extends ISize {
 }
 interface IQuestions {
     items: Array<IQuestion>;
@@ -172,17 +210,6 @@ interface CircleSectorItem {
 }
 interface ICircleSector {
     awards: Array<CircleSectorItem>;
-}
-interface SlideshowItem {
-    url: string;
-}
-interface ISlideshow {
-    awards: Array<SlideshowItem>;
-}
-interface ISlotMachine {
-    awards: Array<SlideshowItem>;
-    bgColor: number | string;
-    bdUrl: string;
 }
 interface ITrigger {
     delay: number;
@@ -280,8 +307,13 @@ declare class LayerSet {
     static getLayer(list: any, type: number): any;
     static identity<T>(arg: T): T;
 }
-declare class UURequest {
-    constructor();
+declare class Transformable {
+    width: number;
+    height: number;
+    matrix: any;
+    owner: any;
+    changed: any;
+    constructor(width: number, height: number, matrix: any, owner: any);
 }
 /**
  * 自定义操作框
@@ -396,6 +428,9 @@ declare class Picture {
  */
 declare class Preview extends eui.Group {
     private displayList;
+    private drawTarget;
+    private distanceX;
+    private distanceY;
     tool: any;
     pages: any[];
     private pageIndex;
@@ -414,6 +449,9 @@ declare class Preview extends eui.Group {
     down(event: egret.TouchEvent): boolean;
     move(event: egret.TouchEvent): void;
     up(event: egret.TouchEvent): void;
+    down2(evt: egret.TouchEvent): void;
+    move2(evt: egret.TouchEvent): void;
+    up2(evt: egret.TouchEvent): void;
     findControlByType(type: any): any;
     applyDynamicControls(event: any): void;
     getDynamicControl(): any;
@@ -427,41 +465,21 @@ declare class Preview extends eui.Group {
     reset(): void;
     drawDisplayList(): void;
 }
+interface uiData {
+    id: string;
+    name: string;
+    url?: string;
+}
 /**
- * 轮播图组件
+ * 声音组件
  */
-declare class Slideshow extends eui.Group implements IUUBase, IUUContainer, IUUComponent {
-    data: any;
+declare class SoundButton extends eui.Button implements IUUBase {
+    data: uiData;
     layerName: string;
-    container: any;
     static uuType: UUType;
-    private _activeIndex;
-    activeIndex: number;
-    private btn_left;
-    private btn_right;
-    private duration;
-    private delayed;
-    private isAnimating;
-    draw(): void;
-    dispose(): void;
-    width: number;
-    height: number;
-    awards: Array<SlideshowItem>;
-    private imgBox;
     constructor();
-    getProps(): {
-        awards: SlideshowItem[];
-    };
-    setProps(d: ISlideshow): void;
-    redraw(): void;
     private onAddToStage(event);
-    private onRemoveFromStage(event);
     private init();
-    private onclickLeft();
-    private onclickRight();
-    private resetLeft();
-    private resetRight();
-    private resetImgBox();
 }
 declare class Card extends eui.Group implements IUUBase, IUUContainer {
     static uuType: UUType;
@@ -481,30 +499,6 @@ declare class Card extends eui.Group implements IUUBase, IUUContainer {
     draw(): Promise<void>;
     reset(): void;
     dispose(): void;
-}
-interface uiData {
-    id: string;
-    name: string;
-    url?: string;
-}
-/**
- * 声音组件
- */
-declare class SoundButton extends eui.Button implements IUUBase {
-    data: uiData;
-    layerName: string;
-    static uuType: UUType;
-    constructor();
-    private onAddToStage(event);
-    private init();
-}
-declare class Transformable {
-    width: number;
-    height: number;
-    matrix: any;
-    owner: any;
-    changed: any;
-    constructor(width: number, height: number, matrix: any, owner: any);
 }
 /**
  * 操作基类
@@ -583,37 +577,23 @@ declare class TweenControl extends eui.Group {
      */
     setValue(start: egret.Point, control?: egret.Point, anchor?: egret.Point): void;
 }
-/**
- * 转盘组件
- */
-declare class CircleSector extends BaseComponent implements IUUBase, IUUComponent {
-    data: UUData<IComponentData>;
-    layerName: string;
-    container: any;
-    width: number;
-    height: number;
-    static uuType: UUType;
-    tweens: Array<egret.Tween>;
+declare class BaseComponent extends eui.Group implements IUUComponent {
     awards: Array<IResource>;
-    private main;
+    tweens: Array<egret.Tween>;
     constructor();
-    draw(): void;
-    private onAddToStage(event);
-    private onRemoveFromStage(event);
-    private init();
+    getProps(): {
+        awards: IResource[];
+    };
+    setProps(d: IComponentData): void;
     redraw(): void;
-    drawSector(): Promise<void>;
-    private down(event);
-    private rnd(n, m);
-    rotateFn(item: number, txt: string): void;
     /**
-     * 画弧形方法
+     * 切换页和删除图层的时候回收组件释放当前组件动画等
      */
-    drawArc(mc: egret.Shape, x?: number, y?: number, r?: number, angle?: number, startFrom?: number, color?: number): void;
+    dispose(): void;
 }
 declare class Utils {
     constructor();
-    static getComs(): (typeof UULabel | typeof UUContainer | typeof SoundButton | typeof CircleSector | typeof UUBackground | typeof Slideshow | typeof SlotMachine)[];
+    static getComs(): any[];
     static getTexture(url: string): Promise<{}>;
     static getSound(url: string): Promise<{}>;
     static getScript(arr: Array<string>): Promise<{}>;
@@ -658,64 +638,42 @@ declare class UUContainer extends eui.Group implements IUUBase {
         height: number;
     };
 }
+declare class UUGroup extends eui.Group implements IUUBase, IGroup {
+    static uuType: UUType;
+    name: string;
+    data: UUData<IGroup>;
+    layerName: string;
+    isDraw: boolean;
+    width: number;
+    height: number;
+    constructor(props: any);
+}
 /**
  * 图片组件
  */
-declare class UUImage extends eui.Image implements IUUBase {
+declare class UUImage extends eui.Image implements IUUBase, IImage {
+    static uuType: UUType;
     data: UUData<IResource>;
     layerName: string;
-    static uuType: UUType;
+    isDraw: boolean;
 }
 /**
  * 文字组件
  */
-declare class UULabel extends eui.Label implements IUUBase {
+declare class UULabel extends eui.Label implements IUUBase, ILabel {
+    static uuType: UUType;
+    name: string;
     data: UUData<ILabel>;
     layerName: string;
+    isDraw: boolean;
     text: string;
     textColor: number;
     size: number;
     fontFamily: string;
     lineSpacing: 12;
     textAlign: string;
-    name: string;
-    static uuType: UUType;
-    constructor();
-    getProps(): ILabel;
-    setProps(props: ILabel): void;
-    redraw(): void;
+    constructor(props?: {});
 }
-/**
- * 轮播图组件
- */
-declare class SlotMachine extends eui.Group implements IUUBase {
-    data: any;
-    layerName: string;
-    container: any;
-    static uuType: UUType;
-    private btn_start;
-    private isAnimating;
-    private itemWidth;
-    private itemHeight;
-    private gap;
-    private tweenFlag;
-    width: number;
-    height: number;
-    bgColor: string | number;
-    bdUrl: string;
-    private awardsTotal;
-    private _awards;
-    awards: Array<SlideshowItem>;
-    private itemGroup;
-    constructor(props: any);
-    private onAddToStage(event);
-    private onRemoveFromStage(event);
-    private init();
-    private createMainBox();
-    private createItemBox();
-    private createItem(url);
-    private createImg(url);
-    private createStartBtn();
-    private onClick(evt);
-    private tween(item, step, duration?);
+declare class UURequest {
+    constructor();
 }

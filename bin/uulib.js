@@ -43,35 +43,6 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var BaseComponent = (function (_super) {
-    __extends(BaseComponent, _super);
-    function BaseComponent() {
-        return _super.call(this) || this;
-    }
-    BaseComponent.prototype.getProps = function () {
-        return {
-            awards: this.awards
-        };
-    };
-    BaseComponent.prototype.setProps = function (d) {
-        this.awards = d.awards;
-    };
-    BaseComponent.prototype.redraw = function () {
-    };
-    /**
-     * 切换页和删除图层的时候回收组件释放当前组件动画等
-     */
-    BaseComponent.prototype.dispose = function () {
-        for (var _i = 0, _a = this.tweens; _i < _a.length; _i++) {
-            var t = _a[_i];
-            t.pause();
-        }
-        egret.Tween.removeAllTweens();
-        this.tweens = [];
-    };
-    return BaseComponent;
-}(eui.Group));
-__reflect(BaseComponent.prototype, "BaseComponent", ["IUUComponent"]);
 /**
  * transform 枚举
  */
@@ -250,7 +221,6 @@ var Control = (function () {
     return Control;
 }());
 __reflect(Control.prototype, "Control");
-// TypeScript file
 var UUType;
 (function (UUType) {
     /**
@@ -278,6 +248,10 @@ var UUType;
      */
     UUType[UUType["FRAME"] = 102] = "FRAME";
     /**
+     * Group
+     */
+    UUType[UUType["GROUP"] = 1021] = "GROUP";
+    /**
      * 轮播图组件
      */
     UUType[UUType["SLIDESHOW"] = 103] = "SLIDESHOW";
@@ -286,6 +260,34 @@ var UUType;
      */
     UUType[UUType["SLOT_MACHINE"] = 104] = "SLOT_MACHINE";
     UUType[UUType["CARD"] = 112] = "CARD";
+    /**
+     * 弹出框卡片组件
+     */
+    UUType[UUType["CARDALERT"] = 1001] = "CARDALERT";
+    /**
+     * 图片单选
+     */
+    UUType[UUType["SELECT_IMAGE"] = 1002] = "SELECT_IMAGE";
+    /**
+     * 图片拖拽1
+     */
+    UUType[UUType["DRAW_ONE"] = 2001] = "DRAW_ONE";
+    /**
+     * 拖拽组件 border盒组件
+     */
+    UUType[UUType["DRAG_BORDER_BOX"] = 3001] = "DRAG_BORDER_BOX";
+    /**
+     * 拖拽组件 image盒组件
+     */
+    UUType[UUType["DRAG_IMAGE_BOX"] = 3002] = "DRAG_IMAGE_BOX";
+    /**
+     * 点击组件 image盒组件
+     */
+    UUType[UUType["CLICK_IMAGE_BOX"] = 3003] = "CLICK_IMAGE_BOX";
+    /**
+    * 功能按钮
+    */
+    UUType[UUType["FUNCTION_BUTTON"] = 9001] = "FUNCTION_BUTTON";
 })(UUType || (UUType = {}));
 /**
  * 动画类型
@@ -328,14 +330,19 @@ var LayerSet = (function () {
     return LayerSet;
 }());
 __reflect(LayerSet.prototype, "LayerSet");
-// TypeScript file
-var UURequest = (function () {
-    // private req: egret.HttpRequest = new egret.HttpRequest();
-    function UURequest() {
+var Transformable = (function () {
+    function Transformable(width, height, matrix, owner) {
+        this.width = 0;
+        this.height = 0;
+        this.width = width;
+        this.height = height;
+        this.matrix = matrix;
+        this.owner = owner;
+        this.changed = null;
     }
-    return UURequest;
+    return Transformable;
 }());
-__reflect(UURequest.prototype, "UURequest");
+__reflect(Transformable.prototype, "Transformable");
 /**
  * 自定义操作框
  */
@@ -818,7 +825,8 @@ var Preview = (function (_super) {
         this.renderResources(this.pageIndex);
         this.setupTool();
         // selects pictures on mouse down
-        this.addEventListener(Mouse.START, this.down, this);
+        // this.addEventListener(Mouse.START, this.down, this);
+        // this.addEventListener(Mouse.START, this.down2, this);
         this.render();
     };
     Preview.prototype.setupTool = function () {
@@ -837,38 +845,36 @@ var Preview = (function (_super) {
         return temp;
     };
     Preview.prototype.down = function (event) {
-        var _this = this;
         console.log(event.target);
         var d = event.target.data;
-        if (d && d.sound) {
-            Utils.getSound(d.sound.url).then(function (res) {
-                var sound = res;
-                sound.play(0, 1);
-            });
-        }
-        if (event.target.data.hasOwnProperty("properties") && event.target.data.properties.hasOwnProperty('anims')) {
-            this.tweenControl.setTarget(event.target);
-            var tweener = event.target.data.properties.anims[0];
-            this.tweenControl.setValue(tweener.start, tweener.control, tweener.end);
-            this.tweenControl.start();
-        }
-        if (this.pages[this.pageIndex].hasOwnProperty("properties") && this.pages[this.pageIndex].properties.hasOwnProperty("triggerGroup")) {
-            var triggerGroup = this.pages[this.pageIndex].properties.triggerGroup;
-            console.log('triggerGroup...');
-            console.log(JSON.stringify(triggerGroup));
-            triggerGroup.forEach(function (item) {
-                if (item.sourceId == event.target.name) {
-                    if (event.target.data.hasOwnProperty("sound")) {
-                        var sound = RES.getRes(event.target.data.name);
-                        sound.play(0, 1);
-                    }
-                    else {
-                        console.log('item.targetId = ' + item.targetId);
-                        egret.Tween.get(_this.getDisplayByName(item.targetId)[0].image).to({ alpha: 0 }, 300, egret.Ease.sineIn);
-                    }
-                }
-            });
-        }
+        // if(d && d.sound) {
+        //     Utils.getSound(d.sound.url).then( (res) => {
+        //         var sound: egret.Sound = <egret.Sound>res;
+        //         sound.play(0, 1);
+        //     });
+        // }
+        // if(event.target.data.hasOwnProperty("properties") && event.target.data.properties.hasOwnProperty('anims')){
+        //     this.tweenControl.setTarget(event.target);
+        //     let tweener: ITween = event.target.data.properties.anims[0];
+        //     this.tweenControl.setValue(tweener.start, tweener.control, tweener.end);
+        //     this.tweenControl.start();
+        // }
+        // if(this.pages[this.pageIndex].hasOwnProperty("properties") && this.pages[this.pageIndex].properties.hasOwnProperty("triggerGroup")){
+        //     var triggerGroup = this.pages[this.pageIndex].properties.triggerGroup;
+        //     console.log('triggerGroup...');
+        //     console.log(JSON.stringify(triggerGroup));
+        //     triggerGroup.forEach( (item) => {
+        //         if(item.sourceId == event.target.name){
+        //             if(event.target.data.hasOwnProperty("sound")){
+        //                 var sound:egret.Sound = RES.getRes(event.target.data.name);
+        //                 sound.play(0, 1);
+        //             }else {
+        //                 console.log('item.targetId = ' + item.targetId);
+        //                 egret.Tween.get( this.getDisplayByName(item.targetId)[0].image ).to( {alpha: 0}, 300, egret.Ease.sineIn );
+        //             }
+        //         }
+        //     })
+        // }
         Mouse.get(event, this);
         var controlled = this.tool.start(Mouse.x, Mouse.y);
         if (!this.containsPoint(Mouse.x, Mouse.y)) {
@@ -901,6 +907,33 @@ var Preview = (function (_super) {
         this.removeEventListener(Mouse.END, this.up, this);
         requestAnimationFrame(this.render);
         event.preventDefault();
+    };
+    Preview.prototype.down2 = function (evt) {
+        var target = evt.target;
+        var isDraw = target.isDraw;
+        if (isDraw) {
+            this.drawTarget = target;
+            this.addEventListener(Mouse.MOVE, this.move2, this);
+            this.addEventListener(Mouse.END, this.up2, this);
+            var targetPoint = target.localToGlobal(0, 0);
+            this.distanceX = evt.stageX - targetPoint.x;
+            this.distanceY = evt.stageY - targetPoint.y;
+        }
+        evt.preventDefault();
+    };
+    Preview.prototype.move2 = function (evt) {
+        var _this = this;
+        var targetPoint = this.drawTarget.parent.globalToLocal(evt.stageX - this.distanceX, evt.stageY - this.distanceY);
+        requestAnimationFrame(function () {
+            _this.drawTarget.x = targetPoint.x;
+            _this.drawTarget.y = targetPoint.y;
+        });
+        evt.preventDefault();
+    };
+    Preview.prototype.up2 = function (evt) {
+        this.removeEventListener(Mouse.MOVE, this.move2, this);
+        this.removeEventListener(Mouse.END, this.up2, this);
+        evt.preventDefault();
     };
     Preview.prototype.findControlByType = function (type) {
         var i = 0;
@@ -1082,208 +1115,27 @@ var Preview = (function (_super) {
     return Preview;
 }(eui.Group));
 __reflect(Preview.prototype, "Preview");
-// TypeScript file
 /**
- * 轮播图组件
+ * 声音组件
  */
-var Slideshow = (function (_super) {
-    __extends(Slideshow, _super);
-    function Slideshow() {
+var SoundButton = (function (_super) {
+    __extends(SoundButton, _super);
+    function SoundButton() {
         var _this = _super.call(this) || this;
-        _this.layerName = '轮播图';
-        _this._activeIndex = 0;
-        _this.duration = 500;
-        _this.delayed = 100;
-        _this.isAnimating = false;
-        _this.width = 800;
-        _this.height = 600;
-        _this.awards = [
-            {
-                url: '/assets/pic/post_item_44.png'
-            },
-            {
-                url: '/assets/pic/post_item_45.png'
-            },
-            {
-                url: '/assets/pic/post_item_42.png'
-            },
-            {
-                url: '/assets/pic/post_item_43.png'
-            },
-            {
-                url: '/assets/pic/post_item_46.png'
-            },
-        ];
-        _this.touchEnabled = false;
+        _this.layerName = '声音';
         _this.addEventListener(egret.Event.ADDED_TO_STAGE, _this.onAddToStage, _this);
-        _this.addEventListener(egret.Event.REMOVED_FROM_STAGE, _this.onRemoveFromStage, _this);
         return _this;
     }
-    Object.defineProperty(Slideshow.prototype, "activeIndex", {
-        get: function () {
-            return this._activeIndex;
-        },
-        set: function (v) {
-            this._activeIndex = v;
-            this.btn_left.visible = true;
-            this.btn_right.visible = true;
-            if (v == 0) {
-                this.btn_left.visible = false;
-            }
-            if (v == this.awards.length - 1) {
-                this.btn_right.visible = true;
-            }
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Slideshow.prototype.draw = function () {
-    };
-    Slideshow.prototype.dispose = function () {
-    };
-    Slideshow.prototype.getProps = function () {
-        return {
-            awards: this.awards
-        };
-    };
-    Slideshow.prototype.setProps = function (d) {
-        this.awards = d.awards;
-    };
-    Slideshow.prototype.redraw = function () {
-        this.resetImgBox();
-    };
-    Slideshow.prototype.onAddToStage = function (event) {
+    SoundButton.prototype.onAddToStage = function (event) {
         this.init();
+        // this.bindHandler();
     };
-    Slideshow.prototype.onRemoveFromStage = function (event) {
+    SoundButton.prototype.init = function () {
     };
-    Slideshow.prototype.init = function () {
-        return __awaiter(this, void 0, void 0, function () {
-            var hLayout, btn_left, btn_right, group;
-            return __generator(this, function (_a) {
-                console.log('Slideshow init ...');
-                hLayout = new eui.HorizontalLayout();
-                hLayout.gap = 10;
-                hLayout.paddingTop = 30;
-                hLayout.horizontalAlign = egret.HorizontalAlign.JUSTIFY;
-                hLayout.verticalAlign = egret.VerticalAlign.MIDDLE;
-                this.layout = hLayout; /// 水平布局
-                btn_left = new eui.Button();
-                btn_left.width = 80;
-                btn_left.label = 'left';
-                btn_left.enabled = true;
-                btn_left.addEventListener(egret.TouchEvent.TOUCH_TAP, this.onclickLeft, this);
-                this.btn_left = btn_left;
-                btn_right = new eui.Button();
-                btn_right.width = 80;
-                btn_right.label = 'right';
-                btn_right.enabled = true;
-                btn_right.addEventListener(egret.TouchEvent.TOUCH_TAP, this.onclickRight, this);
-                this.btn_right = btn_right;
-                group = new eui.Group();
-                group.width = 600;
-                group.height = 400;
-                this.imgBox = group;
-                this.resetImgBox();
-                this.addChild(btn_left);
-                this.addChild(group);
-                this.addChild(btn_right);
-                btn_left.visible = false;
-                this.mask = new egret.Rectangle(0, 0, this.width, this.height);
-                return [2 /*return*/];
-            });
-        });
-    };
-    Slideshow.prototype.onclickLeft = function () {
-        var _this = this;
-        if (this.activeIndex <= 0)
-            return;
-        if (this.isAnimating)
-            return;
-        this.isAnimating = true;
-        var image = this.imgBox.getChildAt(0);
-        var tw = egret.Tween.get(image);
-        tw.to({ x: image.width }, this.duration)
-            .call(function () {
-            _this.imgBox.setChildIndex(image, _this.imgBox.numChildren);
-            tw.to({ x: 0 }, _this.duration)
-                .call(function () {
-                setTimeout(function () {
-                    _this.activeIndex -= 1;
-                    _this.resetLeft();
-                    _this.isAnimating = false;
-                }, 10);
-            });
-        })
-            .wait(this.delayed);
-    };
-    Slideshow.prototype.onclickRight = function () {
-        var _this = this;
-        if (this.activeIndex >= this.awards.length - 1)
-            return;
-        if (this.isAnimating)
-            return;
-        this.isAnimating = true;
-        var image = this.imgBox.getChildAt(this.imgBox.numChildren - 1);
-        var tw = egret.Tween.get(image);
-        tw.to({ x: image.width }, this.duration)
-            .call(function () {
-            _this.imgBox.setChildIndex(image, 1);
-            tw.to({ x: 0 }, _this.duration)
-                .call(function () {
-                setTimeout(function () {
-                    _this.activeIndex += 1;
-                    _this.resetRight();
-                    _this.isAnimating = false;
-                }, 10);
-            });
-        })
-            .wait(this.delayed);
-    };
-    Slideshow.prototype.resetLeft = function () {
-        console.log('resetLeft...');
-        var item = this.awards.shift();
-        this.awards.push(item);
-        this.resetImgBox();
-    };
-    Slideshow.prototype.resetRight = function () {
-        console.log('resetRight..');
-        var item = this.awards.pop();
-        this.awards.unshift(item);
-        this.resetImgBox();
-    };
-    Slideshow.prototype.resetImgBox = function () {
-        return __awaiter(this, void 0, void 0, function () {
-            var i, len, img, t;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        this.imgBox.removeChildren();
-                        i = 0, len = this.awards.length;
-                        _a.label = 1;
-                    case 1:
-                        if (!(i < len)) return [3 /*break*/, 4];
-                        img = new egret.Bitmap();
-                        return [4 /*yield*/, Utils.getTexture("resource/" + this.awards[i].url)];
-                    case 2:
-                        t = _a.sent();
-                        img.width = this.imgBox.width;
-                        img.height = this.imgBox.height;
-                        img.texture = t;
-                        this.imgBox.addChild(img);
-                        _a.label = 3;
-                    case 3:
-                        i++;
-                        return [3 /*break*/, 1];
-                    case 4: return [2 /*return*/];
-                }
-            });
-        });
-    };
-    Slideshow.uuType = UUType.SLIDESHOW;
-    return Slideshow;
-}(eui.Group));
-__reflect(Slideshow.prototype, "Slideshow", ["IUUBase", "IUUContainer", "IUUComponent"]);
+    SoundButton.uuType = UUType.SOUND;
+    return SoundButton;
+}(eui.Button));
+__reflect(SoundButton.prototype, "SoundButton", ["IUUBase"]);
 var Card = (function (_super) {
     __extends(Card, _super);
     function Card() {
@@ -1406,40 +1258,6 @@ var Card = (function (_super) {
     return Card;
 }(eui.Group));
 __reflect(Card.prototype, "Card", ["IUUBase", "IUUContainer"]);
-/**
- * 声音组件
- */
-var SoundButton = (function (_super) {
-    __extends(SoundButton, _super);
-    function SoundButton() {
-        var _this = _super.call(this) || this;
-        _this.layerName = '声音';
-        _this.addEventListener(egret.Event.ADDED_TO_STAGE, _this.onAddToStage, _this);
-        return _this;
-    }
-    SoundButton.prototype.onAddToStage = function (event) {
-        this.init();
-        // this.bindHandler();
-    };
-    SoundButton.prototype.init = function () {
-    };
-    SoundButton.uuType = UUType.SOUND;
-    return SoundButton;
-}(eui.Button));
-__reflect(SoundButton.prototype, "SoundButton", ["IUUBase"]);
-var Transformable = (function () {
-    function Transformable(width, height, matrix, owner) {
-        this.width = 0;
-        this.height = 0;
-        this.width = width;
-        this.height = height;
-        this.matrix = matrix;
-        this.owner = owner;
-        this.changed = null;
-    }
-    return Transformable;
-}());
-__reflect(Transformable.prototype, "Transformable");
 /**
  * 操作基类
  */
@@ -1928,213 +1746,40 @@ var TweenControl = (function (_super) {
     return TweenControl;
 }(eui.Group));
 __reflect(TweenControl.prototype, "TweenControl");
-// TypeScript file
-/**
- * 转盘组件
- */
-var CircleSector = (function (_super) {
-    __extends(CircleSector, _super);
-    function CircleSector() {
-        var _this = _super.call(this) || this;
-        _this.layerName = '转盘';
-        _this.width = 400;
-        _this.height = 400;
-        _this.tweens = [];
-        _this.awards = [
-            {
-                text: '文本1',
-                url: '/assets/1.png'
-            },
-            {
-                text: '文本2',
-                url: '/assets/2.png'
-            },
-            {
-                text: '文本3',
-                url: '/assets/3.png'
-            },
-            {
-                text: '文本4',
-                url: '/assets/4.png'
-            },
-            {
-                text: '文本5',
-                url: '/assets/5.png'
-            },
-            {
-                text: '文本6',
-                url: '/assets/5.png'
-            }
-        ];
-        _this.main = new eui.Group();
-        _this.touchEnabled = false;
-        _this.addEventListener(egret.Event.ADDED_TO_STAGE, _this.onAddToStage, _this);
-        _this.addEventListener(egret.Event.REMOVED_FROM_STAGE, _this.onRemoveFromStage, _this);
-        return _this;
+var BaseComponent = (function (_super) {
+    __extends(BaseComponent, _super);
+    function BaseComponent() {
+        return _super.call(this) || this;
     }
-    CircleSector.prototype.draw = function () {
+    BaseComponent.prototype.getProps = function () {
+        return {
+            awards: this.awards
+        };
     };
-    CircleSector.prototype.onAddToStage = function (event) {
-        this.init();
-        this.drawSector();
+    BaseComponent.prototype.setProps = function (d) {
+        this.awards = d.awards;
     };
-    CircleSector.prototype.onRemoveFromStage = function (event) {
-        this.dispose();
+    BaseComponent.prototype.redraw = function () {
     };
-    CircleSector.prototype.init = function () {
-        this.width = 400;
-        this.height = 400;
-        this.main.anchorOffsetX = 200;
-        this.main.anchorOffsetY = 200;
-        this.main.x = 200;
-        this.main.y = 200;
-        var s = new egret.Shape();
-        // s.graphics.beginFill(0x000000, 0.5);
-        // s.graphics.lineStyle(1, 0xf2f2f2);
-        // s.graphics.drawRect(0, 0, 456, 444);
-        // s.graphics.endFill();
-        this.main.touchEnabled = false;
-        this.main.addChild(s);
-        this.addChild(this.main);
-    };
-    CircleSector.prototype.redraw = function () {
-        this.main.removeChildren();
-        this.drawSector();
-    };
-    CircleSector.prototype.drawSector = function () {
-        return __awaiter(this, void 0, void 0, function () {
-            var shape, arc, lastAngle, r, fillStyle, strokeStyle, lineWidth, i, g, label, img, t, jt, texture;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        shape = new egret.Shape();
-                        shape.touchEnabled = true;
-                        this.main.addChild(shape);
-                        arc = 360 / this.awards.length;
-                        lastAngle = 0;
-                        r = 200;
-                        fillStyle = 0xffffff;
-                        strokeStyle = 0x007eff;
-                        lineWidth = 2;
-                        i = 0;
-                        _a.label = 1;
-                    case 1:
-                        if (!(i < this.awards.length)) return [3 /*break*/, 4];
-                        if (i % 2 === 0)
-                            fillStyle = 0xFFFFFF;
-                        else
-                            fillStyle = 0xFD5757;
-                        lastAngle = i * arc;
-                        this.drawArc(shape, r, r, r, arc, lastAngle, fillStyle);
-                        g = new eui.Group();
-                        g.width = 2 * r * Math.sin(arc * 2 * Math.PI / 360 / 2);
-                        g.height = r;
-                        g.x = 200 + Math.cos(lastAngle * Math.PI / 180 + arc * Math.PI / 180 / 2) * 200;
-                        g.y = 200 + Math.sin(lastAngle * Math.PI / 180 + arc * Math.PI / 180 / 2) * 200;
-                        g.touchEnabled = false;
-                        g.rotation = (lastAngle * Math.PI / 180 + arc * Math.PI / 180 / 2 + Math.PI / 2) * 180 / Math.PI;
-                        label = new eui.Label(this.awards[i].text);
-                        label.textColor = 0xE5302F;
-                        label.size = 18;
-                        // label.horizontalCenter = 50;
-                        label.x = -label.width / 2;
-                        label.y = 10;
-                        g.addChild(label);
-                        img = new egret.Bitmap();
-                        return [4 /*yield*/, Utils.getTexture("resource/" + this.awards[i].url)];
-                    case 2:
-                        t = _a.sent();
-                        img.texture = t;
-                        img.width = 80;
-                        img.height = 80;
-                        img.x = -img.width / 2;
-                        img.y = label.height + 20;
-                        g.addChild(img);
-                        this.main.addChild(g);
-                        _a.label = 3;
-                    case 3:
-                        i++;
-                        return [3 /*break*/, 1];
-                    case 4:
-                        jt = new eui.Image();
-                        texture = RES.getRes("jt2_png");
-                        jt.texture = texture;
-                        jt.horizontalCenter = 0;
-                        jt.verticalCenter = 0;
-                        jt.addEventListener(Mouse.START, this.down, this);
-                        this.addChild(jt);
-                        return [2 /*return*/];
-                }
-            });
-        });
-    };
-    CircleSector.prototype.down = function (event) {
-        var item = this.rnd(1, this.awards.length);
-        this.rotateFn(item, this.awards[item - 1].text);
-    };
-    CircleSector.prototype.rnd = function (n, m) {
-        var random = Math.floor(Math.random() * (m - n + 1) + n);
-        return random;
-    };
-    CircleSector.prototype.rotateFn = function (item, txt) {
-        var angles = item * (360 / this.awards.length) - (360 / (this.awards.length * 2));
-        if (angles < 270) {
-            angles = 270 - angles;
-        }
-        else {
-            angles = 360 - angles + 270;
-        }
-        egret.Tween.pauseTweens(this.main);
-        var t = egret.Tween.get(this.main);
-        t.to({ rotation: angles + 1800 }, 8000, egret.Ease.sineOut);
-        this.tweens.push(t);
-    };
-    // dispose () {
-    //     egret.Tween.pauseTweens(this.main);
-    //     // egret.Tween.removeTweens(this.main);
-    // }
     /**
-     * 画弧形方法
+     * 切换页和删除图层的时候回收组件释放当前组件动画等
      */
-    CircleSector.prototype.drawArc = function (mc, x, y, r, angle, startFrom, color) {
-        if (x === void 0) { x = 200; }
-        if (y === void 0) { y = 200; }
-        if (r === void 0) { r = 100; }
-        if (angle === void 0) { angle = 27; }
-        if (startFrom === void 0) { startFrom = 270; }
-        if (color === void 0) { color = 0xff0000; }
-        mc.graphics.beginFill(color, 50);
-        mc.graphics.lineStyle(0, color);
-        mc.graphics.moveTo(x, y);
-        angle = (Math.abs(angle) > 360) ? 360 : angle;
-        var n = Math.ceil(Math.abs(angle) / 45);
-        var angleA = angle / n;
-        angleA = angleA * Math.PI / 180;
-        startFrom = startFrom * Math.PI / 180;
-        mc.graphics.lineTo(x + r * Math.cos(startFrom), y + r * Math.sin(startFrom));
-        for (var i = 1; i <= n; i++) {
-            startFrom += angleA;
-            var angleMid = startFrom - angleA / 2;
-            var bx = x + r / Math.cos(angleA / 2) * Math.cos(angleMid);
-            var by = y + r / Math.cos(angleA / 2) * Math.sin(angleMid);
-            var cx = x + r * Math.cos(startFrom);
-            var cy = y + r * Math.sin(startFrom);
-            mc.graphics.curveTo(bx, by, cx, cy);
+    BaseComponent.prototype.dispose = function () {
+        for (var _i = 0, _a = this.tweens; _i < _a.length; _i++) {
+            var t = _a[_i];
+            t.pause();
         }
-        if (angle != 360) {
-            mc.graphics.lineTo(x, y);
-        }
-        mc.graphics.endFill();
+        egret.Tween.removeAllTweens();
+        this.tweens = [];
     };
-    CircleSector.uuType = UUType.CIRCLE_SECTOR;
-    return CircleSector;
-}(BaseComponent));
-__reflect(CircleSector.prototype, "CircleSector", ["IUUBase"]);
+    return BaseComponent;
+}(eui.Group));
+__reflect(BaseComponent.prototype, "BaseComponent", ["IUUComponent"]);
 var Utils = (function () {
     function Utils() {
     }
     Utils.getComs = function () {
-        return [UULabel, UUImage, UUContainer, SoundButton, CircleSector, UUBackground, Slideshow, SlotMachine];
+        return [UULabel, UUImage, UUContainer, SoundButton, CircleSector, UUBackground, Slideshow, SlotMachine, UUGroup, CardAlert, SelectImage, DrawOne, DragBorderBox, DragImageBox, ClickImageBox, FunctionButton];
     };
     Utils.getTexture = function (url) {
         var _this = this;
@@ -2258,6 +1903,26 @@ var UUContainer = (function (_super) {
     return UUContainer;
 }(eui.Group));
 __reflect(UUContainer.prototype, "UUContainer", ["IUUBase"]);
+var UUGroup = (function (_super) {
+    __extends(UUGroup, _super);
+    function UUGroup(props) {
+        var _this = _super.call(this) || this;
+        // base 
+        _this.name = '';
+        _this.layerName = '容器';
+        _this.isDraw = false;
+        // props默认值
+        _this.width = 200;
+        _this.height = 200;
+        for (var key in props) {
+            _this[key] = props[key];
+        }
+        return _this;
+    }
+    UUGroup.uuType = UUType.GROUP;
+    return UUGroup;
+}(eui.Group));
+__reflect(UUGroup.prototype, "UUGroup", ["IUUBase", "IGroup", "ISize"]);
 // TypeScript file
 /**
  * 图片组件
@@ -2267,297 +1932,46 @@ var UUImage = (function (_super) {
     function UUImage() {
         var _this = _super !== null && _super.apply(this, arguments) || this;
         _this.layerName = '图片';
+        _this.isDraw = false;
         return _this;
     }
     UUImage.uuType = UUType.IMAGE;
     return UUImage;
 }(eui.Image));
-__reflect(UUImage.prototype, "UUImage", ["IUUBase"]);
+__reflect(UUImage.prototype, "UUImage", ["IUUBase", "IImage", "IResource", "ISize"]);
 // TypeScript file
 /**
  * 文字组件
  */
 var UULabel = (function (_super) {
     __extends(UULabel, _super);
-    function UULabel() {
+    function UULabel(props) {
+        if (props === void 0) { props = {}; }
         var _this = _super.call(this) || this;
+        // base
+        _this.name = '';
         _this.layerName = '文字';
+        _this.isDraw = false;
+        // props默认值
         _this.text = '请输入文本';
         _this.textColor = 0x000000;
         _this.size = 40;
         _this.fontFamily = 'Arial';
         _this.textAlign = egret.HorizontalAlign.JUSTIFY;
-        _this.name = '';
+        for (var key in props) {
+            _this[key] = props[key];
+        }
         return _this;
     }
-    UULabel.prototype.getProps = function () {
-        return {
-            text: this.text,
-            textColor: this.textColor,
-            size: this.size,
-            fontFamily: this.fontFamily
-            // textAlign: this.textAlign,
-            // lineSpacing: this.lineSpacing
-        };
-    };
-    UULabel.prototype.setProps = function (props) {
-        this.text = props.text;
-        this.textColor = props.textColor;
-        this.size = props.size;
-        this.fontFamily = props.fontFamily;
-    };
-    UULabel.prototype.redraw = function () {
-    };
     UULabel.uuType = UUType.TEXT;
     return UULabel;
 }(eui.Label));
-__reflect(UULabel.prototype, "UULabel", ["IUUBase"]);
+__reflect(UULabel.prototype, "UULabel", ["IUUBase", "ILabel"]);
 // TypeScript file
-/**
- * 轮播图组件
- */
-var SlotMachine = (function (_super) {
-    __extends(SlotMachine, _super);
-    function SlotMachine(props) {
-        var _this = _super.call(this) || this;
-        _this.layerName = '老虎机';
-        _this.isAnimating = false;
-        _this.itemWidth = 250;
-        _this.itemHeight = 250;
-        _this.gap = 10;
-        _this.tweenFlag = 3; // 动画标记
-        // 组件宽、高固定
-        _this.width = 800;
-        _this.height = 400;
-        // props中用到的参数
-        _this.bgColor = '0x666699';
-        _this.bdUrl = '/assets/pic/draw_card_bg.png';
-        _this.awardsTotal = [];
-        _this._awards = [];
-        _this.awards = props.awards;
-        _this.bgColor = props.bgColor;
-        _this.bdUrl = props.bdUrl;
-        _this.touchEnabled = false;
-        _this.addEventListener(egret.Event.ADDED_TO_STAGE, _this.onAddToStage, _this);
-        _this.addEventListener(egret.Event.REMOVED_FROM_STAGE, _this.onRemoveFromStage, _this);
-        return _this;
+var UURequest = (function () {
+    // private req: egret.HttpRequest = new egret.HttpRequest();
+    function UURequest() {
     }
-    Object.defineProperty(SlotMachine.prototype, "awards", {
-        get: function () {
-            return this._awards;
-        },
-        set: function (v) {
-            this._awards = v;
-            var firstItem = v.slice(0, 1);
-            this.awardsTotal = v.concat(firstItem);
-        },
-        enumerable: true,
-        configurable: true
-    });
-    SlotMachine.prototype.onAddToStage = function (event) {
-        this.init();
-    };
-    SlotMachine.prototype.onRemoveFromStage = function (event) {
-    };
-    SlotMachine.prototype.init = function () {
-        return __awaiter(this, void 0, void 0, function () {
-            var vLayout, mainBox, btn;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        vLayout = new eui.VerticalLayout();
-                        vLayout.horizontalAlign = 'center';
-                        this.layout = vLayout;
-                        return [4 /*yield*/, this.createMainBox()];
-                    case 1:
-                        mainBox = _a.sent();
-                        btn = this.createStartBtn();
-                        this.addChild(mainBox);
-                        this.addChild(btn);
-                        return [2 /*return*/];
-                }
-            });
-        });
-    };
-    SlotMachine.prototype.createMainBox = function () {
-        return __awaiter(this, void 0, void 0, function () {
-            var group, shape, itemGroup, i, len, itemBox;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        group = new eui.Group();
-                        group.width = this.width;
-                        group.height = this.itemHeight + 2 * this.gap;
-                        shape = new egret.Shape();
-                        shape.graphics.beginFill(this.bgColor, 1);
-                        shape.graphics.drawRect(0, 0, group.width, group.height);
-                        shape.graphics.endFill();
-                        itemGroup = new eui.Group();
-                        itemGroup.width = this.width;
-                        itemGroup.height = group.height;
-                        this.itemGroup = itemGroup;
-                        itemGroup.mask = new egret.Rectangle(0, 0, itemGroup.width, itemGroup.height);
-                        i = 0, len = 3;
-                        _a.label = 1;
-                    case 1:
-                        if (!(i < len)) return [3 /*break*/, 4];
-                        return [4 /*yield*/, this.createItemBox()];
-                    case 2:
-                        itemBox = _a.sent();
-                        itemBox.x = (12 + this.itemWidth) * i + 12;
-                        itemBox.y = this.gap;
-                        itemGroup.addChild(itemBox);
-                        _a.label = 3;
-                    case 3:
-                        i++;
-                        return [3 /*break*/, 1];
-                    case 4:
-                        ;
-                        group.addChild(shape);
-                        group.addChild(itemGroup);
-                        return [2 /*return*/, group];
-                }
-            });
-        });
-    };
-    // 竖向轮播图容器
-    SlotMachine.prototype.createItemBox = function () {
-        return __awaiter(this, void 0, void 0, function () {
-            var group, vLayout, promiseArr, i, len;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        group = new eui.Group();
-                        group.width = this.itemWidth;
-                        group.height = (this.itemWidth + this.gap) * this.awardsTotal.length - this.gap;
-                        vLayout = new eui.VerticalLayout();
-                        vLayout.gap = this.gap;
-                        vLayout.paddingTop = 0;
-                        group.layout = vLayout;
-                        promiseArr = [];
-                        for (i = 0, len = this.awardsTotal.length; i < len; i++) {
-                            promiseArr.push(this.createItem(this.awardsTotal[i].url));
-                        }
-                        ;
-                        return [4 /*yield*/, Promise.all(promiseArr).then(function (itemArr) {
-                                for (var i = 0, len = itemArr.length; i < len; i++) {
-                                    var item = itemArr[i];
-                                    group.addChild(item);
-                                }
-                            })];
-                    case 1:
-                        _a.sent();
-                        return [2 /*return*/, group];
-                }
-            });
-        });
-    };
-    SlotMachine.prototype.createItem = function (url) {
-        return __awaiter(this, void 0, void 0, function () {
-            var group, bg, img;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        group = new eui.Group();
-                        group.width = this.itemWidth;
-                        group.height = this.itemHeight;
-                        return [4 /*yield*/, this.createImg(this.bdUrl)];
-                    case 1:
-                        bg = _a.sent();
-                        return [4 /*yield*/, this.createImg(url)];
-                    case 2:
-                        img = _a.sent();
-                        group.addChild(bg);
-                        group.addChild(img);
-                        return [2 /*return*/, group];
-                }
-            });
-        });
-    };
-    SlotMachine.prototype.createImg = function (url) {
-        return __awaiter(this, void 0, void 0, function () {
-            var img, t;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        img = new egret.Bitmap();
-                        return [4 /*yield*/, Utils.getTexture("resource/" + url)];
-                    case 1:
-                        t = _a.sent();
-                        img.width = this.itemWidth;
-                        img.height = this.itemHeight;
-                        img.texture = t;
-                        return [2 /*return*/, img];
-                }
-            });
-        });
-    };
-    SlotMachine.prototype.createStartBtn = function () {
-        var btn = new eui.Button();
-        btn.label = '开始';
-        btn.addEventListener(egret.TouchEvent.TOUCH_TAP, this.onClick, this);
-        return btn;
-    };
-    SlotMachine.prototype.onClick = function (evt) {
-        evt.stopPropagation();
-        evt.stopImmediatePropagation();
-        if (this.tweenFlag !== 3)
-            return;
-        this.tweenFlag = 0;
-        var stepRandomMax = this.awardsTotal.length - 1;
-        var stepRandomMIn = 4;
-        var step1 = Math.floor(Math.random() * stepRandomMax) + stepRandomMIn;
-        var step2 = Math.floor(Math.random() * stepRandomMax) + stepRandomMIn;
-        var step3 = Math.floor(Math.random() * stepRandomMax) + stepRandomMIn;
-        var timeRandomMax = (this.awardsTotal.length - 1) * 200;
-        var timeRandomMIn = 1000;
-        var time1 = Math.floor(Math.random() * timeRandomMax) + timeRandomMIn;
-        var time2 = Math.floor(Math.random() * timeRandomMax) + timeRandomMIn;
-        var time3 = Math.floor(Math.random() * timeRandomMax) + timeRandomMIn;
-        var firstBox = this.itemGroup.getChildAt(0);
-        var secondBox = this.itemGroup.getChildAt(1);
-        var thirdBox = this.itemGroup.getChildAt(2);
-        this.tween(firstBox, step1, time1);
-        this.tween(secondBox, step2, time2);
-        this.tween(thirdBox, step3, time3);
-    };
-    SlotMachine.prototype.tween = function (item, step, duration) {
-        var _this = this;
-        if (duration === void 0) { duration = 500; }
-        var initY = item.y;
-        var addY = -(this.itemHeight + this.gap) * step;
-        var totalY = initY + addY;
-        var maxY = -(this.itemHeight + this.gap) * (this.awardsTotal.length - 1) + this.gap;
-        if (totalY < maxY) {
-            var oneStepTime = duration / step;
-            var step1 = (maxY - initY) / -(this.itemHeight + this.gap);
-            var step2_1 = step - step1;
-            var time1 = step1 * oneStepTime;
-            var time2_1 = duration - time1;
-            var t = egret.Tween.get(item);
-            t.to({ y: maxY }, time1)
-                .call(function () {
-                item.y = 10;
-                _this.tween(item, step2_1, time2_1);
-            });
-        }
-        else if (totalY > maxY) {
-            egret.Tween.get(item)
-                .to({ y: totalY }, duration)
-                .call(function () {
-                _this.tweenFlag += 1;
-            });
-        }
-        else if (totalY == maxY) {
-            egret.Tween.get(item)
-                .to({ y: totalY }, duration)
-                .call(function () {
-                item.y = 10;
-                _this.tweenFlag += 1;
-            });
-        }
-    };
-    SlotMachine.uuType = UUType.SLOT_MACHINE;
-    return SlotMachine;
-}(eui.Group));
-__reflect(SlotMachine.prototype, "SlotMachine", ["IUUBase"]);
+    return UURequest;
+}());
+__reflect(UURequest.prototype, "UURequest");

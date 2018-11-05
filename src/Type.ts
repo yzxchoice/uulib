@@ -1,4 +1,3 @@
-// TypeScript file
 enum UUType {
     /**
      * 文本
@@ -25,6 +24,10 @@ enum UUType {
      */
     FRAME = 102,
     /**
+     * Group
+     */
+    GROUP = 1021,
+    /**
      * 轮播图组件
      */
     SLIDESHOW = 103,
@@ -33,7 +36,35 @@ enum UUType {
      */
     SLOT_MACHINE = 104,
 
-    CARD = 112
+    CARD = 112,
+    /**
+     * 弹出框卡片组件
+     */
+    CARDALERT = 1001,
+    /**
+     * 图片单选
+     */
+    SELECT_IMAGE = 1002,
+    /**
+     * 图片拖拽1
+     */
+    DRAW_ONE = 2001,
+    /**
+     * 拖拽组件 border盒组件
+     */
+    DRAG_BORDER_BOX = 3001,
+    /**
+     * 拖拽组件 image盒组件
+     */
+    DRAG_IMAGE_BOX = 3002,
+    /**
+     * 点击组件 image盒组件
+     */
+    CLICK_IMAGE_BOX = 3003,
+     /**
+     * 功能按钮
+     */
+    FUNCTION_BUTTON = 9001,
 }
 
 /**
@@ -64,7 +95,9 @@ interface IResource {
     /**
      * 图片地址
      */
-    url?: string
+    url?: string,
+    answer?: boolean,
+    rightAnswer?: ILabel,
 }
 
 /**
@@ -94,18 +127,37 @@ interface IUUBase {
      * 资源类组件 
      */
     texture?: any,
-
+    /**
+     * 是否可拖动
+     */
+    isDraw?: boolean;
     getProps?: () => any
 }
 
+interface ISize {
+    width: number,
+    height: number,
+}
+
+interface IPosition {
+    x: number,
+    y: number,
+}
+
+interface IBaseMessage extends ISize, IPosition {}
+
 interface ILabel {
-    text: string,
+    text?: string,
     textColor?: number,
     size?: number,
     fontFamily?: string,
     textAlign?: string,
     lineSpacing?: number
 }
+
+interface IImage extends IResource, ISize {}
+
+interface IGroup extends ISize {}
 
 interface IQuestions {
     items: Array<IQuestion>,
@@ -117,28 +169,6 @@ interface IQuestion {
     resource: IResource
 }
 
-interface CircleSectorItem {
-    text: string;
-    url: string;
-}
-
-interface ICircleSector {
-    awards: Array<CircleSectorItem>;
-}
-
-interface SlideshowItem {
-    url: string;
-}
-interface ISlideshow {
-    awards: Array<SlideshowItem>;
-}
-
-
-interface ISlotMachine {
-    awards: Array<SlideshowItem>;
-    bgColor: number | string;
-    bdUrl: string;
-}
 
 interface ITrigger {
     delay: number,
